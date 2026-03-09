@@ -1,25 +1,118 @@
-
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=DM+Mono:wght@400;500&display=swap');
 @import "tailwindcss";
 
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=JetBrains+Mono:wght@400;500&display=swap');
+@theme {
+  /* Colors */
+  --color-dark-900: #0a0e1a;
+  --color-dark-800: #111827;
+  --color-dark-700: #1a2235;
+  --color-dark-600: #25304a;
 
-@import "tailwindcss/preflight";
-@import "tailwindcss/components";
-@import "tailwindcss/utilities";
+  --color-ocean-50: #f0f7ff;
+  --color-ocean-100: #e0effe;
+  --color-ocean-200: #bae0fd;
+  --color-ocean-300: #7cc8fb;
+  --color-ocean-400: #36aaf5;
+  --color-ocean-500: #0c8ee6;
+  --color-ocean-600: #006fc4;
+  --color-ocean-700: #00589f;
+  --color-ocean-800: #034a83;
+  --color-ocean-900: #093f6d;
+  --color-ocean-950: #062849;
 
-@layer base {
-  :root {
-    --color-bg: #0a0e1a;
-    --color-surface: #111827;
-    --color-surface-2: #1a2235;
-    --color-border: rgba(255, 255, 255, 0.08);
-    --color-text: #f8fafc;
-    --color-text-muted: #94a3b8;
-    --color-accent: #0c8ee6;
-    --color-gold: #db912c;
+  --color-sand-50: #fdf8f0;
+  --color-sand-100: #faeeda;
+  --color-sand-200: #f4dab4;
+  --color-sand-300: #ecc083;
+  --color-sand-400: #e39f50;
+  --color-sand-500: #dc832e;
+  --color-sand-600: #cd6a23;
+  --color-sand-700: #aa521f;
+  --color-sand-800: #884221;
+  --color-sand-900: #6e371e;
+
+  --color-reef-50: #f0fdf6;
+  --color-reef-100: #dcfceb;
+  --color-reef-200: #bbf7d7;
+  --color-reef-300: #86efb8;
+  --color-reef-400: #4ade8a;
+  --color-reef-500: #22c564;
+  --color-reef-600: #15a34a;
+  --color-reef-700: #148040;
+  --color-reef-800: #156535;
+  --color-reef-900: #14532d;
+
+  /* Typography */
+  --font-display: "Playfair Display", Georgia, serif;
+  --font-body: "DM Sans", system-ui, sans-serif;
+  --font-mono: "DM Mono", monospace;
+
+  /* Screens */
+  --breakpoint-xs: 375px;
+  --breakpoint-sm: 640px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1280px;
+  --breakpoint-2xl: 1536px;
+
+  /* Spacing */
+  --spacing-18: 4.5rem;
+  --spacing-88: 22rem;
+  --spacing-128: 32rem;
+
+  /* Border radius */
+  --radius-4xl: 2rem;
+
+  /* Shadows */
+  --shadow-ocean: 0 4px 24px -4px rgba(6, 40, 73, 0.15);
+  --shadow-ocean-lg: 0 8px 40px -8px rgba(6, 40, 73, 0.2);
+  --shadow-glow: 0 0 24px rgba(12, 142, 230, 0.3);
+
+  /* Animations */
+  --animate-fade-in: fadeIn 0.3s ease-out;
+  --animate-slide-up: slideUp 0.3s ease-out;
+  --animate-slide-in-right: slideInRight 0.3s ease-out;
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+
+    to {
+      opacity: 1;
+    }
   }
 
-  * {
+  @keyframes slideUp {
+    from {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes slideInRight {
+    from {
+      opacity: 0;
+      transform: translateX(100%);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+}
+
+@layer base {
+
+  *,
+  *::before,
+  *::after {
     box-sizing: border-box;
   }
 
@@ -29,9 +122,9 @@
   }
 
   body {
-    font-family: 'DM Sans', system-ui, sans-serif;
-    background-color: var(--color-bg);
-    color: var(--color-text);
+    font-family: var(--font-body);
+    background-color: var(--color-dark-900);
+    color: #f8fafc;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
@@ -42,33 +135,34 @@
   h4,
   h5,
   h6 {
-    font-family: 'Playfair Display', Georgia, serif;
+    font-family: var(--font-display);
   }
 }
 
 @layer components {
+/* cleaner — use a base class in HTML: class="btn btn-primary" */
   .btn {
-    @apply inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl font-body font-medium text-sm transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ocean-500 focus-visible:ring-offset-2 focus-visible:ring-offset-dark-900 disabled:opacity-50 disabled:pointer-events-none;
+    @apply inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl font-medium text-sm transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ocean-500 disabled:opacity-50 disabled:pointer-events-none;
   }
 
   .btn-primary {
-    @apply btn bg-ocean-600 hover:bg-ocean-500 text-white shadow-ocean hover:shadow-glow;
+    @apply bg-ocean-600 hover:bg-ocean-500 text-white;
   }
 
   .btn-secondary {
-    @apply btn bg-dark-700 hover:bg-dark-600 text-white border border-white/10;
+    @apply bg-dark-700 hover:bg-dark-600 text-white border border-white/10;
   }
 
   .btn-ghost {
-    @apply btn hover:bg-white/5 text-slate-300 hover:text-white;
+    @apply hover:bg-white/5 text-slate-300 hover:text-white;
   }
 
   .btn-danger {
-    @apply btn bg-red-600/90 hover:bg-red-500 text-white;
+    @apply bg-red-600/90 hover:bg-red-500 text-white;
   }
 
   .btn-gold {
-    @apply btn bg-sand-600 hover:bg-sand-500 text-white shadow-ocean;
+    @apply bg-sand-600 hover:bg-sand-500 text-white;
   }
 
   .input {
@@ -79,58 +173,53 @@
     @apply bg-dark-800 border border-white/8 rounded-2xl;
   }
 
-  .badge {
-    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-2xs font-medium font-body uppercase tracking-wider;
-  }
-
-  .badge-pending {
-    @apply badge bg-yellow-500/15 text-yellow-400;
-  }
-
-  .badge-confirmed {
-    @apply badge bg-ocean-500/15 text-ocean-400;
-  }
-
-  .badge-success {
-    @apply badge bg-emerald-500/15 text-emerald-400;
-  }
-
-  .badge-canceled {
-    @apply badge bg-red-500/15 text-red-400;
-  }
-
-  .badge-preparing {
-    @apply badge bg-orange-500/15 text-orange-400;
-  }
+    .badge {
+      @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium uppercase tracking-wider;
+    }
+  
+    .badge-pending {
+      @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium uppercase tracking-wider bg-yellow-500/15 text-yellow-400;
+    }
+  
+    .badge-confirmed {
+      @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium uppercase tracking-wider bg-ocean-500/15 text-ocean-400;
+    }
+  
+    .badge-success {
+      @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium uppercase tracking-wider bg-reef-500/15 text-reef-400;
+    }
+  
+    .badge-canceled {
+      @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium uppercase tracking-wider bg-red-500/15 text-red-400;
+    }
+  
+    .badge-preparing {
+      @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium uppercase tracking-wider bg-orange-500/15 text-orange-400;
+    }
 
   .page-container {
     @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
   }
 
   .section-title {
-    @apply font-display text-2xl sm:text-3xl font-semibold text-white;
+    @apply text-2xl sm:text-3xl font-semibold text-white;
   }
 }
 
 @layer utilities {
   .text-gradient {
-    @apply bg-gradient-to-r from-ocean-400 to-sand-400 bg-clip-text text-transparent;
-  }
-
-  .border-subtle {
-    @apply border border-white/8;
-  }
-
-  .surface {
-    @apply bg-dark-800 border-subtle;
+    background: linear-gradient(to right, var(--color-ocean-400), var(--color-sand-400));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
   }
 
   .scrollbar-hide {
     -ms-overflow-style: none;
     scrollbar-width: none;
-  }
 
-  .scrollbar-hide::-webkit-scrollbar {
-    display: none;
+    &::-webkit-scrollbar {
+      display: none;
+    }
   }
 }
