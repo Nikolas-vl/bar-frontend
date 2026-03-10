@@ -40,7 +40,7 @@ export default function RegisterPage() {
         password: data.password,
       });
       setAuth(user, accessToken);
-      toast.success(`Welcome to OceanBar, ${user.name}!`);
+      toast.success(`Welcome to Jolie, ${user.name}!`);
       navigate('/', { replace: true });
     } catch (err) {
       toast.error(getErrorMessage(err));
@@ -48,66 +48,71 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className='min-h-[calc(100vh-4rem)] flex items-center justify-center px-4 py-12'>
+    <div className='min-h-[calc(100vh-4rem)] flex items-center justify-center px-4 py-12' style={{ backgroundColor: 'var(--color-ob-bg)' }}>
       <div className='w-full max-w-sm animate-slide-up'>
         <div className='text-center mb-8'>
-          <h1 className='font-display text-3xl font-semibold text-white mb-2'>Create account</h1>
-          <p className='text-sm text-slate-400 font-body'>Join OceanBar and start ordering</p>
+          <div className='w-12 h-12 rounded-2xl flex items-center justify-center mx-auto mb-4' style={{ backgroundColor: 'var(--color-ob-blue)' }}>
+            <span className='text-2xl'>🍽️</span>
+          </div>
+          <h1 className='font-display text-3xl font-semibold mb-2' style={{ color: 'var(--color-ob-text)' }}>
+            Create account
+          </h1>
+          <p className='text-sm' style={{ color: 'var(--color-ob-text-muted)' }}>
+            Join OceanBar and start ordering
+          </p>
         </div>
 
-        <div className='card p-6 shadow-ocean-lg'>
-          <form onSubmit={handleSubmit(onSubmit)} className='flex flex-col gap-4'>
+        <div className='card p-7'>
+          <form onSubmit={handleSubmit(onSubmit)} className='flex flex-col gap-5'>
             <div>
-              <label className='block text-sm font-body font-medium text-slate-300 mb-1.5'>Name</label>
-              <input
-                {...register('name')}
-                placeholder='Your name'
-                className={cn('input', errors.name && 'border-red-500/50 focus:ring-red-500')}
-                autoComplete='name'
-              />
-              {errors.name && <p className='mt-1 text-xs text-red-400 font-body'>{errors.name.message}</p>}
+              <label className='label'>Full name</label>
+              <input {...register('name')} placeholder='Your name' className={cn('input', errors.name && 'input-error')} autoComplete='name' />
+              {errors.name && <p className='field-error'>{errors.name.message}</p>}
             </div>
 
             <div>
-              <label className='block text-sm font-body font-medium text-slate-300 mb-1.5'>Email</label>
+              <label className='label'>Email address</label>
               <input
                 {...register('email')}
                 type='email'
                 placeholder='you@example.com'
-                className={cn('input', errors.email && 'border-red-500/50 focus:ring-red-500')}
+                className={cn('input', errors.email && 'input-error')}
                 autoComplete='email'
               />
-              {errors.email && <p className='mt-1 text-xs text-red-400 font-body'>{errors.email.message}</p>}
+              {errors.email && <p className='field-error'>{errors.email.message}</p>}
             </div>
 
             <div>
-              <label className='block text-sm font-body font-medium text-slate-300 mb-1.5'>Password</label>
+              <label className='label'>Password</label>
               <input
                 {...register('password')}
                 type='password'
                 placeholder='At least 6 characters'
-                className={cn('input', errors.password && 'border-red-500/50 focus:ring-red-500')}
+                className={cn('input', errors.password && 'input-error')}
                 autoComplete='new-password'
               />
-              {errors.password && <p className='mt-1 text-xs text-red-400 font-body'>{errors.password.message}</p>}
+              {errors.password && <p className='field-error'>{errors.password.message}</p>}
             </div>
 
             <div>
-              <label className='block text-sm font-body font-medium text-slate-300 mb-1.5'>Confirm password</label>
+              <label className='label'>Confirm password</label>
               <input
                 {...register('confirmPassword')}
                 type='password'
                 placeholder='Repeat your password'
-                className={cn('input', errors.confirmPassword && 'border-red-500/50 focus:ring-red-500')}
+                className={cn('input', errors.confirmPassword && 'input-error')}
                 autoComplete='new-password'
               />
-              {errors.confirmPassword && <p className='mt-1 text-xs text-red-400 font-body'>{errors.confirmPassword.message}</p>}
+              {errors.confirmPassword && <p className='field-error'>{errors.confirmPassword.message}</p>}
             </div>
 
-            <button type='submit' disabled={isSubmitting} className='btn-primary w-full mt-1'>
+            <button type='submit' disabled={isSubmitting} className='btn-primary w-full mt-1 justify-center'>
               {isSubmitting ? (
                 <span className='flex items-center gap-2'>
-                  <span className='w-4 h-4 rounded-full border-2 border-white/20 border-t-white animate-spin' />
+                  <span
+                    className='w-4 h-4 rounded-full border-2 animate-spin'
+                    style={{ borderColor: 'rgba(255,255,255,0.3)', borderTopColor: '#fff' }}
+                  />
                   Creating account…
                 </span>
               ) : (
@@ -117,9 +122,15 @@ export default function RegisterPage() {
           </form>
         </div>
 
-        <p className='mt-6 text-center text-sm text-slate-500 font-body'>
+        <p className='mt-6 text-center text-sm' style={{ color: 'var(--color-ob-text-muted)' }}>
           Already have an account?{' '}
-          <Link to='/login' className='text-ocean-400 hover:text-ocean-300 transition-colors'>
+          <Link
+            to='/login'
+            className='font-medium transition-colors'
+            style={{ color: 'var(--color-ob-caramel)' }}
+            onMouseEnter={e => (e.currentTarget.style.color = 'var(--color-ob-wood)')}
+            onMouseLeave={e => (e.currentTarget.style.color = 'var(--color-ob-caramel)')}
+          >
             Sign in
           </Link>
         </p>

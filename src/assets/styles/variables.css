@@ -1,0 +1,142 @@
+/* ═══════════════════════════════════════════════
+   JOLIE BRASSERIE CAFÉ — Design Tokens
+   All brand colors, fonts, shadows and animations
+   exposed as CSS variables via Tailwind v4 @theme.
+═══════════════════════════════════════════════ */
+
+@theme {
+
+  /* ── Brand Palette ──────────────────────────── */
+  --color-ob-bg: #F7F6F3;
+  /* porcelain white  — app background  */
+  --color-ob-surface: #FFFFFF;
+  /* pure white       — cards / modals  */
+  --color-ob-blue: #D8E7F2;
+  /* pastel café blue — section fills   */
+  --color-ob-blue-deep: #A8C8E0;
+  /* deeper blue      — hover / borders */
+  --color-ob-caramel: #C58B5A;
+  /* warm caramel     — primary CTA     */
+  --color-ob-caramel-h: #A87449;
+  /* caramel hover                      */
+  --color-ob-wood: #8B5E3C;
+  /* natural wood     — links / accents */
+  --color-ob-wood-light: #B88A60;
+  /* lighter wood                       */
+  --color-ob-text: #2F2F2F;
+  /* charcoal         — primary text    */
+  --color-ob-muted: #6B6B6B;
+  /* secondary text                     */
+  --color-ob-light: #9A9A9A;
+  /* placeholder / disabled             */
+  --color-ob-border: #E5E5E5;
+  /* soft grey        — default borders */
+  --color-ob-border-h: #D0D0D0;
+  /* border hover                       */
+  --color-ob-cream: #FAF7F2;
+  /* warm cream       — alt background  */
+  --color-ob-error: #C0392B;
+  --color-ob-success: #27AE60;
+
+  /* ── Order / Reservation status ────────────── */
+  --color-status-new: #D8E7F2;
+  --color-status-new-text: #2F6A8B;
+  --color-status-paid: #D5EDD8;
+  --color-status-paid-text: #1E7A34;
+  --color-status-prep: #FDE9CE;
+  --color-status-prep-text: #9A5A0A;
+  --color-status-done: #D5EDD8;
+  --color-status-done-text: #1E7A34;
+  --color-status-canc: #F5D5D2;
+  --color-status-canc-text: #C0392B;
+  --color-status-pend: #FEF3CD;
+  --color-status-pend-text: #856404;
+  --color-status-conf: #D5EDD8;
+  --color-status-conf-text: #1E7A34;
+
+  /* ── Typography ─────────────────────────────── */
+  --font-display: "Playfair Display", Georgia, serif;
+  --font-body: "Inter", system-ui, sans-serif;
+  --font-mono: "DM Mono", monospace;
+
+  /* ── Breakpoints ─────────────────────────────── */
+  --breakpoint-xs: 375px;
+  --breakpoint-sm: 640px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1280px;
+  --breakpoint-2xl: 1536px;
+
+  /* ── Shadows (warm, caramel-tinted) ─────────── */
+  --shadow-sm: 0 1px 3px rgba(47, 47, 47, 0.06), 0 1px 2px rgba(47, 47, 47, 0.04);
+  --shadow-md: 0 4px 12px rgba(47, 47, 47, 0.08), 0 2px 4px rgba(47, 47, 47, 0.05);
+  --shadow-lg: 0 8px 24px rgba(47, 47, 47, 0.10), 0 4px 8px rgba(47, 47, 47, 0.06);
+  --shadow-xl: 0 16px 48px rgba(47, 47, 47, 0.12), 0 8px 16px rgba(47, 47, 47, 0.07);
+  --shadow-card: 0 2px 8px rgba(197, 139, 90, 0.08), 0 1px 3px rgba(47, 47, 47, 0.05);
+  --shadow-caramel: 0 4px 16px rgba(197, 139, 90, 0.25);
+
+  /* ── Animations ──────────────────────────────── */
+  --animate-fade-in: fadeIn 0.35s ease-out;
+  --animate-slide-up: slideUp 0.35s ease-out;
+  --animate-slide-down: slideDown 0.3s ease-out;
+  --animate-slide-in-right: slideInRight 0.3s ease-out;
+  --animate-scale-in: scaleIn 0.25s ease-out;
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes slideUp {
+    from {
+      opacity: 0;
+      transform: translateY(16px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes slideDown {
+    from {
+      opacity: 0;
+      transform: translateY(-8px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes slideInRight {
+    from {
+      opacity: 0;
+      transform: translateX(100%);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  @keyframes scaleIn {
+    from {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+}

@@ -1,0 +1,54 @@
+/* ═══════════════════════════════════════════════
+   JOLIE BRASSERIE CAFÉ — Utilities
+═══════════════════════════════════════════════ */
+
+@layer utilities {
+
+  /* Caramel → wood gradient text */
+  .text-gradient {
+    background: linear-gradient(135deg, var(--color-ob-caramel) 0%, var(--color-ob-wood) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* Background shorthands */
+  .bg-ob {
+    background-color: var(--color-ob-bg);
+  }
+
+  .bg-surface {
+    background-color: var(--color-ob-surface);
+  }
+
+  .bg-cream {
+    background-color: var(--color-ob-cream);
+  }
+
+  /* Hide native scrollbar (keep scrollability) */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Multiline text truncation */
+  .line-clamp-2 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+  }
+
+  .line-clamp-3 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+  }
+}

@@ -2,10 +2,8 @@ import { Navigate, Outlet, useLocation } from 'react-router-dom';
 import { useAuthStore } from '../store/auth.store';
 
 export const ProtectedRoute = () => {
-  const { isAuthenticated, isInitialized } = useAuthStore();
+  const isAuthenticated = useAuthStore(s => s.isAuthenticated);
   const location = useLocation();
-
-  if (!isInitialized) return null; // wait for auth check
 
   if (!isAuthenticated) {
     return <Navigate to='/login' state={{ from: location }} replace />;
@@ -15,30 +13,18 @@ export const ProtectedRoute = () => {
 };
 
 export const AdminRoute = () => {
-  const { isAuthenticated, isInitialized, user } = useAuthStore();
-  const location = useLocation();
+  const { isAuthenticated, user } = useAuthStore();
 
-  if (!isInitialized) return null;
-
-  if (!isAuthenticated) {
-    return <Navigate to='/login' state={{ from: location }} replace />;
-  }
-
-  if (user?.role !== 'ADMIN') {
-    return <Navigate to='/' replace />;
-  }
+  if (!isAuthenticated) return <Navigate to='/login' replace />;
+  if (user?.role !== 'ADMIN') return <Navigate to='/' replace />;
 
   return <Outlet />;
 };
 
 export const GuestRoute = () => {
-  const { isAuthenticated, isInitialized } = useAuthStore();
+  const isAuthenticated = useAuthStore(s => s.isAuthenticated);
 
-  if (!isInitialized) return null;
-
-  if (isAuthenticated) {
-    return <Navigate to='/' replace />;
-  }
+  if (isAuthenticated) return <Navigate to='/' replace />;
 
   return <Outlet />;
 };
