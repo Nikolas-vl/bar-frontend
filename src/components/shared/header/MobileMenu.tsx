@@ -1,64 +1,78 @@
-import { Link, useNavigate } from 'react-router-dom';
-import { toast } from 'sonner';
-
+import { Link } from 'react-router-dom';
 import { NavItem } from '../navigation/NavItem';
 import { useAuthStore } from '../../../store/auth.store';
-import { authApi } from '../../../api/auth.api';
+import { useUIStore } from '../../../store/ui.store';
+import { IconCart } from '../../../assets/icons';
+
+const mobileItemClass = 'px-3 py-2.5 text-sm rounded-xl font-medium transition-colors';
+const mobileActiveClass = 'bg-[rgba(197,139,90,0.08)] text-[var(--color-ob-caramel)]';
 
 interface MobileMenuProps {
-  close: () => void;
+  onClose: () => void;
+  onLogout: () => void;
 }
 
-export function MobileMenu({ close }: MobileMenuProps) {
+export function MobileMenu({ onClose, onLogout }: MobileMenuProps) {
   const isAuthenticated = useAuthStore(s => s.isAuthenticated);
   const role = useAuthStore(s => s.user?.role);
-  const clearAuth = useAuthStore(s => s.clearAuth);
-
-  const navigate = useNavigate();
-
-  const logout = async () => {
-    try {
-      await authApi.logout();
-    } finally {
-      clearAuth();
-      navigate('/login');
-      toast.success('Logged out');
-    }
-  };
+  const toggleCart = useUIStore(s => s.toggleCart);
 
   return (
-    <div className='md:hidden border-t bg-color-ob-surface'>
+    <div
+      className='md:hidden border-t animate-slide-down'
+      style={{
+        borderColor: 'var(--color-ob-border)',
+        backgroundColor: 'var(--color-ob-surface)',
+      }}
+    >
       <nav className='page-container py-4 flex flex-col gap-1'>
-        <NavItem to='/menu' onClick={close} className='px-3 py-2.5 text-sm rounded-xl font-medium'>
+        <NavItem to='/menu' onClick={onClose} className={mobileItemClass} activeClassName={mobileActiveClass}>
           Menu
         </NavItem>
 
         {isAuthenticated && (
           <>
-            <NavItem to='/orders' onClick={close} className='px-3 py-2.5 text-sm rounded-xl'>
+            <NavItem to='/orders' onClick={onClose} className={mobileItemClass} activeClassName={mobileActiveClass}>
               My Orders
             </NavItem>
 
-            <NavItem to='/reservations' onClick={close} className='px-3 py-2.5 text-sm rounded-xl'>
+            <NavItem to='/reservations' onClick={onClose} className={mobileItemClass} activeClassName={mobileActiveClass}>
               Reservations
             </NavItem>
 
-            <NavItem to='/profile' onClick={close} className='px-3 py-2.5 text-sm rounded-xl'>
+            <NavItem to='/profile' onClick={onClose} className={mobileItemClass} activeClassName={mobileActiveClass}>
               Profile
             </NavItem>
 
             {role === 'ADMIN' && (
-              <NavItem to='/admin' onClick={close} className='px-3 py-2.5 text-sm rounded-xl'>
+              <NavItem to='/admin' onClick={onClose} className={mobileItemClass} activeClassName={mobileActiveClass}>
                 Admin Panel
               </NavItem>
             )}
 
             <button
               onClick={() => {
-                logout();
-                close();
+                toggleCart();
+                onClose();
               }}
-              className='text-left px-3 py-2.5 text-sm'
+              className={`flex items-center gap-2 w-full text-left ${mobileItemClass}`}
+              style={{ color: 'var(--color-ob-muted)' }}
+            >
+              <IconCart className='w-4 h-4' />
+              Cart
+            </button>
+
+            <div className='divider my-1' />
+
+            <button
+              onClick={() => {
+                onLogout();
+                onClose();
+              }}
+              className='text-left px-3 py-2.5 text-sm rounded-xl transition-colors'
+              style={{ color: 'var(--color-ob-error)' }}
+              onMouseEnter={e => (e.currentTarget.style.background = 'rgba(192,57,43,0.06)')}
+              onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
             >
               Sign out
             </button>
@@ -67,12 +81,12 @@ export function MobileMenu({ close }: MobileMenuProps) {
 
         {!isAuthenticated && (
           <>
-            <NavItem to='/login' onClick={close} className='px-3 py-2.5 text-sm rounded-xl'>
+            <NavItem to='/login' onClick={onClose} className={mobileItemClass} activeClassName={mobileActiveClass}>
               Sign in
             </NavItem>
 
             <div className='px-3 pt-2'>
-              <Link to='/register' onClick={close} className='btn-primary w-full justify-center'>
+              <Link to='/register' onClick={onClose} className='btn-primary w-full justify-center'>
                 Reserve a table
               </Link>
             </div>

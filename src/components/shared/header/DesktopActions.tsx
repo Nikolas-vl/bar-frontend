@@ -1,29 +1,16 @@
-import { Link, useNavigate } from 'react-router-dom';
-import { toast } from 'sonner';
-
+import { Link } from 'react-router-dom';
 import { IconCart, IconUser } from '../../../assets/icons';
 import { useAuthStore } from '../../../store/auth.store';
-import { authApi } from '../../../api/auth.api';
 import { useUIStore } from '../../../store/ui.store';
 
-export function DesktopActions() {
+interface DesktopActionsProps {
+  onLogout: () => void; // defined once in Header, passed down
+}
+
+export function DesktopActions({ onLogout }: DesktopActionsProps) {
   const isAuthenticated = useAuthStore(s => s.isAuthenticated);
   const user = useAuthStore(s => s.user);
-  const clearAuth = useAuthStore(s => s.clearAuth);
-
   const toggleCart = useUIStore(s => s.toggleCart);
-
-  const navigate = useNavigate();
-
-  const handleLogout = async () => {
-    try {
-      await authApi.logout();
-    } finally {
-      clearAuth();
-      navigate('/login');
-      toast.success('See you soon ☕');
-    }
-  };
 
   if (!isAuthenticated) {
     return (
@@ -31,7 +18,6 @@ export function DesktopActions() {
         <Link to='/login' className='btn-ghost text-sm'>
           Sign in
         </Link>
-
         <Link to='/register' className='btn-primary text-sm'>
           Reserve a table
         </Link>
@@ -51,7 +37,7 @@ export function DesktopActions() {
         {user?.name ?? 'Profile'}
       </Link>
 
-      <button onClick={handleLogout} className='btn-secondary text-sm'>
+      <button onClick={onLogout} className='btn-secondary text-sm'>
         Sign out
       </button>
     </div>
