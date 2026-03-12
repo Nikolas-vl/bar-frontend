@@ -12,7 +12,6 @@ const schema = z.object({
   email: z.string().email('Invalid email address'),
   password: z.string().min(1, 'Password is required'),
 });
-
 type FormData = z.infer<typeof schema>;
 
 export default function LoginPage() {
@@ -39,45 +38,55 @@ export default function LoginPage() {
   };
 
   return (
-    <div className='min-h-[calc(100vh-4rem)] flex items-center justify-center px-4 py-12'>
+    <div className='min-h-[calc(100vh-4rem)] flex items-center justify-center px-4 py-12' style={{ backgroundColor: 'var(--color-ob-bg)' }}>
       <div className='w-full max-w-sm animate-slide-up'>
         {/* Header */}
         <div className='text-center mb-8'>
-          <h1 className='font-display text-3xl font-semibold text-white mb-2'>Welcome back</h1>
-          <p className='text-sm text-slate-400 font-body'>Sign in to your OceanBar account</p>
+          <div className='w-12 h-12 rounded-2xl flex items-center justify-center mx-auto mb-4' style={{ backgroundColor: 'var(--color-ob-blue)' }}>
+            <span className='text-2xl'>☕</span>
+          </div>
+          <h1 className='font-display text-3xl font-semibold mb-2' style={{ color: 'var(--color-ob-text)' }}>
+            Welcome back
+          </h1>
+          <p className='text-sm' style={{ color: 'var(--color-ob-text-muted)' }}>
+            Sign in to your Jolie account
+          </p>
         </div>
 
-        {/* Form */}
-        <div className='card p-6 shadow-ocean-lg'>
-          <form onSubmit={handleSubmit(onSubmit)} className='flex flex-col gap-4'>
+        {/* Card */}
+        <div className='card p-7'>
+          <form onSubmit={handleSubmit(onSubmit)} className='flex flex-col gap-5'>
             <div>
-              <label className='block text-sm font-body font-medium text-slate-300 mb-1.5'>Email</label>
+              <label className='label'>Email address</label>
               <input
                 {...register('email')}
                 type='email'
                 placeholder='you@example.com'
-                className={cn('input', errors.email && 'border-red-500/50 focus:ring-red-500')}
+                className={cn('input', errors.email && 'input-error')}
                 autoComplete='email'
               />
-              {errors.email && <p className='mt-1 text-xs text-red-400 font-body'>{errors.email.message}</p>}
+              {errors.email && <p className='field-error'>{errors.email.message}</p>}
             </div>
 
             <div>
-              <label className='block text-sm font-body font-medium text-slate-300 mb-1.5'>Password</label>
+              <label className='label'>Password</label>
               <input
                 {...register('password')}
                 type='password'
-                placeholder='••••••••'
-                className={cn('input', errors.password && 'border-red-500/50 focus:ring-red-500')}
+                placeholder='Your password'
+                className={cn('input', errors.password && 'input-error')}
                 autoComplete='current-password'
               />
-              {errors.password && <p className='mt-1 text-xs text-red-400 font-body'>{errors.password.message}</p>}
+              {errors.password && <p className='field-error'>{errors.password.message}</p>}
             </div>
 
-            <button type='submit' disabled={isSubmitting} className='btn-primary w-full mt-1'>
+            <button type='submit' disabled={isSubmitting} className='btn-primary w-full mt-1 justify-center'>
               {isSubmitting ? (
                 <span className='flex items-center gap-2'>
-                  <span className='w-4 h-4 rounded-full border-2 border-white/20 border-t-white animate-spin' />
+                  <span
+                    className='w-4 h-4 rounded-full border-2 animate-spin'
+                    style={{ borderColor: 'rgba(255,255,255,0.3)', borderTopColor: '#fff' }}
+                  />
                   Signing in…
                 </span>
               ) : (
@@ -87,10 +96,16 @@ export default function LoginPage() {
           </form>
         </div>
 
-        <p className='mt-6 text-center text-sm text-slate-500 font-body'>
+        <p className='mt-6 text-center text-sm' style={{ color: 'var(--color-ob-text-muted)' }}>
           Don't have an account?{' '}
-          <Link to='/register' className='text-ocean-400 hover:text-ocean-300 transition-colors'>
-            Register
+          <Link
+            to='/register'
+            className='font-medium transition-colors'
+            style={{ color: 'var(--color-ob-caramel)' }}
+            onMouseEnter={e => (e.currentTarget.style.color = 'var(--color-ob-wood)')}
+            onMouseLeave={e => (e.currentTarget.style.color = 'var(--color-ob-caramel)')}
+          >
+            Create account
           </Link>
         </p>
       </div>

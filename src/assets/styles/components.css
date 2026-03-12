@@ -1,0 +1,466 @@
+/* ═══════════════════════════════════════════════
+   JOLIE BRASSERIE CAFÉ — Components
+   
+   ⚠ Tailwind v4: @apply can only reference
+   built-in utility classes. Never use @apply
+   with another custom class from this file.
+   Every .btn-* / .badge-* is self-contained.
+═══════════════════════════════════════════════ */
+
+@layer components {
+
+  /* ─────────────────────────────────────────────
+     LAYOUT
+  ───────────────────────────────────────────── */
+  .page-container {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+
+  /* ─────────────────────────────────────────────
+     TYPOGRAPHY
+  ───────────────────────────────────────────── */
+  .section-title {
+    @apply text-2xl sm:text-3xl font-semibold;
+    font-family: var(--font-display);
+    color: var(--color-ob-text);
+  }
+
+  .heading-hero {
+    @apply text-4xl sm:text-5xl lg:text-6xl font-semibold leading-tight;
+    font-family: var(--font-display);
+  }
+
+  .heading-card {
+    @apply text-lg font-medium;
+    font-family: var(--font-display);
+    color: var(--color-ob-text);
+  }
+
+  /* ─────────────────────────────────────────────
+     BUTTONS — each variant is fully self-contained
+  ───────────────────────────────────────────── */
+
+  /* Primary — warm caramel */
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 focus-visible:outline-none disabled:opacity-50 disabled:pointer-events-none select-none;
+    background-color: var(--color-ob-caramel);
+    color: #fff;
+    box-shadow: var(--shadow-caramel);
+  }
+
+  .btn-primary:hover:not(:disabled) {
+    background-color: var(--color-ob-caramel-h);
+    box-shadow: 0 6px 20px rgba(197, 139, 90, 0.32);
+    transform: translateY(-1px);
+  }
+
+  .btn-primary:active:not(:disabled) {
+    transform: translateY(0);
+  }
+
+  /* Secondary — pastel blue */
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 focus-visible:outline-none disabled:opacity-50 disabled:pointer-events-none select-none;
+    background-color: var(--color-ob-blue);
+    color: var(--color-ob-text);
+    border: 1px solid var(--color-ob-blue-deep);
+  }
+
+  .btn-secondary:hover:not(:disabled) {
+    background-color: var(--color-ob-blue-deep);
+  }
+
+  /* Outline */
+  .btn-outline {
+    @apply inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 focus-visible:outline-none disabled:opacity-50 disabled:pointer-events-none select-none;
+    background: transparent;
+    color: var(--color-ob-caramel);
+    border: 1.5px solid var(--color-ob-caramel);
+  }
+
+  .btn-outline:hover:not(:disabled) {
+    background-color: rgba(197, 139, 90, 0.06);
+  }
+
+  /* Ghost */
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2 px-3 py-2 rounded-xl text-sm font-medium transition-all duration-200 focus-visible:outline-none disabled:opacity-50 disabled:pointer-events-none select-none;
+    background: transparent;
+    color: var(--color-ob-muted);
+  }
+
+  .btn-ghost:hover:not(:disabled) {
+    background-color: var(--color-ob-border);
+    color: var(--color-ob-text);
+  }
+
+  /* Danger */
+  .btn-danger {
+    @apply inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 focus-visible:outline-none disabled:opacity-50 disabled:pointer-events-none select-none;
+    background-color: var(--color-ob-error);
+    color: #fff;
+  }
+
+  .btn-danger:hover:not(:disabled) {
+    background-color: #a93226;
+    transform: translateY(-1px);
+  }
+
+  /* Icon — ghost */
+  .btn-icon-ghost {
+    @apply inline-flex items-center justify-center w-9 h-9 rounded-xl transition-all duration-200 focus-visible:outline-none disabled:opacity-50 disabled:pointer-events-none;
+    background: transparent;
+    color: var(--color-ob-muted);
+  }
+
+  .btn-icon-ghost:hover:not(:disabled) {
+    background-color: var(--color-ob-border);
+    color: var(--color-ob-text);
+  }
+
+  /* Icon — caramel tint */
+  .btn-icon-caramel {
+    @apply inline-flex items-center justify-center w-9 h-9 rounded-xl transition-all duration-200 focus-visible:outline-none disabled:opacity-50 disabled:pointer-events-none;
+    background-color: rgba(197, 139, 90, 0.10);
+    color: var(--color-ob-caramel);
+  }
+
+  .btn-icon-caramel:hover:not(:disabled) {
+    background-color: rgba(197, 139, 90, 0.18);
+  }
+
+  /* ─────────────────────────────────────────────
+     FORM ELEMENTS
+  ───────────────────────────────────────────── */
+  .input {
+    @apply w-full px-4 py-3 rounded-xl text-sm transition-all duration-200 focus:outline-none;
+    background-color: var(--color-ob-surface);
+    border: 1.5px solid var(--color-ob-border);
+    color: var(--color-ob-text);
+    font-family: var(--font-body);
+  }
+
+  .input::placeholder {
+    color: var(--color-ob-light);
+  }
+
+  .input:hover:not(:focus) {
+    border-color: var(--color-ob-border-h);
+  }
+
+  .input:focus {
+    border-color: var(--color-ob-caramel);
+    box-shadow: 0 0 0 3px rgba(197, 139, 90, 0.12);
+  }
+
+  .input-error {
+    border-color: var(--color-ob-error) !important;
+    box-shadow: 0 0 0 3px rgba(192, 57, 43, 0.10) !important;
+  }
+
+  .label {
+    @apply block text-sm font-medium mb-1.5;
+    color: var(--color-ob-text);
+  }
+
+  .field-error {
+    @apply mt-1 text-xs;
+    color: var(--color-ob-error);
+  }
+
+  .select {
+    @apply w-full px-4 py-3 rounded-xl text-sm appearance-none transition-all duration-200 focus:outline-none;
+    background-color: var(--color-ob-surface);
+    border: 1.5px solid var(--color-ob-border);
+    color: var(--color-ob-text);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236B6B6B' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 2.5rem;
+  }
+
+  .select:focus {
+    border-color: var(--color-ob-caramel);
+    box-shadow: 0 0 0 3px rgba(197, 139, 90, 0.12);
+  }
+
+  .textarea {
+    @apply w-full px-4 py-3 rounded-xl text-sm resize-none transition-all duration-200 focus:outline-none;
+    min-height: 100px;
+    background-color: var(--color-ob-surface);
+    border: 1.5px solid var(--color-ob-border);
+    color: var(--color-ob-text);
+    font-family: var(--font-body);
+  }
+
+  .textarea::placeholder {
+    color: var(--color-ob-light);
+  }
+
+  .textarea:focus {
+    border-color: var(--color-ob-caramel);
+    box-shadow: 0 0 0 3px rgba(197, 139, 90, 0.12);
+  }
+
+  /* ─────────────────────────────────────────────
+     CARDS
+  ───────────────────────────────────────────── */
+  .card {
+    background-color: var(--color-ob-surface);
+    border: 1px solid var(--color-ob-border);
+    border-radius: 16px;
+    box-shadow: var(--shadow-card);
+  }
+
+  .card-hover {
+    @apply transition-all duration-200;
+    background-color: var(--color-ob-surface);
+    border: 1px solid var(--color-ob-border);
+    border-radius: 16px;
+    box-shadow: var(--shadow-card);
+  }
+
+  .card-hover:hover {
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-2px);
+    border-color: var(--color-ob-border-h);
+  }
+
+  .card-blue {
+    background-color: var(--color-ob-blue);
+    border: 1px solid var(--color-ob-blue-deep);
+    border-radius: 16px;
+  }
+
+  .card-caramel {
+    background-color: rgba(197, 139, 90, 0.06);
+    border: 1px solid rgba(197, 139, 90, 0.20);
+    border-radius: 16px;
+  }
+
+  .card-cream {
+    background-color: var(--color-ob-cream);
+    border: 1px solid var(--color-ob-border);
+    border-radius: 16px;
+  }
+
+  /* ─────────────────────────────────────────────
+     BADGES — self-contained (v4 compatible)
+  ───────────────────────────────────────────── */
+  .badge {
+    @apply inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium uppercase tracking-wide;
+  }
+
+  .badge-new {
+    @apply inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium uppercase tracking-wide;
+    background: var(--color-status-new);
+    color: var(--color-status-new-text);
+  }
+
+  .badge-paid {
+    @apply inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium uppercase tracking-wide;
+    background: var(--color-status-paid);
+    color: var(--color-status-paid-text);
+  }
+
+  .badge-preparing {
+    @apply inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium uppercase tracking-wide;
+    background: var(--color-status-prep);
+    color: var(--color-status-prep-text);
+  }
+
+  .badge-completed {
+    @apply inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium uppercase tracking-wide;
+    background: var(--color-status-done);
+    color: var(--color-status-done-text);
+  }
+
+  .badge-canceled {
+    @apply inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium uppercase tracking-wide;
+    background: var(--color-status-canc);
+    color: var(--color-status-canc-text);
+  }
+
+  .badge-pending {
+    @apply inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium uppercase tracking-wide;
+    background: var(--color-status-pend);
+    color: var(--color-status-pend-text);
+  }
+
+  .badge-confirmed {
+    @apply inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium uppercase tracking-wide;
+    background: var(--color-status-conf);
+    color: var(--color-status-conf-text);
+  }
+
+  .badge-success {
+    @apply inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium uppercase tracking-wide;
+    background: var(--color-status-paid);
+    color: var(--color-status-paid-text);
+  }
+
+  /* ─────────────────────────────────────────────
+     CATEGORY CHIPS (menu filters)
+  ───────────────────────────────────────────── */
+  .chip-default {
+    @apply inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium cursor-pointer transition-all duration-150 select-none;
+    background-color: var(--color-ob-surface);
+    border: 1px solid var(--color-ob-border);
+    color: var(--color-ob-muted);
+  }
+
+  .chip-default:hover {
+    border-color: var(--color-ob-caramel);
+    color: var(--color-ob-caramel);
+  }
+
+  .chip-active {
+    @apply inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium cursor-pointer transition-all duration-150 select-none;
+    background-color: var(--color-ob-caramel);
+    border: 1px solid var(--color-ob-caramel);
+    color: #fff;
+  }
+
+  /* ─────────────────────────────────────────────
+     NAVIGATION
+  ───────────────────────────────────────────── */
+  .nav-link {
+    @apply text-sm font-medium transition-colors duration-150;
+    color: var(--color-ob-muted);
+  }
+
+  .nav-link:hover {
+    color: var(--color-ob-text);
+  }
+
+  .nav-link-active {
+    color: var(--color-ob-caramel) !important;
+  }
+
+  .sidebar-link {
+    @apply flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150;
+    color: var(--color-ob-muted);
+  }
+
+  .sidebar-link:hover {
+    background-color: var(--color-ob-border);
+    color: var(--color-ob-text);
+  }
+
+  .sidebar-link-active {
+    background-color: rgba(197, 139, 90, 0.10);
+    color: var(--color-ob-caramel);
+  }
+
+  /* ─────────────────────────────────────────────
+     ADMIN TABLE
+  ───────────────────────────────────────────── */
+  .table-root {
+    @apply w-full text-sm;
+    border-collapse: collapse;
+    font-family: var(--font-body);
+  }
+
+  .table-root th {
+    @apply px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider;
+    color: var(--color-ob-muted);
+    border-bottom: 1px solid var(--color-ob-border);
+    background-color: var(--color-ob-cream);
+  }
+
+  .table-root td {
+    @apply px-4 py-3;
+    color: var(--color-ob-text);
+    border-bottom: 1px solid var(--color-ob-border);
+  }
+
+  .table-root tr:last-child td {
+    border-bottom: none;
+  }
+
+  .table-root tbody tr:hover td {
+    background-color: var(--color-ob-cream);
+  }
+
+  /* ─────────────────────────────────────────────
+     QUANTITY STEPPER
+  ───────────────────────────────────────────── */
+  .qty-stepper {
+    @apply inline-flex items-center rounded-xl overflow-hidden;
+    border: 1px solid var(--color-ob-border);
+  }
+
+  .qty-btn {
+    @apply flex items-center justify-center w-9 h-9 text-sm font-semibold transition-colors duration-150;
+    background-color: var(--color-ob-surface);
+    color: var(--color-ob-muted);
+  }
+
+  .qty-btn:hover {
+    background-color: var(--color-ob-caramel);
+    color: #fff;
+  }
+
+  .qty-value {
+    @apply w-10 text-center text-sm font-medium py-2;
+    color: var(--color-ob-text);
+    background-color: var(--color-ob-surface);
+    border-left: 1px solid var(--color-ob-border);
+    border-right: 1px solid var(--color-ob-border);
+  }
+
+  /* ─────────────────────────────────────────────
+     MISC UI HELPERS
+  ───────────────────────────────────────────── */
+  .divider {
+    @apply w-full h-px;
+    background-color: var(--color-ob-border);
+  }
+
+  .skeleton {
+    @apply rounded-xl animate-pulse;
+    background-color: var(--color-ob-border);
+  }
+
+  .page-loader {
+    @apply min-h-screen flex items-center justify-center;
+    background-color: var(--color-ob-bg);
+  }
+
+  .accent-line {
+    @apply w-12 h-0.5 rounded-full;
+    background-color: var(--color-ob-caramel);
+  }
+
+  .backdrop {
+    @apply fixed inset-0 z-40;
+    background-color: rgba(47, 47, 47, 0.35);
+    backdrop-filter: blur(2px);
+  }
+
+  .empty-state {
+    @apply flex flex-col items-center justify-center gap-3 py-16 text-center;
+  }
+
+  .price {
+    @apply font-semibold;
+    font-family: var(--font-display);
+    color: var(--color-ob-caramel);
+  }
+
+  .section-divider {
+    @apply flex items-center gap-4 my-6;
+  }
+
+  .section-divider span {
+    @apply text-xs font-medium uppercase tracking-widest;
+    color: var(--color-ob-light);
+  }
+
+  .section-divider::before,
+  .section-divider::after {
+    content: '';
+    @apply flex-1 h-px;
+    background-color: var(--color-ob-border);
+  }
+}

@@ -1,0 +1,83 @@
+/* ═══════════════════════════════════════════════
+   JOLIE BRASSERIE CAFÉ — Reset & Base
+═══════════════════════════════════════════════ */
+
+@layer base {
+
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  html {
+    font-size: 16px;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    font-family: var(--font-body);
+    background-color: var(--color-ob-bg);
+    color: var(--color-ob-text);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    line-height: 1.6;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-display);
+    line-height: 1.25;
+    color: var(--color-ob-text);
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  img {
+    max-width: 100%;
+    display: block;
+  }
+
+  button {
+    cursor: pointer;
+  }
+
+  /* Text selection — pastel blue tint */
+  ::selection {
+    background-color: var(--color-ob-blue);
+    color: var(--color-ob-text);
+  }
+
+  /* Focus ring — caramel instead of browser blue */
+  :focus-visible {
+    outline: 2px solid var(--color-ob-caramel);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  /* Scrollbar — warm, subtle */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: var(--color-ob-bg);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-ob-border-h);
+    border-radius: 3px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--color-ob-light);
+  }
+}

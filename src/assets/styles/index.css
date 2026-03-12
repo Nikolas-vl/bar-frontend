@@ -1,0 +1,20 @@
+/* ═══════════════════════════════════════════════
+   JOLIE BRASSERIE CAFÉ — Styles Entry Point
+   
+   Import order matters:
+   1. Google Fonts
+   2. Tailwind core
+   3. Design tokens (variables)  ← must be before reset/components
+   4. Reset & base               ← consumes variables
+   5. Components                 ← consumes variables
+   6. Utilities                  ← overrides
+═══════════════════════════════════════════════ */
+
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Inter:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap');
+
+@import "tailwindcss";
+
+@import "./variables.css";
+@import "./reset.css";
+@import "./components.css";
+@import "./utilities.css";
