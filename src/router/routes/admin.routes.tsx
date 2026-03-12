@@ -1,7 +1,7 @@
 import { lazy } from 'react';
 import type { RouteObject } from 'react-router-dom';
 import { AdminRoute } from '../guards';
-import { AdminLayout } from '../../components/layout/AdminLayout';
+import { AdminLayout } from '../../components/layout/admin/AdminLayout';
 
 const DashboardPage = lazy(() => import('../../features/admin/dashboard/pages/DashboardPage'));
 const UsersPage = lazy(() => import('../../features/admin/users/pages/UsersPage'));
