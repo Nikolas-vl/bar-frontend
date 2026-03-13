@@ -1,44 +1,53 @@
-/* ═══════════════════════════════════════════════
+/* ═══════════════════════════════════════════════════════════
    JOLIE BRASSERIE CAFÉ — Design Tokens
-   All brand colors, fonts, shadows and animations
-   exposed as CSS variables via Tailwind v4 @theme.
-═══════════════════════════════════════════════ */
+   Single @theme block. Every --color-* automatically generates
+   bg-*, text-*, border-*, ring-* Tailwind utilities.
+   Every --font-* generates font-* utilities.
+═══════════════════════════════════════════════════════════ */
 
 @theme {
 
-  /* ── Brand Palette ──────────────────────────── */
+  /* ── Brand Palette ──────────────────────────────────── */
+
   --color-ob-bg: #F7F6F3;
   /* porcelain white  — app background  */
   --color-ob-surface: #FFFFFF;
   /* pure white       — cards / modals  */
+  --color-ob-cream: #FAF7F2;
+  /* warm cream       — alt background  */
+
   --color-ob-blue: #D8E7F2;
   /* pastel café blue — section fills   */
   --color-ob-blue-deep: #A8C8E0;
   /* deeper blue      — hover / borders */
+
   --color-ob-caramel: #C58B5A;
   /* warm caramel     — primary CTA     */
   --color-ob-caramel-h: #A87449;
   /* caramel hover                      */
+
   --color-ob-wood: #8B5E3C;
   /* natural wood     — links / accents */
   --color-ob-wood-light: #B88A60;
   /* lighter wood                       */
+
   --color-ob-text: #2F2F2F;
   /* charcoal         — primary text    */
   --color-ob-muted: #6B6B6B;
   /* secondary text                     */
   --color-ob-light: #9A9A9A;
   /* placeholder / disabled             */
+
   --color-ob-border: #E5E5E5;
   /* soft grey        — default borders */
   --color-ob-border-h: #D0D0D0;
   /* border hover                       */
-  --color-ob-cream: #FAF7F2;
-  /* warm cream       — alt background  */
+
   --color-ob-error: #C0392B;
   --color-ob-success: #27AE60;
 
-  /* ── Order / Reservation status ────────────── */
+  /* ── Status colors (orders / reservations) ──────────── */
+
   --color-status-new: #D8E7F2;
   --color-status-new-text: #2F6A8B;
   --color-status-paid: #D5EDD8;
@@ -54,12 +63,14 @@
   --color-status-conf: #D5EDD8;
   --color-status-conf-text: #1E7A34;
 
-  /* ── Typography ─────────────────────────────── */
+  /* ── Typography ─────────────────────────────────────── */
+
   --font-display: "Playfair Display", Georgia, serif;
   --font-body: "Inter", system-ui, sans-serif;
   --font-mono: "DM Mono", monospace;
 
-  /* ── Breakpoints ─────────────────────────────── */
+  /* ── Breakpoints ─────────────────────────────────────── */
+
   --breakpoint-xs: 375px;
   --breakpoint-sm: 640px;
   --breakpoint-md: 768px;
@@ -67,7 +78,8 @@
   --breakpoint-xl: 1280px;
   --breakpoint-2xl: 1536px;
 
-  /* ── Shadows (warm, caramel-tinted) ─────────── */
+  /* ── Shadows ─────────────────────────────────────────── */
+
   --shadow-sm: 0 1px 3px rgba(47, 47, 47, 0.06), 0 1px 2px rgba(47, 47, 47, 0.04);
   --shadow-md: 0 4px 12px rgba(47, 47, 47, 0.08), 0 2px 4px rgba(47, 47, 47, 0.05);
   --shadow-lg: 0 8px 24px rgba(47, 47, 47, 0.10), 0 4px 8px rgba(47, 47, 47, 0.06);
@@ -75,7 +87,8 @@
   --shadow-card: 0 2px 8px rgba(197, 139, 90, 0.08), 0 1px 3px rgba(47, 47, 47, 0.05);
   --shadow-caramel: 0 4px 16px rgba(197, 139, 90, 0.25);
 
-  /* ── Animations ──────────────────────────────── */
+  /* ── Animations ──────────────────────────────────────── */
+
   --animate-fade-in: fadeIn 0.35s ease-out;
   --animate-slide-up: slideUp 0.35s ease-out;
   --animate-slide-down: slideDown 0.3s ease-out;
