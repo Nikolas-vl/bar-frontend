@@ -1,0 +1,19 @@
+import { NavItem } from '../navigation/NavItem';
+import { adminNavLinks } from './adminNavLinks';
+
+interface AdminNavListProps {
+  onNavigate?: () => void;
+}
+
+export function AdminNavList({ onNavigate }: AdminNavListProps) {
+  return (
+    <>
+      {adminNavLinks.map(({ to, label, icon: Icon, end }) => (
+        <NavItem key={to} to={to} end={end} onClick={onNavigate} className='sidebar-link' activeClassName='sidebar-link-active'>
+          <Icon width={16} height={16} />
+          {label}
+        </NavItem>
+      ))}
+    </>
+  );
+}
