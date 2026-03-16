@@ -1,24 +1,16 @@
+import { memo } from 'react';
 import { Link } from 'react-router-dom';
 import type { Dish } from '../../../types/index';
 import { formatPrice } from '../../../utils/cn';
 import { cn } from '../../../utils/cn';
+import { CATEGORY_LABEL, CATEGORY_BADGE_CLASS } from '../../../constants/category';
 
 interface DishCardProps {
   dish: Dish;
   className?: string;
 }
 
-const categoryLabel: Record<string, string> = {
-  BREAKFAST: 'Breakfast',
-  LUNCH: 'Lunch',
-};
-
-const categoryColor: Record<string, string> = {
-  BREAKFAST: 'bg-[rgba(197,139,90,0.12)] text-[var(--color-ob-caramel)]',
-  LUNCH: 'bg-[rgba(47,82,119,0.10)] text-[var(--color-ob-blue-deep)]',
-};
-
-export function DishCard({ dish, className }: DishCardProps) {
+export const DishCard = memo(function DishCard({ dish, className }: DishCardProps) {
   return (
     <Link
       to={`/menu/${dish.id}`}
@@ -40,8 +32,8 @@ export function DishCard({ dish, className }: DishCardProps) {
         )}
 
         {/* Category badge */}
-        <span className={cn('absolute top-2.5 left-2.5 px-2 py-0.5 rounded-full text-[11px] font-semibold', categoryColor[dish.category])}>
-          {categoryLabel[dish.category]}
+        <span className={cn('absolute top-2.5 left-2.5 px-2 py-0.5 rounded-full text-[11px] font-semibold', CATEGORY_BADGE_CLASS[dish.category])}>
+          {CATEGORY_LABEL[dish.category]}
         </span>
 
         {/* Unavailable overlay */}
@@ -92,7 +84,7 @@ export function DishCard({ dish, className }: DishCardProps) {
       </div>
     </Link>
   );
-}
+});
 
 function MacroChip({ label, value, unit = '' }: { label: string; value: number; unit?: string }) {
   return (

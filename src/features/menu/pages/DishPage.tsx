@@ -1,15 +1,23 @@
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useDish } from '../hooks/useDish';
 import { formatPrice } from '../../../utils/cn';
-
-const categoryLabel: Record<string, string> = {
-  BREAKFAST: '🌅 Breakfast',
-  LUNCH: '☀️ Lunch',
-};
+import { CATEGORY_LABEL, CATEGORY_EMOJI } from '../../../constants/category';
 
 export default function DishPage() {
   const { id } = useParams<{ id: string }>();
-  const { data: dish, isLoading, error } = useDish(Number(id));
+  const parsedId = Number(id);
+  const navigate = useNavigate();
+
+  if (Number.isNaN(parsedId)) {
+    navigate('/menu', { replace: true });
+    return null;
+  }
+
+  return <DishDetail id={parsedId} />;
+}
+
+function DishDetail({ id }: { id: number }) {
+  const { data: dish, isLoading, error } = useDish(id);
 
   if (isLoading) {
     return (
@@ -65,7 +73,7 @@ export default function DishPage() {
           <div>
             <div className='flex items-center gap-2 mb-2'>
               <span className='text-sm font-medium' style={{ color: 'var(--color-ob-text-muted)' }}>
-                {categoryLabel[dish.category]}
+                {CATEGORY_EMOJI[dish.category]} {CATEGORY_LABEL[dish.category]}
               </span>
               {!dish.isAvailable && (
                 <span className='px-2 py-0.5 rounded-full text-xs font-semibold bg-[rgba(192,57,43,0.10)] text-[var(--color-ob-error)]'>

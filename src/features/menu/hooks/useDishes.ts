@@ -5,7 +5,7 @@ import type { DishQuery } from '../../../types/index';
 
 export const useDishes = (query?: DishQuery) => {
   return useQuery({
-    queryKey: queryKeys.dishes.list(query as Record<string, unknown>),
+    queryKey: queryKeys.dishes.list(query),
     queryFn: () => menuApi.getDishes(query),
   });
 };

@@ -35,7 +35,6 @@ export function DishFilters({ value, onChange, totalCount }: DishFiltersProps) {
   const [searchInput, setSearchInput] = useState(value.search ?? '');
   const debouncedSearch = useDebounce(searchInput);
 
-  // Propagate debounced search up only when it actually differs
   useEffect(() => {
     if (debouncedSearch !== (value.search ?? '')) {
       onChange({ ...value, search: debouncedSearch || undefined });
