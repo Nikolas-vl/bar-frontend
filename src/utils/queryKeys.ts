@@ -69,5 +69,7 @@ export const queryKeys = {
   },
 
   // Settings
-  settings: ['settings'] as const,
+  settings: {
+    all: ['settings'] as const,
+  },
 };

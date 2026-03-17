@@ -7,11 +7,17 @@ interface AppImageProps {
   src?: string | null;
   alt: string;
   aspectRatio?: AspectRatio;
-  /** Emoji or text shown when no image / image fails to load */
+  /** Emoji shown when no image or image fails to load. Defaults to '🍽️' */
   fallbackIcon?: string;
+  /**
+   * Whether to show the "No image" text label below the fallback icon.
+   * Disable for small thumbnails where the label doesn't fit.
+   * @default false
+   */
+  showLabel?: boolean;
   className?: string;
   imgClassName?: string;
-  /** Extra scale on hover – useful inside interactive cards */
+  /** Extra scale on hover — useful inside interactive cards */
   hoverScale?: boolean;
 }
 
@@ -23,15 +29,24 @@ const ASPECT_CLASS: Record<AspectRatio, string> = {
   auto: '',
 };
 
-export function AppImage({ src, alt, aspectRatio = '4/3', fallbackIcon = '🍽️', className, imgClassName, hoverScale = false }: AppImageProps) {
+export function AppImage({
+  src,
+  alt,
+  aspectRatio = '4/3',
+  fallbackIcon = '🍽️',
+  showLabel = false,
+  className,
+  imgClassName,
+  hoverScale = false,
+}: AppImageProps) {
   const [status, setStatus] = useState<'loading' | 'loaded' | 'error'>(src ? 'loading' : 'error');
 
   return (
     <div className={cn('relative w-full overflow-hidden bg-ob-surface', ASPECT_CLASS[aspectRatio], className)}>
-      {/* ── Skeleton ──────────────────────────────── */}
+      {/* Skeleton */}
       {status === 'loading' && <div className='absolute inset-0 animate-pulse bg-ob-border/60' />}
 
-      {/* ── Image ─────────────────────────────────── */}
+      {/* Image */}
       {src && status !== 'error' && (
         <img
           src={src}
@@ -47,11 +62,11 @@ export function AppImage({ src, alt, aspectRatio = '4/3', fallbackIcon = '🍽�
         />
       )}
 
-      {/* ── Fallback ──────────────────────────────── */}
+      {/* Fallback */}
       {status === 'error' && (
         <div className='absolute inset-0 flex flex-col items-center justify-center gap-1 bg-ob-blue/30'>
           <span className='text-4xl select-none'>{fallbackIcon}</span>
-          <span className='text-[10px] font-medium uppercase tracking-widest text-ob-muted'>No image</span>
+          {showLabel && <span className='text-[10px] font-medium uppercase tracking-widest text-ob-muted'>No image</span>}
         </div>
       )}
     </div>

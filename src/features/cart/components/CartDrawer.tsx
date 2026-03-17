@@ -1,11 +1,13 @@
 import { Link } from 'react-router-dom';
-import { useUIStore } from '../../../store/ui.store';
+import { useUIStore } from '@/store/ui.store';
 import { useCart } from '../hooks/useCart';
 import { useClearCart } from '../hooks/useClearCart';
 import { hasUnavailableItems, getUnavailableItems, calcCartSubtotal, getTotalItemCount } from '../utils/cartUtils';
 import { CartItemRow } from './CartItemRow';
-import { formatPrice, cn } from '../../../utils/cn';
-import { Spinner } from '../../../components/shared/ui/Spinner';
+import { CartIngredientItemRow } from './CartIngredientItemRow';
+import { CartAddIngredients } from './CartAddIngredients';
+import { formatPrice, cn } from '@/utils/cn';
+import { Spinner } from '@/components/shared/ui/Spinner';
 
 export const CartDrawer = () => {
   const { isCartOpen, closeCart } = useUIStore();
@@ -16,7 +18,9 @@ export const CartDrawer = () => {
   const unavailableNames = getUnavailableItems(cart).map(i => i.dish.name);
   const subtotal = calcCartSubtotal(cart);
   const itemCount = getTotalItemCount(cart);
-  const isEmpty = !cart || cart.items.length === 0;
+
+  // ✅ Must check BOTH arrays — ingredient-only cart is still a valid cart
+  const isEmpty = !cart || (cart.items.length === 0 && (cart.ingredientItems ?? []).length === 0);
 
   if (!isCartOpen) return null;
 
@@ -25,7 +29,7 @@ export const CartDrawer = () => {
       <div className='backdrop' onClick={closeCart} />
 
       <div className='fixed top-0 right-0 h-full w-full max-w-sm z-50 flex flex-col animate-slide-in-right bg-ob-surface shadow-xl'>
-        {/* ── Header ──────────────────────────────── */}
+        {/* ── Header ── */}
         <div className='flex items-center justify-between px-5 h-16 shrink-0 border-b border-ob-border'>
           <div>
             <h2 className='font-display text-lg font-semibold text-ob-text'>Your Cart</h2>
@@ -52,7 +56,7 @@ export const CartDrawer = () => {
           </div>
         </div>
 
-        {/* ── Items ───────────────────────────────── */}
+        {/* ── Items ── */}
         <div className='flex-1 overflow-y-auto px-5'>
           {isLoading && (
             <div className='flex items-center justify-center py-16'>
@@ -72,15 +76,19 @@ export const CartDrawer = () => {
           )}
 
           {!isLoading && !isEmpty && (
-            <div>
+            <div className='divide-y divide-ob-border'>
               {cart.items.map(item => (
                 <CartItemRow key={item.id} item={item} />
               ))}
+              {(cart.ingredientItems ?? []).map(item => (
+                <CartIngredientItemRow key={item.id} item={item} />
+              ))}
+              <CartAddIngredients />
             </div>
           )}
         </div>
 
-        {/* ── Unavailable warning ─────────────────── */}
+        {/* ── Unavailable warning ── */}
         {blocked && (
           <div className='mx-5 mb-3 rounded-xl bg-amber-50 border border-amber-200 px-4 py-3'>
             <p className='text-xs font-semibold text-amber-700 mb-1'>⚠️ Order blocked</p>
@@ -91,7 +99,7 @@ export const CartDrawer = () => {
           </div>
         )}
 
-        {/* ── Footer ──────────────────────────────── */}
+        {/* ── Footer ── */}
         {!isEmpty && (
           <div className='px-5 py-4 shrink-0 border-t border-ob-border space-y-3'>
             <div className='flex items-center justify-between'>
@@ -99,6 +107,9 @@ export const CartDrawer = () => {
               <span className='font-display font-semibold text-ob-text'>{formatPrice(subtotal.toFixed(2))}</span>
             </div>
             <p className='text-[11px] text-ob-muted'>Tax &amp; delivery fees calculated at checkout</p>
+            <Link to='/cart' onClick={closeCart} className='btn-secondary w-full justify-center text-sm'>
+              View Full Cart
+            </Link>
             <Link
               to='/checkout'
               onClick={closeCart}

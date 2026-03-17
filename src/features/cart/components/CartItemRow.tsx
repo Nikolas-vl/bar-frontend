@@ -5,6 +5,8 @@ import { cn, formatPrice } from '../../../utils/cn';
 import { calcItemTotal } from '../utils/cartUtils';
 import { useUpdateCartItem } from '../hooks/useUpdateCartItem';
 import { useRemoveFromCart } from '../hooks/useRemoveFromCart';
+import { QuantityStepper } from './QuantityStepper';
+import { NoteEditor } from './NoteEditor';
 import { IconTrash } from '../../../assets/icons';
 
 interface CartItemRowProps {
@@ -17,27 +19,16 @@ export const CartItemRow = memo(function CartItemRow({ item }: CartItemRowProps)
 
   const isPending = isUpdating || isRemoving;
 
-  const handleDecrement = () => {
-    if (item.quantity === 1) {
-      remove(item.id);
-    } else {
-      update({ cartItemId: item.id, quantity: item.quantity - 1 });
-    }
-  };
-
-  const handleIncrement = () => {
-    update({ cartItemId: item.id, quantity: item.quantity + 1 });
-  };
-
   return (
     <div className={cn('flex gap-3 py-4 border-b border-ob-border last:border-0 transition-opacity', isPending && 'opacity-50 pointer-events-none')}>
       {/* Thumbnail */}
       <div className='shrink-0 w-16 h-16 rounded-xl overflow-hidden'>
-        <AppImage src={item.dish.imageUrl} alt={item.dish.name} aspectRatio='square' fallbackIcon='🍽️' />
+        <AppImage src={item.dish.imageUrl} alt={item.dish.name} aspectRatio='square' />
       </div>
 
       {/* Content */}
       <div className='flex-1 min-w-0'>
+        {/* Name row */}
         <div className='flex items-start justify-between gap-2'>
           <div className='min-w-0'>
             <p className='font-medium text-sm leading-tight truncate text-ob-text'>{item.dish.name}</p>
@@ -46,7 +37,6 @@ export const CartItemRow = memo(function CartItemRow({ item }: CartItemRowProps)
             )}
           </div>
 
-          {/* Remove */}
           <button onClick={() => remove(item.id)} className='shrink-0 text-ob-border hover:text-ob-error transition-colors' aria-label='Remove item'>
             <IconTrash className='w-3.5 h-3.5' />
           </button>
@@ -60,21 +50,22 @@ export const CartItemRow = memo(function CartItemRow({ item }: CartItemRowProps)
         )}
 
         {/* Note */}
-        {item.note && <p className='text-[11px] italic mt-0.5 truncate text-ob-muted'>"{item.note}"</p>}
+        <div className='mt-1'>
+          <NoteEditor note={item.note} onSave={note => update({ cartItemId: item.id, note })} />
+        </div>
 
         {/* Price + Stepper */}
         <div className='flex items-center justify-between mt-2'>
           <span className='font-display font-semibold text-sm text-ob-caramel'>{formatPrice(calcItemTotal(item).toFixed(2))}</span>
 
-          <div className='qty-stepper'>
-            <button className='qty-btn' onClick={handleDecrement} aria-label='Decrease quantity'>
-              -
-            </button>
-            <span className='qty-value'>{item.quantity}</span>
-            <button className='qty-btn' onClick={handleIncrement} aria-label='Increase quantity'>
-              +
-            </button>
-          </div>
+          <QuantityStepper
+            quantity={item.quantity}
+            onDecrement={() => {
+              if (item.quantity === 1) remove(item.id);
+              else update({ cartItemId: item.id, quantity: item.quantity - 1 });
+            }}
+            onIncrement={() => update({ cartItemId: item.id, quantity: item.quantity + 1 })}
+          />
         </div>
       </div>
     </div>
