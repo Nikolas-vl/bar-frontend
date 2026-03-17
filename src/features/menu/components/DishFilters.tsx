@@ -28,8 +28,8 @@ const sortOptions: { value: string; label: string }[] = [
 const caloriePresets: { label: string; min?: number; max?: number }[] = [
   { label: 'Any', min: undefined, max: undefined },
   { label: '< 300 kcal', max: 300 },
-  { label: '300–600', min: 300, max: 600 },
-  { label: '600–900', min: 600, max: 900 },
+  { label: '300-600', min: 300, max: 600 },
+  { label: '600-900', min: 600, max: 900 },
   { label: '900+ kcal', min: 900 },
 ];
 
@@ -107,9 +107,7 @@ export function DishFilters({ value, onChange, totalCount }: DishFiltersProps) {
     <div className='flex flex-col gap-3'>
       <div className='flex flex-col sm:flex-row gap-2.5'>
         <div className='relative flex-1'>
-          <span className='absolute left-3 top-1/2 -translate-y-1/2 text-sm pointer-events-none' style={{ color: 'var(--color-ob-text-muted)' }}>
-            🔍
-          </span>
+          <span className='absolute left-3 top-1/2 -translate-y-1/2 text-sm pointer-events-none text-ob-muted'>🔍</span>
           <input
             type='text'
             placeholder='Search dishes…'
@@ -128,12 +126,10 @@ export function DishFilters({ value, onChange, totalCount }: DishFiltersProps) {
           )}
         </div>
 
-        {/* Sort */}
         <select
           value={currentSort}
           onChange={e => handleSort(e.target.value)}
-          className='input w-full sm:w-44 appearance-none cursor-pointer'
-          style={{ backgroundImage: 'none' }}
+          className='input w-full sm:w-44 appearance-none cursor-pointer bg-none'
         >
           {sortOptions.map(o => (
             <option key={o.value} value={o.value}>
@@ -152,18 +148,9 @@ export function DishFilters({ value, onChange, totalCount }: DishFiltersProps) {
                 key={cat.label}
                 onClick={() => handleCategory(cat.value)}
                 className={cn(
-                  'px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all duration-150',
-                  isActive ? 'text-white' : 'hover:opacity-80',
+                  'px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all duration-150 border',
+                  isActive ? 'bg-ob-caramel border-ob-caramel text-white' : 'bg-ob-surface border-ob-border text-ob-muted hover:opacity-80',
                 )}
-                style={
-                  isActive
-                    ? { background: 'var(--color-ob-caramel)', color: '#fff' }
-                    : {
-                        background: 'var(--color-ob-surface)',
-                        border: '1px solid var(--color-ob-border)',
-                        color: 'var(--color-ob-text-muted)',
-                      }
-                }
               >
                 {cat.label}
               </button>
@@ -173,19 +160,12 @@ export function DishFilters({ value, onChange, totalCount }: DishFiltersProps) {
 
         <div className='flex items-center gap-2.5 ml-auto'>
           {totalCount !== undefined && (
-            <span className='text-xs' style={{ color: 'var(--color-ob-text-muted)' }}>
+            <span className='text-xs text-ob-muted'>
               {totalCount} {totalCount === 1 ? 'dish' : 'dishes'}
             </span>
           )}
           {activeFiltersCount > 0 && (
-            <button
-              onClick={clearAll}
-              className='text-xs font-semibold px-2.5 py-1 rounded-full transition-all'
-              style={{
-                background: 'rgba(197,139,90,0.10)',
-                color: 'var(--color-ob-caramel)',
-              }}
-            >
+            <button onClick={clearAll} className='text-xs font-semibold px-2.5 py-1 rounded-full transition-all bg-ob-caramel/10 text-ob-caramel'>
               Clear {activeFiltersCount > 1 ? `(${activeFiltersCount})` : ''}
             </button>
           )}
@@ -193,9 +173,8 @@ export function DishFilters({ value, onChange, totalCount }: DishFiltersProps) {
       </div>
 
       <div className='flex items-center gap-1.5 flex-wrap'>
-        <span className='text-xs font-medium mr-1' style={{ color: 'var(--color-ob-text-muted)' }}>
-          Calories:
-        </span>
+        <span className='text-xs font-medium mr-1 text-ob-muted'>Calories:</span>
+
         {caloriePresets.map(preset => {
           const isActive = preset.min === value.minCalories && preset.max === value.maxCalories;
           const isAnyActive = preset.label === 'Any' && value.minCalories === undefined && value.maxCalories === undefined;
@@ -205,16 +184,10 @@ export function DishFilters({ value, onChange, totalCount }: DishFiltersProps) {
             <button
               key={preset.label}
               onClick={() => handleCaloriePreset(preset.min, preset.max)}
-              className={cn('px-3 py-1 rounded-full text-xs font-medium transition-all duration-150', selected ? 'text-white' : 'hover:opacity-80')}
-              style={
-                selected
-                  ? { background: 'var(--color-ob-wood)', color: '#fff' }
-                  : {
-                      background: 'var(--color-ob-surface)',
-                      border: '1px solid var(--color-ob-border)',
-                      color: 'var(--color-ob-text-muted)',
-                    }
-              }
+              className={cn(
+                'px-3 py-1 rounded-full text-xs font-medium transition-all duration-150 border',
+                selected ? 'bg-ob-wood border-ob-wood text-white' : 'bg-ob-surface border-ob-border text-ob-muted hover:opacity-80',
+              )}
             >
               {preset.label}
             </button>

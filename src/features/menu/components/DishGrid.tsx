@@ -1,5 +1,6 @@
 import type { Dish } from '../../../types/index';
 import { DishCard } from './DishCard';
+import { Skeleton } from '../../../components/ui/Skeleton';
 
 interface DishGridProps {
   dishes: Dish[];
@@ -8,15 +9,16 @@ interface DishGridProps {
 
 function SkeletonCard() {
   return (
-    <div className='card overflow-hidden animate-pulse'>
-      <div className='w-full aspect-4/3' style={{ background: 'var(--color-ob-border)' }} />
+    <div className='card overflow-hidden'>
+      <Skeleton className='w-full aspect-4/3 rounded-none' />
+
       <div className='p-4 flex flex-col gap-2'>
-        <div className='h-4 rounded-md w-3/4' style={{ background: 'var(--color-ob-border)' }} />
-        <div className='h-3 rounded-md w-full' style={{ background: 'var(--color-ob-border)' }} />
-        <div className='h-3 rounded-md w-2/3' style={{ background: 'var(--color-ob-border)' }} />
+        <Skeleton className='h-4 w-3/4' />
+        <Skeleton className='h-3 w-full' />
+        <Skeleton className='h-3 w-2/3' />
         <div className='flex justify-between mt-2'>
-          <div className='h-4 rounded-md w-16' style={{ background: 'var(--color-ob-border)' }} />
-          <div className='h-4 rounded-md w-12' style={{ background: 'var(--color-ob-border)' }} />
+          <Skeleton className='h-4 w-16' />
+          <Skeleton className='h-4 w-12' />
         </div>
       </div>
     </div>
@@ -38,12 +40,8 @@ export function DishGrid({ dishes, loading }: DishGridProps) {
     return (
       <div className='flex flex-col items-center justify-center py-20 gap-4'>
         <span className='text-5xl'>🍽️</span>
-        <p className='text-base font-medium' style={{ color: 'var(--color-ob-text-muted)' }}>
-          No dishes found
-        </p>
-        <p className='text-sm' style={{ color: 'var(--color-ob-text-muted)' }}>
-          Try adjusting your filters
-        </p>
+        <p className='text-base font-medium text-ob-muted'>No dishes found</p>
+        <p className='text-sm text-ob-muted'>Try adjusting your filters</p>
       </div>
     );
   }

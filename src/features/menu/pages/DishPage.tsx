@@ -1,8 +1,9 @@
 import { Navigate, useParams, Link } from 'react-router-dom';
 import { toast } from 'sonner';
 import { useDish } from '../hooks/useDish';
-import { formatPrice } from '../../../utils/cn';
+import { formatPrice, cn } from '../../../utils/cn';
 import { CATEGORY_LABEL, CATEGORY_EMOJI } from '../../../constants/category';
+import { Skeleton } from '../../../components/ui/Skeleton';
 
 export default function DishPage() {
   const { id } = useParams<{ id: string }>();
@@ -21,14 +22,14 @@ function DishDetail({ id }: { id: number }) {
   if (isLoading) {
     return (
       <div className='page-container py-10'>
-        <div className='max-w-3xl mx-auto animate-pulse flex flex-col gap-6'>
-          <div className='w-full aspect-video rounded-2xl' style={{ background: 'var(--color-ob-border)' }} />
-          <div className='h-8 rounded-lg w-2/3' style={{ background: 'var(--color-ob-border)' }} />
-          <div className='h-4 rounded-lg w-full' style={{ background: 'var(--color-ob-border)' }} />
-          <div className='h-4 rounded-lg w-4/5' style={{ background: 'var(--color-ob-border)' }} />
+        <div className='max-w-3xl mx-auto flex flex-col gap-6'>
+          <Skeleton className='w-full aspect-video rounded-2xl' />
+          <Skeleton className='h-8 rounded-lg w-2/3' />
+          <Skeleton className='h-4 rounded-lg w-full' />
+          <Skeleton className='h-4 rounded-lg w-4/5' />
           <div className='grid grid-cols-4 gap-3'>
             {Array.from({ length: 4 }).map((_, i) => (
-              <div key={i} className='h-16 rounded-xl' style={{ background: 'var(--color-ob-border)' }} />
+              <Skeleton key={i} className='h-16 rounded-xl' />
             ))}
           </div>
         </div>
@@ -39,9 +40,7 @@ function DishDetail({ id }: { id: number }) {
   if (error || !dish) {
     return (
       <div className='page-container py-10 text-center'>
-        <p className='text-lg' style={{ color: 'var(--color-ob-text-muted)' }}>
-          Dish not found.
-        </p>
+        <p className='text-lg text-ob-muted'>Dish not found.</p>
         <Link to='/menu' className='btn-primary mt-6 inline-flex'>
           ← Back to Menu
         </Link>
@@ -51,23 +50,19 @@ function DishDetail({ id }: { id: number }) {
 
   const requiredIngredients = dish.ingredients.filter(i => !i.optional);
   const optionalIngredients = dish.ingredients.filter(i => i.optional);
+
   const handleAddToCart = () => {
     toast.success(`${dish.name} added to cart!`);
-    // TODO (Cart sprint): useCartStore.getState().addItem({ dish, quantity: 1 })
   };
 
   return (
     <div className='page-container py-10'>
-      <Link
-        to='/menu'
-        className='inline-flex items-center gap-1.5 text-sm mb-6 hover:opacity-80 transition-opacity'
-        style={{ color: 'var(--color-ob-text-muted)' }}
-      >
+      <Link to='/menu' className='inline-flex items-center gap-1.5 text-sm mb-6 hover:opacity-80 transition-opacity text-ob-muted'>
         ← Back to Menu
       </Link>
 
       <div className='max-w-3xl mx-auto'>
-        <div className='w-full aspect-video rounded-2xl overflow-hidden mb-8' style={{ background: 'var(--color-ob-surface)' }}>
+        <div className='w-full aspect-video rounded-2xl overflow-hidden mb-8 bg-ob-surface'>
           {dish.imageUrl ? (
             <img src={dish.imageUrl} alt={dish.name} className='w-full h-full object-cover' />
           ) : (
@@ -78,35 +73,21 @@ function DishDetail({ id }: { id: number }) {
         <div className='flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-6'>
           <div>
             <div className='flex items-center gap-2 mb-2'>
-              <span className='text-sm font-medium' style={{ color: 'var(--color-ob-text-muted)' }}>
+              <span className='text-sm font-medium text-ob-muted'>
                 {CATEGORY_EMOJI[dish.category]} {CATEGORY_LABEL[dish.category]}
               </span>
-              {!dish.isAvailable && (
-                <span className='px-2 py-0.5 rounded-full text-xs font-semibold bg-[rgba(192,57,43,0.10)] text-[var(--color-ob-error)]'>
-                  Unavailable
-                </span>
-              )}
+              {!dish.isAvailable && <span className='px-2 py-0.5 rounded-full text-xs font-semibold bg-ob-error/10 text-ob-error'>Unavailable</span>}
             </div>
-            <h1 className='font-display text-3xl font-semibold' style={{ color: 'var(--color-ob-text)' }}>
-              {dish.name}
-            </h1>
+            <h1 className='font-display text-3xl font-semibold text-ob-text'>{dish.name}</h1>
           </div>
-          <span className='font-display text-3xl font-semibold shrink-0' style={{ color: 'var(--color-ob-caramel)' }}>
-            {formatPrice(dish.price)}
-          </span>
+          <span className='font-display text-3xl font-semibold shrink-0 text-ob-caramel'>{formatPrice(dish.price)}</span>
         </div>
 
-        {dish.description && (
-          <p className='text-base leading-relaxed mb-8' style={{ color: 'var(--color-ob-text-muted)' }}>
-            {dish.description}
-          </p>
-        )}
+        {dish.description && <p className='text-base leading-relaxed mb-8 text-ob-muted'>{dish.description}</p>}
 
         {dish.calories !== null && (
           <div className='card p-5 mb-6'>
-            <h2 className='font-display font-semibold text-sm uppercase tracking-wider mb-4' style={{ color: 'var(--color-ob-text-muted)' }}>
-              Nutritional Values
-            </h2>
+            <h2 className='font-display font-semibold text-sm uppercase tracking-wider mb-4 text-ob-muted'>Nutritional Values</h2>
             <div className='grid grid-cols-2 sm:grid-cols-4 gap-4'>
               <NutritionStat label='Calories' value={dish.calories} unit='kcal' highlight />
               {dish.protein !== null && <NutritionStat label='Protein' value={dish.protein} unit='g' />}
@@ -118,15 +99,11 @@ function DishDetail({ id }: { id: number }) {
 
         {dish.ingredients.length > 0 && (
           <div className='card p-5 mb-8'>
-            <h2 className='font-display font-semibold text-sm uppercase tracking-wider mb-4' style={{ color: 'var(--color-ob-text-muted)' }}>
-              Ingredients
-            </h2>
+            <h2 className='font-display font-semibold text-sm uppercase tracking-wider mb-4 text-ob-muted'>Ingredients</h2>
 
             {requiredIngredients.length > 0 && (
               <div className='mb-3'>
-                <p className='text-xs font-semibold uppercase tracking-wider mb-2' style={{ color: 'var(--color-ob-text-muted)' }}>
-                  Included
-                </p>
+                <p className='text-xs font-semibold uppercase tracking-wider mb-2 text-ob-muted'>Included</p>
                 <div className='flex flex-wrap gap-2'>
                   {requiredIngredients.map(di => (
                     <IngredientChip key={di.ingredientId} name={di.ingredient.name} quantity={di.quantity} optional={false} />
@@ -137,9 +114,8 @@ function DishDetail({ id }: { id: number }) {
 
             {optionalIngredients.length > 0 && (
               <div>
-                <p className='text-xs font-semibold uppercase tracking-wider mb-2' style={{ color: 'var(--color-ob-text-muted)' }}>
-                  Optional extras
-                </p>
+                {/* Before: style={{ color: 'var(--color-ob-text-muted)' }} → text-ob-muted */}
+                <p className='text-xs font-semibold uppercase tracking-wider mb-2 text-ob-muted'>Optional extras</p>
                 <div className='flex flex-wrap gap-2'>
                   {optionalIngredients.map(di => (
                     <IngredientChip key={di.ingredientId} name={di.ingredient.name} quantity={di.quantity} price={di.ingredient.price} optional />
@@ -155,15 +131,7 @@ function DishDetail({ id }: { id: number }) {
             Add to Cart — {formatPrice(dish.price)}
           </button>
         ) : (
-          <div
-            className='w-full text-center py-3.5 rounded-xl text-sm font-medium'
-            style={{
-              background: 'var(--color-ob-border)',
-              color: 'var(--color-ob-text-muted)',
-            }}
-          >
-            Currently unavailable
-          </div>
+          <div className='w-full text-center py-3.5 rounded-xl text-sm font-medium bg-ob-border text-ob-muted'>Currently unavailable</div>
         )}
       </div>
     </div>
@@ -172,14 +140,12 @@ function DishDetail({ id }: { id: number }) {
 
 function NutritionStat({ label, value, unit, highlight }: { label: string; value: number; unit: string; highlight?: boolean }) {
   return (
-    <div className='flex flex-col items-center gap-0.5 p-3 rounded-xl text-center' style={{ background: 'var(--color-ob-bg)' }}>
-      <span className='font-display font-bold text-xl' style={{ color: highlight ? 'var(--color-ob-caramel)' : 'var(--color-ob-text)' }}>
+    <div className='flex flex-col items-center gap-0.5 p-3 rounded-xl text-center bg-ob-bg'>
+      <span className={cn('font-display font-bold text-xl', highlight ? 'text-ob-caramel' : 'text-ob-text')}>
         {Math.round(value)}
         <span className='text-sm font-normal ml-0.5'>{unit}</span>
       </span>
-      <span className='text-xs' style={{ color: 'var(--color-ob-text-muted)' }}>
-        {label}
-      </span>
+      <span className='text-xs text-ob-muted'>{label}</span>
     </div>
   );
 }
@@ -187,22 +153,12 @@ function NutritionStat({ label, value, unit, highlight }: { label: string; value
 function IngredientChip({ name, quantity, price, optional }: { name: string; quantity: number; price?: string; optional: boolean }) {
   return (
     <span
-      className='flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium'
-      style={
-        optional
-          ? {
-              background: 'rgba(197,139,90,0.08)',
-              color: 'var(--color-ob-caramel)',
-              border: '1px dashed rgba(197,139,90,0.3)',
-            }
-          : {
-              background: 'var(--color-ob-surface)',
-              border: '1px solid var(--color-ob-border)',
-              color: 'var(--color-ob-text)',
-            }
-      }
+      className={cn(
+        'flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium border',
+        optional ? 'bg-ob-caramel/8 text-ob-caramel border-dashed border-ob-caramel/30' : 'bg-ob-surface border-ob-border text-ob-text',
+      )}
     >
-      {quantity > 1 && <span className='font-bold'>x{quantity}</span>}
+      {quantity > 1 && <span className='font-bold'>×{quantity}</span>}
       {name}
       {optional && price && <span className='opacity-70'>+{formatPrice(price)}</span>}
     </span>

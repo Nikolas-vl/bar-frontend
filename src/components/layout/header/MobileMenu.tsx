@@ -5,7 +5,7 @@ import { useUIStore } from '../../../store/ui.store';
 import { IconCart } from '../../../assets/icons';
 
 const mobileItemClass = 'px-3 py-2.5 text-sm rounded-xl font-medium transition-colors';
-const mobileActiveClass = 'bg-[rgba(197,139,90,0.08)] text-[var(--color-ob-caramel)]';
+const mobileActiveClass = 'bg-ob-caramel/10 text-ob-caramel';
 
 interface MobileMenuProps {
   onClose: () => void;
@@ -18,13 +18,7 @@ export function MobileMenu({ onClose, onLogout }: MobileMenuProps) {
   const toggleCart = useUIStore(s => s.toggleCart);
 
   return (
-    <div
-      className='md:hidden border-t animate-slide-down'
-      style={{
-        borderColor: 'var(--color-ob-border)',
-        backgroundColor: 'var(--color-ob-surface)',
-      }}
-    >
+    <div className='md:hidden border-t border-ob-border bg-ob-surface animate-slide-down'>
       <nav className='page-container py-4 flex flex-col gap-1'>
         <NavItem to='/menu' onClick={onClose} className={mobileItemClass} activeClassName={mobileActiveClass}>
           Menu
@@ -55,8 +49,7 @@ export function MobileMenu({ onClose, onLogout }: MobileMenuProps) {
                 toggleCart();
                 onClose();
               }}
-              className={`flex items-center gap-2 w-full text-left ${mobileItemClass}`}
-              style={{ color: 'var(--color-ob-muted)' }}
+              className={`flex items-center gap-2 w-full text-left text-ob-muted ${mobileItemClass}`}
             >
               <IconCart className='w-4 h-4' />
               Cart
@@ -69,10 +62,7 @@ export function MobileMenu({ onClose, onLogout }: MobileMenuProps) {
                 onLogout();
                 onClose();
               }}
-              className='text-left px-3 py-2.5 text-sm rounded-xl transition-colors'
-              style={{ color: 'var(--color-ob-error)' }}
-              onMouseEnter={e => (e.currentTarget.style.background = 'rgba(192,57,43,0.06)')}
-              onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+              className='text-left px-3 py-2.5 text-sm rounded-xl transition-colors text-ob-error hover:bg-ob-error/6'
             >
               Sign out
             </button>

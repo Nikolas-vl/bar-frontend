@@ -8,15 +8,12 @@ export default function HomePage() {
 
   return (
     <div>
-      {/* Hero */}
       <section
-        className='relative overflow-hidden'
+        className='relative overflow-hidden min-h-[520px]'
         style={{
           background: 'linear-gradient(135deg, var(--color-ob-bg) 0%, var(--color-ob-surface) 50%, var(--color-ob-blue) 100%)',
-          minHeight: '520px',
         }}
       >
-        {/* Decorative orbs */}
         <div
           className='absolute -top-24 -right-24 w-96 h-96 rounded-full opacity-20 pointer-events-none'
           style={{ background: 'radial-gradient(circle, var(--color-ob-caramel), transparent)' }}
@@ -28,21 +25,17 @@ export default function HomePage() {
 
         <div className='page-container relative z-10 py-20 flex flex-col items-start gap-7'>
           <div className='flex items-center gap-2'>
-            <span className='w-6 h-px' style={{ background: 'var(--color-ob-caramel)' }} />
-            <span className='text-xs font-semibold uppercase tracking-widest' style={{ color: 'var(--color-ob-caramel)' }}>
-              Jolie Brasserie Café
-            </span>
+            <span className='w-6 h-px bg-ob-caramel' />
+            <span className='text-xs font-semibold uppercase tracking-widest text-ob-caramel'>Jolie Brasserie Café</span>
           </div>
 
-          <h1 className='font-display font-semibold leading-[1.1]' style={{ color: 'var(--color-ob-text)', fontSize: 'clamp(2.5rem, 6vw, 4rem)' }}>
+          <h1 className='font-display font-semibold leading-[1.1] text-ob-text' style={{ fontSize: 'clamp(2.5rem, 6vw, 4rem)' }}>
             A place where every
             <br />
             meal tells a story
           </h1>
 
-          <p className='text-lg max-w-md leading-relaxed' style={{ color: 'var(--color-ob-text-muted)' }}>
-            Fresh, seasonal ingredients. Crafted with care. Served with warmth.
-          </p>
+          <p className='text-lg max-w-md leading-relaxed text-ob-muted'>Fresh, seasonal ingredients. Crafted with care. Served with warmth.</p>
 
           <div className='flex items-center gap-3 flex-wrap'>
             <Link to='/menu' className='btn-primary text-base px-7 py-3'>
@@ -53,7 +46,6 @@ export default function HomePage() {
             </Link>
           </div>
 
-          {/* Stats */}
           <div className='flex items-center gap-8 pt-4'>
             {[
               { value: '10+', label: 'Dishes' },
@@ -61,35 +53,22 @@ export default function HomePage() {
               { value: '★ 4.9', label: 'Rating' },
             ].map(s => (
               <div key={s.label} className='flex flex-col'>
-                <span className='font-display font-bold text-2xl' style={{ color: 'var(--color-ob-text)' }}>
-                  {s.value}
-                </span>
-                <span className='text-xs' style={{ color: 'var(--color-ob-text-muted)' }}>
-                  {s.label}
-                </span>
+                <span className='font-display font-bold text-2xl text-ob-text'>{s.value}</span>
+                <span className='text-xs text-ob-muted'>{s.label}</span>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Featured dishes */}
       {featuredSlice.length > 0 && (
         <section className='page-container py-16'>
           <div className='flex items-end justify-between mb-8'>
             <div>
-              <p className='text-xs font-semibold uppercase tracking-widest mb-1' style={{ color: 'var(--color-ob-caramel)' }}>
-                Today's picks
-              </p>
-              <h2 className='font-display text-3xl font-semibold' style={{ color: 'var(--color-ob-text)' }}>
-                Featured Dishes
-              </h2>
+              <p className='text-xs font-semibold uppercase tracking-widest mb-1 text-ob-caramel'>Today's picks</p>
+              <h2 className='font-display text-3xl font-semibold text-ob-text'>Featured Dishes</h2>
             </div>
-            <Link
-              to='/menu'
-              className='text-sm font-medium transition-opacity hover:opacity-70 hidden sm:block'
-              style={{ color: 'var(--color-ob-caramel)' }}
-            >
+            <Link to='/menu' className='text-sm font-medium transition-opacity hover:opacity-70 hidden sm:block text-ob-caramel'>
               View all →
             </Link>
           </div>
@@ -107,17 +86,11 @@ export default function HomePage() {
           </div>
         </section>
       )}
-
-      {/* CTA strip */}
-      <section style={{ background: 'var(--color-ob-surface)', borderTop: '1px solid var(--color-ob-border)' }}>
+      <section className='bg-ob-surface border-t border-ob-border'>
         <div className='page-container py-12 flex flex-col sm:flex-row items-center justify-between gap-6'>
           <div>
-            <h2 className='font-display text-2xl font-semibold mb-1' style={{ color: 'var(--color-ob-text)' }}>
-              Ready to dine with us?
-            </h2>
-            <p className='text-sm' style={{ color: 'var(--color-ob-text-muted)' }}>
-              Book your table in seconds, no phone call needed.
-            </p>
+            <h2 className='font-display text-2xl font-semibold mb-1 text-ob-text'>Ready to dine with us?</h2>
+            <p className='text-sm text-ob-muted'>Book your table in seconds, no phone call needed.</p>
           </div>
           <Link to='/reservations/new' className='btn-primary text-base px-8 py-3 shrink-0'>
             Book a table

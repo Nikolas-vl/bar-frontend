@@ -7,9 +7,10 @@ import { authApi } from '../../../api/auth.api';
 import { useAuthStore } from '../../../store/auth.store';
 import { getErrorMessage } from '../../../api/client';
 import { cn } from '../../../utils/cn';
+import { Spinner } from '../../../components/ui/Spinner';
 
 const schema = z.object({
-  email: z.string().email('Invalid email address'),
+  email: z.email('Invalid email address'),
   password: z.string().min(1, 'Password is required'),
 });
 type FormData = z.infer<typeof schema>;
@@ -38,22 +39,16 @@ export default function LoginPage() {
   };
 
   return (
-    <div className='min-h-[calc(100vh-4rem)] flex items-center justify-center px-4 py-12' style={{ backgroundColor: 'var(--color-ob-bg)' }}>
+    <div className='min-h-[calc(100vh-4rem)] flex items-center justify-center px-4 py-12 bg-ob-bg'>
       <div className='w-full max-w-sm animate-slide-up'>
-        {/* Header */}
         <div className='text-center mb-8'>
-          <div className='w-12 h-12 rounded-2xl flex items-center justify-center mx-auto mb-4' style={{ backgroundColor: 'var(--color-ob-blue)' }}>
+          <div className='w-12 h-12 rounded-2xl flex items-center justify-center mx-auto mb-4 bg-ob-blue'>
             <span className='text-2xl'>☕</span>
           </div>
-          <h1 className='font-display text-3xl font-semibold mb-2' style={{ color: 'var(--color-ob-text)' }}>
-            Welcome back
-          </h1>
-          <p className='text-sm' style={{ color: 'var(--color-ob-text-muted)' }}>
-            Sign in to your Jolie account
-          </p>
+          <h1 className='font-display text-3xl font-semibold mb-2 text-ob-text'>Welcome back</h1>
+          <p className='text-sm text-ob-muted'>Sign in to your Jolie account</p>
         </div>
 
-        {/* Card */}
         <div className='card p-7'>
           <form onSubmit={handleSubmit(onSubmit)} className='flex flex-col gap-5'>
             <div>
@@ -83,10 +78,7 @@ export default function LoginPage() {
             <button type='submit' disabled={isSubmitting} className='btn-primary w-full mt-1 justify-center'>
               {isSubmitting ? (
                 <span className='flex items-center gap-2'>
-                  <span
-                    className='w-4 h-4 rounded-full border-2 animate-spin'
-                    style={{ borderColor: 'rgba(255,255,255,0.3)', borderTopColor: '#fff' }}
-                  />
+                  <Spinner variant='white' />
                   Signing in…
                 </span>
               ) : (
@@ -96,15 +88,9 @@ export default function LoginPage() {
           </form>
         </div>
 
-        <p className='mt-6 text-center text-sm' style={{ color: 'var(--color-ob-text-muted)' }}>
+        <p className='mt-6 text-center text-sm text-ob-muted'>
           Don't have an account?{' '}
-          <Link
-            to='/register'
-            className='font-medium transition-colors'
-            style={{ color: 'var(--color-ob-caramel)' }}
-            onMouseEnter={e => (e.currentTarget.style.color = 'var(--color-ob-wood)')}
-            onMouseLeave={e => (e.currentTarget.style.color = 'var(--color-ob-caramel)')}
-          >
+          <Link to='/register' className='font-medium transition-colors text-ob-caramel hover:text-ob-wood'>
             Create account
           </Link>
         </p>
