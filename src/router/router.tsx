@@ -1,6 +1,6 @@
 import { createBrowserRouter } from 'react-router-dom';
 import { lazy } from 'react';
-import { RootLayout } from '../components/layout/RootLayout';
+import { RootLayout } from '@/components/layout/RootLayout';
 
 import { publicRoutes } from './routes/public.routes';
 import { authRoutes } from './routes/auth.routes';

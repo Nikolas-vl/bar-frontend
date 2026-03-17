@@ -1,5 +1,5 @@
 import { apiClient } from './client';
-import type { Dish, DishQuery, Ingredient } from '../types/index';
+import type { Dish, DishQuery, Ingredient } from '@/types';
 
 export const menuApi = {
   getDishes: async (query?: DishQuery): Promise<Dish[]> => {

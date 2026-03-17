@@ -1,4 +1,4 @@
-import { Logo } from '../../shared/ui/Logo';
+import { Logo } from '@/components/shared/ui';
 import { AdminNavList } from './AdminNavList';
 import { AdminUserFooter } from './AdminUserFooter';
 

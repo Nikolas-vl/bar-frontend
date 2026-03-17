@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Outlet } from 'react-router-dom';
-import { useLogout } from '../../../hooks/useLogout';
+import { useLogout } from '@/hooks/useLogout';
 import { AdminSidebar } from './AdminSidebar';
 import { AdminTopbar } from './AdminTopbar';
 import { AdminMobileMenu } from './AdminMobileMenu';

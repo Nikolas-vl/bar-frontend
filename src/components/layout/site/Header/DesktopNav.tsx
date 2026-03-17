@@ -1,5 +1,5 @@
-import { NavItem } from '../../../shared/navigation/NavItem';
-import { useAuthStore } from '../../../../store/auth.store';
+import { NavItem } from '@/components/shared/navigation/NavItem';
+import { useAuthStore } from '@/store/auth.store';
 
 export function DesktopNav() {
   const isAuthenticated = useAuthStore(s => s.isAuthenticated);

@@ -1,4 +1,4 @@
-import { cn, formatPrice } from '../../../utils/cn';
+import { cn, formatPrice } from '@/utils/cn';
 
 interface IngredientChipProps {
   name: string;

@@ -1,4 +1,4 @@
-import { NavItem } from '../../shared/navigation/NavItem';
+import { NavItem } from '@/components/shared/navigation/NavItem';
 import { adminNavLinks } from './model/adminNavLinks';
 
 interface AdminNavListProps {

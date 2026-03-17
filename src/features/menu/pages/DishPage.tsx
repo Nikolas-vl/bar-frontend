@@ -1,9 +1,9 @@
 import { Navigate, useParams, Link } from 'react-router-dom';
 import { toast } from 'sonner';
 import { useDish } from '../hooks/useDish';
-import { formatPrice } from '../../../utils/cn';
-import { CATEGORY_LABEL, CATEGORY_EMOJI } from '../../../constants/category';
-import { Skeleton } from '../../../components/shared/ui/Skeleton';
+import { formatPrice } from '@/utils/cn';
+import { CATEGORY_LABEL, CATEGORY_EMOJI } from '@/constants/category';
+import { Skeleton } from '@/components/shared/ui';
 import { NutritionStat } from '../components/NutritionStat';
 import { IngredientChip } from '../components/IngredientChip';
 

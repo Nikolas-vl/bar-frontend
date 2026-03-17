@@ -1,5 +1,5 @@
 import type { ComponentType, SVGProps } from 'react';
-import { IconDashboard, IconOrders, IconReservation, IconDishes, IconUsers, IconTable, IconLocation, IconSettings } from '../../../../assets/icons';
+import { IconDashboard, IconOrders, IconReservation, IconDishes, IconUsers, IconTable, IconLocation, IconSettings } from '@/assets/icons';
 
 type IconComponent = ComponentType<SVGProps<SVGSVGElement>>;
 

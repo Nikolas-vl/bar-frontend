@@ -1,8 +1,8 @@
 import { memo } from 'react';
 import { Link } from 'react-router-dom';
-import type { Dish } from '../../../types/index';
-import { formatPrice, cn } from '../../../utils/cn';
-import { CATEGORY_LABEL, CATEGORY_BADGE_CLASS } from '../../../constants/category';
+import type { Dish } from '@/types';
+import { formatPrice, cn } from '@/utils/cn';
+import { CATEGORY_LABEL, CATEGORY_BADGE_CLASS } from '@/constants/category';
 
 interface DishCardProps {
   dish: Dish;

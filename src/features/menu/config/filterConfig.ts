@@ -1,4 +1,4 @@
-import type { Category } from '../../../types/index';
+import type { Category } from '@/types';
 
 export const categories: { value: Category | undefined; label: string }[] = [
   { value: undefined, label: 'All' },

@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { cn } from '../../../utils/cn';
-import { useDebounce } from '../../../hooks/useDebounce';
-import type { DishQuery, Category } from '../../../types/index';
+import { cn } from '@/utils/cn';
+import { useDebounce } from '@/hooks/useDebounce';
+import type { DishQuery, Category } from '@/types';
 
 interface DishFiltersProps {
   value: DishQuery;

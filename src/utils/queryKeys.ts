@@ -1,4 +1,4 @@
-import type { DishQuery } from '../types/index';
+import type { DishQuery } from '@/types';
 
 export const queryKeys = {
   // Auth

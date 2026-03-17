@@ -3,11 +3,11 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { toast } from 'sonner';
-import { authApi } from '../../../api/auth.api';
-import { useAuthStore } from '../../../store/auth.store';
-import { getErrorMessage } from '../../../api/client';
-import { cn } from '../../../utils/cn';
-import { Spinner } from '../../../components/shared/ui/Spinner';
+import { authApi } from '@/api/auth.api';
+import { useAuthStore } from '@/store/auth.store';
+import { getErrorMessage } from '@/api/client';
+import { cn } from '@/utils/cn';
+import { Spinner } from '@/components/shared/ui';
 
 const schema = z
   .object({

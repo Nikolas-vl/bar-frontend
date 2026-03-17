@@ -1,8 +1,8 @@
 import { Link } from 'react-router-dom';
-import { NavItem } from '../../../shared/navigation/NavItem';
-import { useAuthStore } from '../../../../store/auth.store';
-import { useUIStore } from '../../../../store/ui.store';
-import { IconCart } from '../../../../assets/icons';
+import { NavItem } from '@/components/shared/navigation/NavItem';
+import { useAuthStore } from '@/store/auth.store';
+import { useUIStore } from '@/store/ui.store';
+import { IconCart } from '@/assets/icons';
 
 const mobileItemClass = 'px-3 py-2.5 text-sm rounded-xl font-medium transition-colors';
 const mobileActiveClass = 'bg-ob-caramel/10 text-ob-caramel';

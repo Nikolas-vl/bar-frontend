@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
-import { DishCard } from '../features/menu/components/DishCard';
-import { useDishes } from '../features/menu/hooks/useDishes';
+import { DishCard } from '@/features/menu';
+import { useDishes } from '@/features/menu';
 
 export default function HomePage() {
   const { data: featured } = useDishes({ isAvailable: true, sortBy: 'name', sortOrder: 'asc' });

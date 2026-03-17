@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useDishes } from '../hooks/useDishes';
 import { DishFilters } from '../components/DishFilters';
 import { DishGrid } from '../components/DishGrid';
-import type { DishQuery } from '../../../types/index';
+import type { DishQuery } from '@/types';
 
 export default function MenuPage() {
   const [query, setQuery] = useState<DishQuery>({ isAvailable: true });
