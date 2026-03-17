@@ -21,7 +21,7 @@ export const DishCard = memo(function DishCard({ dish, className }: DishCardProp
       )}
     >
       <div className='relative shrink-0'>
-        <AppImage src={dish.imageUrl} alt={dish.name} aspectRatio='4/3' hoverScale />
+        <AppImage src={dish.imageUrl} alt={dish.name} aspectRatio='4/3' hoverScale showLabel />
 
         <span className={cn('absolute top-2.5 left-2.5 px-2 py-0.5 rounded-full text-[11px] font-semibold', CATEGORY_BADGE_CLASS[dish.category])}>
           {CATEGORY_LABEL[dish.category]}

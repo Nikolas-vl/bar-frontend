@@ -16,14 +16,27 @@ export function calcItemTotal(item: CartItem): number {
   return (base + extras) * item.quantity;
 }
 
-/** Calculates the subtotal of the whole cart (all dish items) */
+/**
+ * Calculates the subtotal of the whole cart.
+ * Includes both dish items (with extras) and standalone ingredient items.
+ */
 export function calcCartSubtotal(cart: Cart | undefined): number {
   if (!cart) return 0;
-  return cart.items.reduce((sum, item) => sum + calcItemTotal(item), 0);
+
+  const itemsSubtotal = cart.items.reduce((sum, item) => sum + calcItemTotal(item), 0);
+  const ingredientsSubtotal = (cart.ingredientItems ?? []).reduce((sum, item) => sum + parseFloat(String(item.ingredient.price)) * item.quantity, 0);
+
+  return itemsSubtotal + ingredientsSubtotal;
 }
 
-/** Total number of individual units in cart */
+/** Total number of individual units in cart (dishes + standalone ingredients) */
 export function getTotalItemCount(cart: Cart | undefined): number {
   if (!cart) return 0;
-  return cart.items.reduce((sum, item) => sum + item.quantity, 0);
+  const dishCount = cart.items.reduce((sum, item) => sum + item.quantity, 0);
+  const ingredientCount = (cart.ingredientItems ?? []).reduce((sum, item) => sum + item.quantity, 0);
+  return dishCount + ingredientCount;
 }
+
+// ⚠️ NOTE: For tax / fee calculations use `calcFinalTotalClient` from
+// `@/utils/pricingClient` — it correctly mirrors the backend pricing logic.
+// The taxRate from settings is already a decimal (e.g. 0.23 = 23%).

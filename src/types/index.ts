@@ -122,11 +122,28 @@ export type OrderStatus = 'NEW' | 'PAID' | 'PREPARING' | 'COMPLETED' | 'CANCELED
 export type PaymentStatus = 'PENDING' | 'SUCCESS' | 'FAILED';
 export type PaymentType = 'CARD' | 'CASH' | 'BLIK';
 
+export interface OrderItemExtra {
+  id: number;
+  ingredientId: number;
+  quantity: number;
+  ingredient: Ingredient;
+}
+
 export interface OrderItem {
   id: number;
   dishId: number;
   quantity: number;
+  note: string | null;
   dish: Dish;
+  extras: OrderItemExtra[];
+}
+
+export interface OrderIngredientItem {
+  id: number;
+  ingredientId: number;
+  quantity: number;
+  note: string | null;
+  ingredient: Ingredient;
 }
 
 export interface Order {
@@ -144,6 +161,14 @@ export interface Order {
   comment: string | null;
   createdAt: string;
   items: OrderItem[];
+  ingredientItems: OrderIngredientItem[];
+}
+
+export interface PaginatedOrders {
+  orders: Order[];
+  total: number;
+  page: number;
+  limit: number;
 }
 
 // ─── Reservations ──────────────────────────────────────────────────────────
