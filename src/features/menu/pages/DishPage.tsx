@@ -3,7 +3,7 @@ import { toast } from 'sonner';
 import { useDish } from '../hooks/useDish';
 import { formatPrice } from '@/utils/cn';
 import { CATEGORY_LABEL, CATEGORY_EMOJI } from '@/constants/category';
-import { Skeleton } from '@/components/shared/ui';
+import { Skeleton, AppImage } from '@/components/shared/ui';
 import { NutritionStat } from '../components/NutritionStat';
 import { IngredientChip } from '../components/IngredientChip';
 
@@ -64,13 +64,7 @@ function DishDetail({ id }: { id: number }) {
       </Link>
 
       <div className='max-w-3xl mx-auto'>
-        <div className='w-full aspect-video rounded-2xl overflow-hidden mb-8 bg-ob-surface'>
-          {dish.imageUrl ? (
-            <img src={dish.imageUrl} alt={dish.name} className='w-full h-full object-cover' />
-          ) : (
-            <div className='w-full h-full flex items-center justify-center text-7xl'>🍽️</div>
-          )}
-        </div>
+        <AppImage src={dish.imageUrl} alt={dish.name} aspectRatio='video' fallbackIcon='🍽️' className='rounded-2xl mb-8' />
 
         <div className='flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-6'>
           <div>

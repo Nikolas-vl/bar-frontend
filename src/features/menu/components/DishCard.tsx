@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import type { Dish } from '@/types';
 import { formatPrice, cn } from '@/utils/cn';
 import { CATEGORY_LABEL, CATEGORY_BADGE_CLASS } from '@/constants/category';
+import { AppImage } from '@/components/shared/ui';
 
 interface DishCardProps {
   dish: Dish;
@@ -20,12 +21,8 @@ export const DishCard = memo(function DishCard({ dish, className }: DishCardProp
         className,
       )}
     >
-      <div className='relative w-full aspect-4/3 bg-ob-surface overflow-hidden shrink-0'>
-        {dish.imageUrl ? (
-          <img src={dish.imageUrl} alt={dish.name} className='w-full h-full object-cover transition-transform duration-300 group-hover:scale-105' />
-        ) : (
-          <div className='w-full h-full flex items-center justify-center text-4xl text-ob-border'>🍽️</div>
-        )}
+      <div className='relative shrink-0'>
+        <AppImage src={dish.imageUrl} alt={dish.name} aspectRatio='4/3' hoverScale />
 
         <span className={cn('absolute top-2.5 left-2.5 px-2 py-0.5 rounded-full text-[11px] font-semibold', CATEGORY_BADGE_CLASS[dish.category])}>
           {CATEGORY_LABEL[dish.category]}
