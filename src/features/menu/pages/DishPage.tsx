@@ -121,16 +121,17 @@ function DishDetail({ id }: { id: number }) {
           </div>
         )}
 
-        {dish.isAvailable ? (
-          <button onClick={handleAddToCart} className='btn-primary w-full justify-center text-base py-3.5'>
-            Add to Cart — {formatPrice(dish.price)}
-          </button>
-        ) : (
-          <div className='w-full text-center py-3.5 rounded-xl text-sm font-medium bg-ob-border text-ob-muted'>Currently unavailable</div>
+        <button onClick={handleAddToCart} className='btn-primary w-full justify-center text-base py-3.5'>
+          Add to Cart — {formatPrice(dish.price)}
+        </button>
+
+        {!dish.isAvailable && (
+          <p className='mt-3 text-center text-xs text-amber-600 bg-amber-50 border border-amber-200 rounded-xl px-4 py-2.5 leading-relaxed'>
+            ⚠️ This dish is currently unavailable. You can add it to your cart, but you won't be able to place an order until it becomes available
+            again.
+          </p>
         )}
       </div>
     </div>
   );
 }
-
-

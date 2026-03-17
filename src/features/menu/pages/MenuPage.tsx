@@ -5,7 +5,7 @@ import { DishGrid } from '../components/DishGrid';
 import type { DishQuery } from '@/types';
 
 export default function MenuPage() {
-  const [query, setQuery] = useState<DishQuery>({ isAvailable: true });
+  const [query, setQuery] = useState<DishQuery>({});
   const { data: dishes, isLoading, error } = useDishes(query);
 
   return (

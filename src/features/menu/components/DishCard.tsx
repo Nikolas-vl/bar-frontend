@@ -17,7 +17,6 @@ export const DishCard = memo(function DishCard({ dish, className }: DishCardProp
       className={cn(
         'group card flex flex-col overflow-hidden transition-all duration-200',
         'hover:shadow-[0_8px_32px_rgba(47,47,47,0.12)] hover:-translate-y-0.5',
-        !dish.isAvailable && 'opacity-60',
         className,
       )}
     >
@@ -27,10 +26,9 @@ export const DishCard = memo(function DishCard({ dish, className }: DishCardProp
         <span className={cn('absolute top-2.5 left-2.5 px-2 py-0.5 rounded-full text-[11px] font-semibold', CATEGORY_BADGE_CLASS[dish.category])}>
           {CATEGORY_LABEL[dish.category]}
         </span>
+
         {!dish.isAvailable && (
-          <div className='absolute inset-0 bg-ob-bg/60 flex items-center justify-center'>
-            <span className='text-xs font-semibold uppercase tracking-wider text-ob-muted bg-ob-surface px-3 py-1 rounded-full'>Unavailable</span>
-          </div>
+          <span className='absolute top-2.5 right-2.5 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-ob-text/70 text-white'>Unavailable</span>
         )}
       </div>
 
