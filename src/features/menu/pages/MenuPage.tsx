@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useDishes } from '../hooks/useDishes';
-import { DishFilters } from '../components/DishFilters';
-import { DishGrid } from '../components/DishGrid';
+import { DishFilters } from '../components/menu/DishFilters';
+import { DishGrid } from '../components/menu/DishGrid';
 import type { DishQuery } from '@/types';
 
 export default function MenuPage() {
