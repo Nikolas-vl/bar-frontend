@@ -1,44 +1,35 @@
-import { Navigate, useParams, Link } from 'react-router-dom';
-import { toast } from 'sonner';
+import { useState } from 'react';
+import { Navigate, useParams, Link, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useDish } from '../hooks/useDish';
-import { formatPrice } from '@/utils/cn';
-import { CATEGORY_LABEL, CATEGORY_EMOJI } from '@/constants/category';
-import { Skeleton, AppImage } from '@/components/shared/ui';
-import { NutritionStat } from '../components/NutritionStat';
-import { IngredientChip } from '../components/IngredientChip';
+import { useAddToCart } from '../../cart/hooks/useAddToCart';
+import { useAuthStore } from '@/store/auth.store';
+import { DishDetailSkeleton } from '../components/dish/DishDetailSkeleton';
+import { DishHeader } from '../components/dish/DishHeader';
+import { DishNutrition } from '../components/dish/DishNutrition';
+import { DishIngredients } from '../components/dish/DishIngredients';
+import { DishExtrasSelector } from '../components/dish/DishExtrasSelector';
+import { DishActions } from '../components/dish/DishActions';
 
 export default function DishPage() {
   const { id } = useParams<{ id: string }>();
   const parsedId = Number(id);
 
-  if (Number.isNaN(parsedId) || parsedId <= 0) {
-    return <Navigate to='/menu' replace />;
-  }
+  if (Number.isNaN(parsedId) || parsedId <= 0) return <Navigate to='/menu' replace />;
 
   return <DishDetail id={parsedId} />;
 }
 
 function DishDetail({ id }: { id: number }) {
+  const location = useLocation();
   const { data: dish, isLoading, error } = useDish(id);
+  const [selectedExtras, setSelectedExtras] = useState<Record<number, number>>({});
+  const [note, setNote] = useState('');
+  const { mutate: addToCart, isPending: isAdding } = useAddToCart();
+  const isAuthenticated = useAuthStore(s => s.isAuthenticated);
+  const navigate = useNavigate();
 
-  if (isLoading) {
-    return (
-      <div className='page-container py-10'>
-        <div className='max-w-3xl mx-auto flex flex-col gap-6'>
-          <Skeleton className='w-full aspect-video rounded-2xl' />
-          <Skeleton className='h-8 rounded-lg w-2/3' />
-          <Skeleton className='h-4 rounded-lg w-full' />
-          <Skeleton className='h-4 rounded-lg w-4/5' />
-          <div className='grid grid-cols-4 gap-3'>
-            {Array.from({ length: 4 }).map((_, i) => (
-              <Skeleton key={i} className='h-16 rounded-xl' />
-            ))}
-          </div>
-        </div>
-      </div>
-    );
-  }
-
+  if (isLoading) return <DishDetailSkeleton />;
   if (error || !dish) {
     return (
       <div className='page-container py-10 text-center'>
@@ -50,11 +41,36 @@ function DishDetail({ id }: { id: number }) {
     );
   }
 
-  const requiredIngredients = dish.ingredients.filter(i => !i.optional);
   const optionalIngredients = dish.ingredients.filter(i => i.optional);
 
+  const handleChangeExtra = (ingredientId: number, delta: number) => {
+    setSelectedExtras(prev => {
+      const next = (prev[ingredientId] ?? 0) + delta;
+      if (next <= 0) {
+        const rest = { ...prev };
+        delete rest[ingredientId];
+        return rest;
+      }
+      return { ...prev, [ingredientId]: next };
+    });
+  };
+
+  const extrasTotal = Object.entries(selectedExtras).reduce((sum, [ingredientId, qty]) => {
+    const ingredient = dish.ingredients.find(i => i.ingredientId === Number(ingredientId))?.ingredient;
+    return sum + (ingredient ? parseFloat(ingredient.price) * qty : 0);
+  }, 0);
+
   const handleAddToCart = () => {
-    toast.success(`${dish.name} added to cart!`);
+    if (!isAuthenticated) {
+      navigate('/login', { state: { from: location } });
+      return;
+    }
+    addToCart({
+      dishId: dish.id,
+      quantity: 1,
+      note: note.trim() || undefined,
+      extras: Object.entries(selectedExtras).map(([id, qty]) => ({ ingredientId: Number(id), quantity: qty })),
+    });
   };
 
   return (
@@ -62,75 +78,19 @@ function DishDetail({ id }: { id: number }) {
       <Link to='/menu' className='inline-flex items-center gap-1.5 text-sm mb-6 hover:opacity-80 transition-opacity text-ob-muted'>
         ← Back to Menu
       </Link>
-
       <div className='max-w-3xl mx-auto'>
-        <AppImage src={dish.imageUrl} alt={dish.name} aspectRatio='video' fallbackIcon='🍽️' className='rounded-2xl mb-8' />
-
-        <div className='flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-6'>
-          <div>
-            <div className='flex items-center gap-2 mb-2'>
-              <span className='text-sm font-medium text-ob-muted'>
-                {CATEGORY_EMOJI[dish.category]} {CATEGORY_LABEL[dish.category]}
-              </span>
-              {!dish.isAvailable && <span className='px-2 py-0.5 rounded-full text-xs font-semibold bg-ob-error/10 text-ob-error'>Unavailable</span>}
-            </div>
-            <h1 className='font-display text-3xl font-semibold text-ob-text'>{dish.name}</h1>
-          </div>
-          <span className='font-display text-3xl font-semibold shrink-0 text-ob-caramel'>{formatPrice(dish.price)}</span>
-        </div>
-
-        {dish.description && <p className='text-base leading-relaxed mb-8 text-ob-muted'>{dish.description}</p>}
-
-        {dish.calories !== null && (
-          <div className='card p-5 mb-6'>
-            <h2 className='font-display font-semibold text-sm uppercase tracking-wider mb-4 text-ob-muted'>Nutritional Values</h2>
-            <div className='grid grid-cols-2 sm:grid-cols-4 gap-4'>
-              <NutritionStat label='Calories' value={dish.calories} unit='kcal' highlight />
-              {dish.protein !== null && <NutritionStat label='Protein' value={dish.protein} unit='g' />}
-              {dish.fat !== null && <NutritionStat label='Fat' value={dish.fat} unit='g' />}
-              {dish.carbs !== null && <NutritionStat label='Carbs' value={dish.carbs} unit='g' />}
-            </div>
-          </div>
-        )}
-
-        {dish.ingredients.length > 0 && (
-          <div className='card p-5 mb-8'>
-            <h2 className='font-display font-semibold text-sm uppercase tracking-wider mb-4 text-ob-muted'>Ingredients</h2>
-
-            {requiredIngredients.length > 0 && (
-              <div className='mb-3'>
-                <p className='text-xs font-semibold uppercase tracking-wider mb-2 text-ob-muted'>Included</p>
-                <div className='flex flex-wrap gap-2'>
-                  {requiredIngredients.map(di => (
-                    <IngredientChip key={di.ingredientId} name={di.ingredient.name} quantity={di.quantity} optional={false} />
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {optionalIngredients.length > 0 && (
-              <div>
-                <p className='text-xs font-semibold uppercase tracking-wider mb-2 text-ob-muted'>Optional extras</p>
-                <div className='flex flex-wrap gap-2'>
-                  {optionalIngredients.map(di => (
-                    <IngredientChip key={di.ingredientId} name={di.ingredient.name} quantity={di.quantity} price={di.ingredient.price} optional />
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-        )}
-
-        <button onClick={handleAddToCart} className='btn-primary w-full justify-center text-base py-3.5'>
-          Add to Cart — {formatPrice(dish.price)}
-        </button>
-
-        {!dish.isAvailable && (
-          <p className='mt-3 text-center text-xs text-amber-600 bg-amber-50 border border-amber-200 rounded-xl px-4 py-2.5 leading-relaxed'>
-            ⚠️ This dish is currently unavailable. You can add it to your cart, but you won't be able to place an order until it becomes available
-            again.
-          </p>
-        )}
+        <DishHeader dish={dish} />
+        <DishNutrition dish={dish} />
+        <DishIngredients ingredients={dish.ingredients} />
+        <DishExtrasSelector optionalIngredients={optionalIngredients} selected={selectedExtras} onChange={handleChangeExtra} />
+        <DishActions
+          displayPrice={parseFloat(dish.price) + extrasTotal}
+          note={note}
+          isAdding={isAdding}
+          isAvailable={dish.isAvailable}
+          onNoteChange={setNote}
+          onAddToCart={handleAddToCart}
+        />
       </div>
     </div>
   );

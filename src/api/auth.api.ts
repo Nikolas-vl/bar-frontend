@@ -22,7 +22,7 @@ export const authApi = {
   },
 
   me: async (): Promise<User> => {
-    const res = await apiClient.get('/user/me');
+    const res = await apiClient.get('/users/me');
     return res.data;
   },
 };
