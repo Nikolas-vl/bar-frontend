@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
-import { IconCart, IconUser } from '../../../assets/icons';
-import { useAuthStore } from '../../../store/auth.store';
-import { useUIStore } from '../../../store/ui.store';
+import { IconCart, IconUser } from '../../../../assets/icons';
+import { useAuthStore } from '../../../../store/auth.store';
+import { useUIStore } from '../../../../store/ui.store';
 
 interface DesktopActionsProps {
   onLogout: () => void; // defined once in Header, passed down

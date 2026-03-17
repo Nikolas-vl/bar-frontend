@@ -7,7 +7,7 @@ import { authApi } from '../../../api/auth.api';
 import { useAuthStore } from '../../../store/auth.store';
 import { getErrorMessage } from '../../../api/client';
 import { cn } from '../../../utils/cn';
-import { Spinner } from '../../../components/ui/Spinner';
+import { Spinner } from '../../../components/shared/ui/Spinner';
 
 const schema = z.object({
   email: z.email('Invalid email address'),

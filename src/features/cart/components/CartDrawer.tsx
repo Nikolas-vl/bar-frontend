@@ -1,4 +1,4 @@
-import { useUIStore } from '../../store/ui.store';
+import { useUIStore } from '../../../store/ui.store';
 
 export const CartDrawer = () => {
   const { isCartOpen, closeCart } = useUIStore();

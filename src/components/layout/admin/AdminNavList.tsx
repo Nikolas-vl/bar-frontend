@@ -1,5 +1,5 @@
-import { NavItem } from '../navigation/NavItem';
-import { adminNavLinks } from './adminNavLinks';
+import { NavItem } from '../../shared/navigation/NavItem';
+import { adminNavLinks } from './model/adminNavLinks';
 
 interface AdminNavListProps {
   onNavigate?: () => void;

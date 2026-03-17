@@ -1,9 +1,11 @@
 import { Navigate, useParams, Link } from 'react-router-dom';
 import { toast } from 'sonner';
 import { useDish } from '../hooks/useDish';
-import { formatPrice, cn } from '../../../utils/cn';
+import { formatPrice } from '../../../utils/cn';
 import { CATEGORY_LABEL, CATEGORY_EMOJI } from '../../../constants/category';
-import { Skeleton } from '../../../components/ui/Skeleton';
+import { Skeleton } from '../../../components/shared/ui/Skeleton';
+import { NutritionStat } from '../components/NutritionStat';
+import { IngredientChip } from '../components/IngredientChip';
 
 export default function DishPage() {
   const { id } = useParams<{ id: string }>();
@@ -114,7 +116,6 @@ function DishDetail({ id }: { id: number }) {
 
             {optionalIngredients.length > 0 && (
               <div>
-                {/* Before: style={{ color: 'var(--color-ob-text-muted)' }} → text-ob-muted */}
                 <p className='text-xs font-semibold uppercase tracking-wider mb-2 text-ob-muted'>Optional extras</p>
                 <div className='flex flex-wrap gap-2'>
                   {optionalIngredients.map(di => (
@@ -138,29 +139,4 @@ function DishDetail({ id }: { id: number }) {
   );
 }
 
-function NutritionStat({ label, value, unit, highlight }: { label: string; value: number; unit: string; highlight?: boolean }) {
-  return (
-    <div className='flex flex-col items-center gap-0.5 p-3 rounded-xl text-center bg-ob-bg'>
-      <span className={cn('font-display font-bold text-xl', highlight ? 'text-ob-caramel' : 'text-ob-text')}>
-        {Math.round(value)}
-        <span className='text-sm font-normal ml-0.5'>{unit}</span>
-      </span>
-      <span className='text-xs text-ob-muted'>{label}</span>
-    </div>
-  );
-}
 
-function IngredientChip({ name, quantity, price, optional }: { name: string; quantity: number; price?: string; optional: boolean }) {
-  return (
-    <span
-      className={cn(
-        'flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium border',
-        optional ? 'bg-ob-caramel/8 text-ob-caramel border-dashed border-ob-caramel/30' : 'bg-ob-surface border-ob-border text-ob-text',
-      )}
-    >
-      {quantity > 1 && <span className='font-bold'>×{quantity}</span>}
-      {name}
-      {optional && price && <span className='opacity-70'>+{formatPrice(price)}</span>}
-    </span>
-  );
-}

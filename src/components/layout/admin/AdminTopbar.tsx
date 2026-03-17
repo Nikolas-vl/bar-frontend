@@ -1,4 +1,4 @@
-import { Logo } from '../../ui/Logo';
+import { Logo } from '../../shared/ui/Logo';
 import { IconMenu } from '../../../assets/icons';
 
 interface AdminTopbarProps {

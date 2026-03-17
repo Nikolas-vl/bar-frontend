@@ -1,7 +1,7 @@
 import { Outlet } from 'react-router-dom';
-import { Header } from './header/Header';
-import { Footer } from './Footer';
-import { CartDrawer } from '../shared/CartDrawer';
+import { Header } from './site/Header/Header';
+import { Footer } from './site/Footer';
+import { CartDrawer } from '../../features/cart/components/CartDrawer';
 
 export const RootLayout = () => {
   return (

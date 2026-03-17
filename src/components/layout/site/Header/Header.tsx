@@ -1,8 +1,8 @@
 import { Link } from 'react-router-dom';
 import { useState } from 'react';
-import { useLogout } from '../../../hooks/useLogout';
-import { Logo } from '../../ui/Logo';
-import { IconMenu, IconClose } from '../../../assets/icons';
+import { useLogout } from '../../../../hooks/useLogout';
+import { Logo } from '../../../shared/ui/Logo';
+import { IconMenu, IconClose } from '../../../../assets/icons';
 import { DesktopNav } from './DesktopNav';
 import { DesktopActions } from './DesktopActions';
 import { MobileMenu } from './MobileMenu';

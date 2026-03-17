@@ -1,4 +1,4 @@
-import logoMainImg from '../../assets/icons/Jolie-Brasserie-Cafe-main-logo.jpg';
+import logoMainImg from '../../../assets/icons/Jolie-Brasserie-Cafe-main-logo.jpg';
 
 interface LogoProps {
   size?: 'sm' | 'md' | 'lg';

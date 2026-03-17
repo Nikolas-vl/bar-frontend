@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { authApi } from '../api/auth.api';
 import { useAuthStore } from '../store/auth.store';
-import { PageLoader } from '../components/ui/PageLoader';
+import { PageLoader } from '../components/shared/ui/PageLoader';
 
 interface Props {
   children: React.ReactNode;

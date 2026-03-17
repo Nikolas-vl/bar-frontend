@@ -1,4 +1,4 @@
-import { cn } from '../../utils/cn';
+import { cn } from '../../../utils/cn';
 
 type SpinnerVariant = 'caramel' | 'white';
 type SpinnerSize = 'sm' | 'md';

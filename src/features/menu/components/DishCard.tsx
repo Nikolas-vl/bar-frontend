@@ -20,7 +20,6 @@ export const DishCard = memo(function DishCard({ dish, className }: DishCardProp
         className,
       )}
     >
-      {/* ── Image ─────────────────────────────────────────────────────────── */}
       <div className='relative w-full aspect-4/3 bg-ob-surface overflow-hidden shrink-0'>
         {dish.imageUrl ? (
           <img src={dish.imageUrl} alt={dish.name} className='w-full h-full object-cover transition-transform duration-300 group-hover:scale-105' />
