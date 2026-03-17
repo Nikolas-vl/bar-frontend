@@ -6,6 +6,7 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import App from './App';
 import './assets/styles/index.css';
 import { AuthInitializer } from './providers/AuthInitializer';
+import { GlobalErrorBoundary } from './components/shared/error';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -20,11 +21,13 @@ const queryClient = new QueryClient({
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <QueryClientProvider client={queryClient}>
-      <AuthInitializer>
-        <App />
-      </AuthInitializer>
-      {import.meta.env.DEV && <ReactQueryDevtools initialIsOpen={false} />}
-    </QueryClientProvider>
+    <GlobalErrorBoundary>
+      <QueryClientProvider client={queryClient}>
+        <AuthInitializer>
+          <App />
+        </AuthInitializer>
+        {import.meta.env.DEV && <ReactQueryDevtools initialIsOpen={false} />}
+      </QueryClientProvider>
+    </GlobalErrorBoundary>
   </StrictMode>,
 );
