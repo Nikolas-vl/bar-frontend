@@ -1,5 +1,5 @@
-import { NavItem } from '../navigation/NavItem';
-import { useAuthStore } from '../../../store/auth.store';
+import { NavItem } from '@/components/shared/navigation/NavItem';
+import { useAuthStore } from '@/store/auth.store';
 
 export function DesktopNav() {
   const isAuthenticated = useAuthStore(s => s.isAuthenticated);
@@ -25,12 +25,7 @@ export function DesktopNav() {
 
       {role === 'ADMIN' && (
         <NavItem to='/admin' className='nav-link' activeClassName='nav-link-active'>
-          <span
-            className='px-2.5 py-1 rounded-lg text-xs font-semibold uppercase tracking-wider'
-            style={{ background: 'rgba(197,139,90,0.10)', color: 'var(--color-ob-caramel)' }}
-          >
-            Admin
-          </span>
+          <span className='px-2.5 py-1 rounded-lg text-xs font-semibold uppercase tracking-wider bg-ob-caramel/10 text-ob-caramel'>Admin</span>
         </NavItem>
       )}
     </nav>

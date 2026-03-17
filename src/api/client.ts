@@ -1,5 +1,5 @@
 import axios, { AxiosError } from 'axios';
-import { useAuthStore } from '../store/auth.store';
+import { useAuthStore } from '@/store/auth.store';
 
 export const apiClient = axios.create({
   baseURL: '/api',

@@ -1,9 +1,9 @@
 import { lazy } from 'react';
 import type { RouteObject } from 'react-router-dom';
-import { GuestRoute } from '../guards';
+import { GuestRoute } from '@/router/guards';
 
-const LoginPage = lazy(() => import('../../features/auth/pages/LoginPage'));
-const RegisterPage = lazy(() => import('../../features/auth/pages/RegisterPage'));
+const LoginPage = lazy(() => import('@/features/auth'));
+const RegisterPage = lazy(() => import('@/features/auth/pages/RegisterPage'));
 
 export const authRoutes: RouteObject[] = [
   {

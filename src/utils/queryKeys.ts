@@ -1,3 +1,5 @@
+import type { DishQuery } from '@/types';
+
 export const queryKeys = {
   // Auth
   me: ['me'] as const,
@@ -5,7 +7,7 @@ export const queryKeys = {
   // Menu
   dishes: {
     all: ['dishes'] as const,
-    list: (filters?: Record<string, unknown>) => ['dishes', 'list', filters] as const,
+    list: (filters?: DishQuery) => ['dishes', 'list', filters] as const,
     detail: (id: number) => ['dishes', id] as const,
   },
 
@@ -23,9 +25,9 @@ export const queryKeys = {
   // Orders
   orders: {
     all: ['orders'] as const,
-    mine: (filters?: Record<string, unknown>) => ['orders', 'mine', filters] as const,
+    mine: (filters?: { status?: string; page?: number; limit?: number }) => ['orders', 'mine', filters] as const,
     detail: (id: number) => ['orders', id] as const,
-    admin: (filters?: Record<string, unknown>) => ['orders', 'admin', filters] as const,
+    admin: (filters?: { status?: string; page?: number; limit?: number }) => ['orders', 'admin', filters] as const,
   },
 
   // Reservations
@@ -33,7 +35,8 @@ export const queryKeys = {
     all: ['reservations'] as const,
     mine: ['reservations', 'mine'] as const,
     detail: (id: number) => ['reservations', id] as const,
-    admin: (filters?: Record<string, unknown>) => ['reservations', 'admin', filters] as const,
+    admin: (filters?: { status?: string; date?: string; tableId?: number; page?: number; limit?: number }) =>
+      ['reservations', 'admin', filters] as const,
   },
 
   // Profile
@@ -48,7 +51,8 @@ export const queryKeys = {
   // Admin
   users: {
     all: ['users'] as const,
-    list: (filters?: Record<string, unknown>) => ['users', 'list', filters] as const,
+    list: (filters?: { search?: string; role?: string; page?: number; limit?: number }) =>
+      ['users', 'list', filters] as const,
     detail: (id: number) => ['users', id] as const,
   },
 

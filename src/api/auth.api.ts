@@ -1,5 +1,5 @@
 import { apiClient } from './client';
-import type { User, LoginInput, RegisterInput, AuthTokens } from '../types/index';
+import type { User, LoginInput, RegisterInput, AuthTokens } from '@/types';
 
 export const authApi = {
   login: async (data: LoginInput): Promise<AuthTokens & { user: User }> => {

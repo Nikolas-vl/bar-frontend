@@ -1,6 +1,6 @@
-import { NavItem } from '../navigation/NavItem';
-import { useAuthStore } from '../../../store/auth.store';
-import { IconHome, IconLogout } from '../../../assets/icons';
+import { NavItem } from '@/components/shared/navigation/NavItem';
+import { useAuthStore } from '@/store/auth.store';
+import { IconHome, IconLogout } from '@/assets/icons';
 
 interface AdminUserFooterProps {
   onLogout: () => void;

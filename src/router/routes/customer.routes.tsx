@@ -1,16 +1,16 @@
 import { lazy } from 'react';
 import type { RouteObject } from 'react-router-dom';
-import { ProtectedRoute } from '../guards';
+import { ProtectedRoute } from '@/router/guards';
 
-const CartPage = lazy(() => import('../../features/cart/pages/CartPage'));
-const CheckoutPage = lazy(() => import('../../features/orders/pages/CheckoutPage'));
-const OrdersPage = lazy(() => import('../../features/orders/pages/OrdersPage'));
-const OrderDetailPage = lazy(() => import('../../features/orders/pages/OrderDetailPage'));
-const ReservationsPage = lazy(() => import('../../features/reservations/pages/ReservationsPage'));
-const NewReservationPage = lazy(() => import('../../features/reservations/pages/NewReservationPage'));
-const ProfilePage = lazy(() => import('../../features/profile/pages/ProfilePage'));
-const AddressesPage = lazy(() => import('../../features/profile/pages/AddressesPage'));
-const PaymentMethodsPage = lazy(() => import('../../features/profile/pages/PaymentMethodsPage'));
+const CartPage = lazy(() => import('@/features/cart'));
+const CheckoutPage = lazy(() => import('@/features/orders/pages/CheckoutPage'));
+const OrdersPage = lazy(() => import('@/features/orders'));
+const OrderDetailPage = lazy(() => import('@/features/orders/pages/OrderDetailPage'));
+const ReservationsPage = lazy(() => import('@/features/reservations'));
+const NewReservationPage = lazy(() => import('@/features/reservations/pages/NewReservationPage'));
+const ProfilePage = lazy(() => import('@/features/profile'));
+const AddressesPage = lazy(() => import('@/features/profile/pages/AddressesPage'));
+const PaymentMethodsPage = lazy(() => import('@/features/profile/pages/PaymentMethodsPage'));
 
 export const customerRoutes: RouteObject[] = [
   {

@@ -1,5 +1,5 @@
-import { Logo } from '../../ui/Logo';
-import { IconClose } from '../../../assets/icons';
+import { Logo } from '@/components/shared/ui';
+import { IconClose } from '@/assets/icons';
 import { AdminNavList } from './AdminNavList';
 import { AdminUserFooter } from './AdminUserFooter';
 

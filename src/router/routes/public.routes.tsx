@@ -1,9 +1,9 @@
 import { lazy } from 'react';
 import type { RouteObject } from 'react-router-dom';
 
-const HomePage = lazy(() => import('../../features/menu/pages/HomePage'));
-const MenuPage = lazy(() => import('../../features/menu/pages/MenuPage'));
-const DishPage = lazy(() => import('../../features/menu/pages/DishPage'));
+const HomePage = lazy(() => import('@/pages/HomePage'));
+const MenuPage = lazy(() => import('@/features/menu'));
+const DishPage = lazy(() => import('@/features/menu/pages/DishPage'));
 
 export const publicRoutes: RouteObject[] = [
   { path: '/', element: <HomePage /> },

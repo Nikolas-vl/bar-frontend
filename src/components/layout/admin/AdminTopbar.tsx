@@ -1,5 +1,5 @@
-import { Logo } from '../../ui/Logo';
-import { IconMenu } from '../../../assets/icons';
+import { Logo } from '@/components/shared/ui';
+import { IconMenu } from '@/assets/icons';
 
 interface AdminTopbarProps {
   onOpenMenu: () => void;
