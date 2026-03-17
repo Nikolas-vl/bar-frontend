@@ -75,8 +75,10 @@ export interface DishQuery {
   category?: Category;
   minPrice?: number;
   maxPrice?: number;
+  minCalories?: number;
+  maxCalories?: number;
   isAvailable?: boolean;
-  sortBy?: 'name' | 'price' | 'calories';
+  sortBy?: 'name' | 'price' | 'calories' | 'protein' | 'fat' | 'carbs';
   sortOrder?: 'asc' | 'desc';
 }
 

@@ -1,4 +1,5 @@
-import { useParams, Link, useNavigate } from 'react-router-dom';
+import { Navigate, useParams, Link } from 'react-router-dom';
+import { toast } from 'sonner';
 import { useDish } from '../hooks/useDish';
 import { formatPrice } from '../../../utils/cn';
 import { CATEGORY_LABEL, CATEGORY_EMOJI } from '../../../constants/category';
@@ -6,11 +7,9 @@ import { CATEGORY_LABEL, CATEGORY_EMOJI } from '../../../constants/category';
 export default function DishPage() {
   const { id } = useParams<{ id: string }>();
   const parsedId = Number(id);
-  const navigate = useNavigate();
 
-  if (Number.isNaN(parsedId)) {
-    navigate('/menu', { replace: true });
-    return null;
+  if (Number.isNaN(parsedId) || parsedId <= 0) {
+    return <Navigate to='/menu' replace />;
   }
 
   return <DishDetail id={parsedId} />;
@@ -27,6 +26,11 @@ function DishDetail({ id }: { id: number }) {
           <div className='h-8 rounded-lg w-2/3' style={{ background: 'var(--color-ob-border)' }} />
           <div className='h-4 rounded-lg w-full' style={{ background: 'var(--color-ob-border)' }} />
           <div className='h-4 rounded-lg w-4/5' style={{ background: 'var(--color-ob-border)' }} />
+          <div className='grid grid-cols-4 gap-3'>
+            {Array.from({ length: 4 }).map((_, i) => (
+              <div key={i} className='h-16 rounded-xl' style={{ background: 'var(--color-ob-border)' }} />
+            ))}
+          </div>
         </div>
       </div>
     );
@@ -47,6 +51,10 @@ function DishDetail({ id }: { id: number }) {
 
   const requiredIngredients = dish.ingredients.filter(i => !i.optional);
   const optionalIngredients = dish.ingredients.filter(i => i.optional);
+  const handleAddToCart = () => {
+    toast.success(`${dish.name} added to cart!`);
+    // TODO (Cart sprint): useCartStore.getState().addItem({ dish, quantity: 1 })
+  };
 
   return (
     <div className='page-container py-10'>
@@ -59,7 +67,6 @@ function DishDetail({ id }: { id: number }) {
       </Link>
 
       <div className='max-w-3xl mx-auto'>
-        {/* Image */}
         <div className='w-full aspect-video rounded-2xl overflow-hidden mb-8' style={{ background: 'var(--color-ob-surface)' }}>
           {dish.imageUrl ? (
             <img src={dish.imageUrl} alt={dish.name} className='w-full h-full object-cover' />
@@ -68,7 +75,6 @@ function DishDetail({ id }: { id: number }) {
           )}
         </div>
 
-        {/* Header */}
         <div className='flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-6'>
           <div>
             <div className='flex items-center gap-2 mb-2'>
@@ -96,14 +102,13 @@ function DishDetail({ id }: { id: number }) {
           </p>
         )}
 
-        {/* Nutritional values */}
         {dish.calories !== null && (
           <div className='card p-5 mb-6'>
             <h2 className='font-display font-semibold text-sm uppercase tracking-wider mb-4' style={{ color: 'var(--color-ob-text-muted)' }}>
               Nutritional Values
             </h2>
             <div className='grid grid-cols-2 sm:grid-cols-4 gap-4'>
-              {dish.calories !== null && <NutritionStat label='Calories' value={dish.calories} unit='kcal' highlight />}
+              <NutritionStat label='Calories' value={dish.calories} unit='kcal' highlight />
               {dish.protein !== null && <NutritionStat label='Protein' value={dish.protein} unit='g' />}
               {dish.fat !== null && <NutritionStat label='Fat' value={dish.fat} unit='g' />}
               {dish.carbs !== null && <NutritionStat label='Carbs' value={dish.carbs} unit='g' />}
@@ -111,7 +116,6 @@ function DishDetail({ id }: { id: number }) {
           </div>
         )}
 
-        {/* Ingredients */}
         {dish.ingredients.length > 0 && (
           <div className='card p-5 mb-8'>
             <h2 className='font-display font-semibold text-sm uppercase tracking-wider mb-4' style={{ color: 'var(--color-ob-text-muted)' }}>
@@ -146,8 +150,21 @@ function DishDetail({ id }: { id: number }) {
           </div>
         )}
 
-        {/* Add to cart CTA */}
-        {dish.isAvailable && <button className='btn-primary w-full justify-center text-base py-3.5'>Add to Cart — {formatPrice(dish.price)}</button>}
+        {dish.isAvailable ? (
+          <button onClick={handleAddToCart} className='btn-primary w-full justify-center text-base py-3.5'>
+            Add to Cart — {formatPrice(dish.price)}
+          </button>
+        ) : (
+          <div
+            className='w-full text-center py-3.5 rounded-xl text-sm font-medium'
+            style={{
+              background: 'var(--color-ob-border)',
+              color: 'var(--color-ob-text-muted)',
+            }}
+          >
+            Currently unavailable
+          </div>
+        )}
       </div>
     </div>
   );
@@ -173,11 +190,19 @@ function IngredientChip({ name, quantity, price, optional }: { name: string; qua
       className='flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium'
       style={
         optional
-          ? { background: 'rgba(197,139,90,0.08)', color: 'var(--color-ob-caramel)', border: '1px dashed rgba(197,139,90,0.3)' }
-          : { background: 'var(--color-ob-surface)', border: '1px solid var(--color-ob-border)', color: 'var(--color-ob-text)' }
+          ? {
+              background: 'rgba(197,139,90,0.08)',
+              color: 'var(--color-ob-caramel)',
+              border: '1px dashed rgba(197,139,90,0.3)',
+            }
+          : {
+              background: 'var(--color-ob-surface)',
+              border: '1px solid var(--color-ob-border)',
+              color: 'var(--color-ob-text)',
+            }
       }
     >
-      {quantity > 1 && <span className='font-bold'>×{quantity}</span>}
+      {quantity > 1 && <span className='font-bold'>x{quantity}</span>}
       {name}
       {optional && price && <span className='opacity-70'>+{formatPrice(price)}</span>}
     </span>
