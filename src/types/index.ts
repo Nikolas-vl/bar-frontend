@@ -162,6 +162,7 @@ export interface Order {
   createdAt: string;
   items: OrderItem[];
   ingredientItems: OrderIngredientItem[];
+  payments: Payment[];
 }
 
 export interface PaginatedOrders {
@@ -221,6 +222,17 @@ export interface PaymentMethod {
   last4: string;
   expMonth: number;
   expYear: number;
+}
+
+export interface Payment {
+  id: number;
+  orderId: number;
+  userId: number;
+  amount: string;
+  status: PaymentStatus;
+  paymentMethodId: number | null;
+  createdAt: string;
+  type: PaymentType;
 }
 
 // ─── Address ───────────────────────────────────────────────────────────────
