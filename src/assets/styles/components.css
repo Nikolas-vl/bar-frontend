@@ -202,6 +202,32 @@
     box-shadow: 0 0 0 3px rgba(197, 139, 90, 0.12);
   }
 
+  /* Time input — matches .input appearance + caramel clock icon */
+  .time-input-themed {
+    @apply px-3 py-2 rounded-xl text-sm w-full transition-all duration-200 focus:outline-none;
+    background-color: var(--color-ob-surface);
+    border: 1.5px solid var(--color-ob-border);
+    color: var(--color-ob-text);
+    font-family: var(--font-body);
+  }
+  
+  .time-input-themed:focus {
+    border-color: var(--color-ob-caramel);
+    box-shadow: 0 0 0 3px rgba(197, 139, 90, 0.12);
+  }
+  
+  /* Tint the browser clock icon to caramel */
+  .time-input-themed::-webkit-calendar-picker-indicator {
+    opacity: 0.6;
+    cursor: pointer;
+    filter: invert(60%) sepia(40%) saturate(500%) hue-rotate(340deg) brightness(90%);
+    transition: opacity 0.15s;
+  }
+  
+  .time-input-themed::-webkit-calendar-picker-indicator:hover {
+    opacity: 1;
+  }
+
   /* ─────────────────────────────────────────────
      CARDS
   ───────────────────────────────────────────── */
@@ -463,4 +489,24 @@
     @apply flex-1 h-px;
     background-color: var(--color-ob-border);
   }
+
+  /* ─────────────────────────────────────────────
+     DATETIME-LOCAL & SELECT
+  ───────────────────────────────────────────── */
+  
+  /* datetime-local — override the browser calendar icon tint */
+  .datetime-local-themed::-webkit-calendar-picker-indicator {
+    filter: invert(60%) sepia(40%) saturate(500%) hue-rotate(340deg) brightness(90%);
+    cursor: pointer;
+    opacity: 0.7;
+    transition: opacity 0.15s;
+  }
+  
+  .datetime-local-themed::-webkit-calendar-picker-indicator:hover {
+    opacity: 1;
+  }
+  
+  /* select — remove default OS arrow, add caramel focus ring (already in .select)
+     The .select class in components.css handles the styled dropdown arrow.
+     No extra CSS needed — just ensure PreOrderSelector uses className='select'. */
 }
