@@ -11,7 +11,9 @@ interface ReservationCardProps {
   reservation: Reservation;
 }
 
-// ─── Status banners ────────────────────────────────────────────────────────
+function mapsUrl(address: string) {
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
+}
 
 function PendingBanner({ hasTable }: { hasTable: boolean }) {
   return (
@@ -29,22 +31,17 @@ function PendingBanner({ hasTable }: { hasTable: boolean }) {
   );
 }
 
-function ConfirmedBanner({ email }: { email?: string }) {
+function ConfirmedBanner() {
   return (
     <div className='rounded-xl bg-ob-success/10 border border-ob-success/30 px-4 py-3 flex gap-3'>
       <span className='text-lg shrink-0'>✅</span>
       <div className='flex flex-col gap-0.5'>
         <p className='text-sm font-semibold text-ob-text'>Reservation confirmed</p>
-        <p className='text-xs text-ob-muted leading-relaxed'>
-          Your table is reserved and ready.
-          {email ? ` A confirmation email has been sent to ${email}.` : ' Check your email for full details.'}
-        </p>
+        <p className='text-xs text-ob-muted leading-relaxed'>Your table is reserved and ready. Check your email for full details and directions.</p>
       </div>
     </div>
   );
 }
-
-// ─── Component ─────────────────────────────────────────────────────────────
 
 export function ReservationCard({ reservation }: ReservationCardProps) {
   const { mutate: cancel, isPending } = useCancelReservation();
@@ -57,6 +54,8 @@ export function ReservationCard({ reservation }: ReservationCardProps) {
       onError: err => toast.error(getErrorMessage(err)),
     });
   };
+
+  const loc = reservation.table?.location;
 
   return (
     <div className='card p-5 flex flex-col gap-4'>
@@ -72,24 +71,35 @@ export function ReservationCard({ reservation }: ReservationCardProps) {
         <ReservationStatusBadge status={reservation.status} />
       </div>
 
-      {/* Table & location — only shown when assigned */}
-      {reservation.table ? (
-        <div className='flex flex-wrap items-center gap-x-2 gap-y-1 text-sm'>
-          <span className='text-ob-muted'>📍</span>
-          <span className='font-medium text-ob-text'>{reservation.table.location.name}</span>
-          <span className='text-ob-border'>·</span>
-          <span className='text-ob-muted'>{reservation.table.location.address}</span>
-          <span className='text-ob-border'>·</span>
-          <span className='text-ob-muted'>Table #{reservation.table.number}</span>
-          <span className='text-ob-border'>·</span>
-          <span className='text-ob-muted'>🕐 {reservation.table.location.openingHours}</span>
+      {/* Location row */}
+      {loc ? (
+        <div className='flex flex-wrap items-start gap-x-3 gap-y-1 text-sm'>
+          <div className='flex items-center gap-1.5'>
+            <span>📍</span>
+            <span className='font-medium text-ob-text'>{loc.name}</span>
+            <span className='text-ob-border mx-0.5'>·</span>
+            {/* Address → clickable Google Maps link */}
+            <a
+              href={mapsUrl(loc.address)}
+              target='_blank'
+              rel='noopener noreferrer'
+              className='text-ob-caramel underline underline-offset-2 hover:text-ob-wood transition-colors'
+            >
+              {loc.address}
+            </a>
+          </div>
+          <div className='flex items-center gap-1.5 text-ob-muted'>
+            <span>🪑 Table #{reservation.table!.number}</span>
+            <span className='text-ob-border mx-0.5'>·</span>
+            <span>🕐 {loc.openingHours}</span>
+          </div>
         </div>
       ) : reservation.status === 'PENDING' ? (
         <p className='text-xs text-ob-muted'>📍 Location &amp; table will be assigned upon confirmation</p>
       ) : null}
 
       {/* Status banners */}
-      {reservation.status === 'PENDING' && <PendingBanner hasTable={!!reservation.table} />}
+      {reservation.status === 'PENDING' && <PendingBanner hasTable={!!loc} />}
       {reservation.status === 'CONFIRMED' && <ConfirmedBanner />}
 
       {/* Comment */}
@@ -104,7 +114,7 @@ export function ReservationCard({ reservation }: ReservationCardProps) {
               <div key={po.id} className='flex items-center justify-between text-sm'>
                 <span className='text-ob-text'>{po.dish.name}</span>
                 <div className='flex items-center gap-3'>
-                  <span className='text-ob-muted'>x{po.quantity}</span>
+                  <span className='text-ob-muted'>×{po.quantity}</span>
                   <span className='font-semibold text-ob-caramel'>{formatPrice((parseFloat(po.dish.price) * po.quantity).toFixed(2))}</span>
                 </div>
               </div>
@@ -124,14 +134,14 @@ export function ReservationCard({ reservation }: ReservationCardProps) {
         </button>
       )}
 
-      {/* Canceled notice */}
+      {/* Canceled */}
       {reservation.status === 'CANCELED' && (
         <div className='rounded-xl bg-ob-border/30 px-4 py-3 flex gap-3'>
           <span className='text-lg shrink-0'>❌</span>
           <p className='text-xs text-ob-muted leading-relaxed'>
-            This reservation has been canceled. If you need a table,{' '}
+            This reservation has been canceled.{' '}
             <a href='/reservations/new' className='underline text-ob-caramel'>
-              make a new booking
+              Make a new booking
             </a>
             .
           </p>
