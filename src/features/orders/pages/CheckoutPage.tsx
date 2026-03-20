@@ -1,8 +1,9 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { toast } from 'sonner';
 import { useCart } from '@/features/cart/hooks/useCart';
 import { usePaymentMethods } from '@/features/payments/hooks/usePaymentMethods';
+import { useAddresses } from '@/features/addresses/hooks/useAddresses';
 import { useCreateOrder } from '../hooks/useCreateOrder';
 import { usePayOrder } from '../hooks/usePayOrder';
 import { useSettings } from '@/features/settings/hooks/useSettings';
@@ -10,6 +11,7 @@ import { hasUnavailableItems, calcCartSubtotal } from '@/features/cart/utils/car
 import { calcFinalTotalClient } from '@/utils/pricingClient';
 import { OrderTypeSelector } from '../components/checkout/OrderTypeSelector';
 import { PaymentMethodSelector } from '../components/checkout/PaymentMethodSelector';
+import { AddressSelector } from '../components/checkout/AddressSelector';
 import { CartSummary } from '../components/checkout/CartSummary';
 import { PriceBreakdown } from '../components/checkout/PriceBreakdown';
 import { Spinner } from '@/components/shared/ui';
@@ -21,6 +23,7 @@ export default function CheckoutPage() {
   const navigate = useNavigate();
   const { data: cart, isLoading: cartLoading } = useCart();
   const { data: savedCards = [] } = usePaymentMethods();
+  const { data: addresses = [] } = useAddresses();
   const { data: settings } = useSettings();
   const { mutateAsync: createOrder } = useCreateOrder();
   const { mutateAsync: payOrder } = usePayOrder();
@@ -28,33 +31,48 @@ export default function CheckoutPage() {
   const [orderType, setOrderType] = useState<OrderType>('DINE_IN');
   const [paymentType, setPaymentType] = useState<PaymentType>('CASH');
   const [paymentMethodId, setPaymentMethodId] = useState<number | null>(null);
+  const [addressId, setAddressId] = useState<number | null>(null);
   const [comment, setComment] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Must check BOTH arrays — ingredient-only cart is still a valid cart
+  useEffect(() => {
+    if (savedCards.length === 0) return;
+    setPaymentMethodId(prev => {
+      if (prev !== null) return prev;
+      return savedCards.find(c => c.isDefault)?.id ?? savedCards[0].id;
+    });
+  }, [savedCards]);
+
+  useEffect(() => {
+    if (addresses.length === 0) return;
+    setAddressId(prev => {
+      if (prev !== null) return prev;
+      return addresses.find(a => a.isDefault)?.id ?? addresses[0].id;
+    });
+  }, [addresses]);
+
   const isEmpty = !cart || (cart.items.length === 0 && (cart.ingredientItems ?? []).length === 0);
   const blocked = hasUnavailableItems(cart);
   const cardRequired = paymentType === 'CARD' && !paymentMethodId;
+  const addressRequired = orderType === 'DELIVERY' && !addressId;
 
-  // ── Live price breakdown — recalculates when orderType or cart changes ───
   const breakdown = useMemo(() => {
     if (!cart || !settings) return null;
     const subtotal = calcCartSubtotal(cart);
     return calcFinalTotalClient(subtotal, settings, orderType);
   }, [cart, settings, orderType]);
 
-  // taxRate from backend is a decimal (0.23 → 23%)
   const taxRatePercent = settings ? parseFloat(settings.taxRate) * 100 : 23;
 
-  // ── Submit ───────────────────────────────────────────────────────────────
   const handleSubmit = async () => {
-    if (isEmpty || blocked || cardRequired) return;
+    if (isEmpty || blocked || cardRequired || addressRequired) return;
     setIsSubmitting(true);
     try {
       const order = await createOrder({
         type: orderType,
         comment: comment.trim() || undefined,
         discountPercent: 0,
+        addressId: orderType === 'DELIVERY' && addressId ? addressId : undefined,
       });
 
       const result = await payOrder({
@@ -76,7 +94,6 @@ export default function CheckoutPage() {
     }
   };
 
-  // ── Loading / empty states ───────────────────────────────────────────────
   if (cartLoading) {
     return (
       <div className='page-container py-16 flex justify-center'>
@@ -105,7 +122,6 @@ export default function CheckoutPage() {
       <h1 className='font-display text-3xl font-semibold mb-8 text-ob-text'>Checkout</h1>
 
       <div className='grid grid-cols-1 lg:grid-cols-5 gap-8'>
-        {/* ── Left column — order options ── */}
         <div className='lg:col-span-3 flex flex-col gap-6'>
           {/* Order type */}
           <div className='card p-5'>
@@ -113,16 +129,41 @@ export default function CheckoutPage() {
             <OrderTypeSelector value={orderType} onChange={setOrderType} />
           </div>
 
+          {/* Delivery address — only for DELIVERY */}
+          {orderType === 'DELIVERY' && (
+            <div className='card p-5'>
+              <div className='flex items-center justify-between mb-4'>
+                <h2 className='font-display font-semibold text-sm uppercase tracking-wider text-ob-muted'>Delivery Address</h2>
+                <Link to='/profile/addresses' className='text-xs font-medium text-ob-caramel hover:underline'>
+                  Manage addresses →
+                </Link>
+              </div>
+              <AddressSelector addresses={addresses} selectedId={addressId} onChange={setAddressId} />
+              {addressRequired && <p className='text-xs text-ob-error mt-2'>Please select a delivery address.</p>}
+            </div>
+          )}
+
           {/* Payment */}
           <div className='card p-5'>
-            <h2 className='font-display font-semibold text-sm uppercase tracking-wider mb-4 text-ob-muted'>Payment</h2>
+            <div className='flex items-center justify-between mb-4'>
+              <h2 className='font-display font-semibold text-sm uppercase tracking-wider text-ob-muted'>Payment</h2>
+              {paymentType === 'CARD' && (
+                <Link to='/profile/payments' className='text-xs font-medium text-ob-caramel hover:underline'>
+                  Manage cards →
+                </Link>
+              )}
+            </div>
             <PaymentMethodSelector
               paymentType={paymentType}
               paymentMethodId={paymentMethodId}
               savedCards={savedCards}
               onTypeChange={t => {
                 setPaymentType(t);
-                setPaymentMethodId(null);
+                if (t !== 'CARD') setPaymentMethodId(null);
+                else {
+                  const def = savedCards.find(c => c.isDefault) ?? savedCards[0];
+                  setPaymentMethodId(def?.id ?? null);
+                }
               }}
               onCardChange={setPaymentMethodId}
             />
@@ -143,16 +184,14 @@ export default function CheckoutPage() {
           </div>
         </div>
 
-        {/* ── Right column — order summary ── */}
+        {/* Right column */}
         <div className='lg:col-span-2'>
           <div className='card p-5 sticky top-24 flex flex-col gap-5'>
-            {/* Cart items */}
             <div>
               <h2 className='font-display font-semibold text-sm uppercase tracking-wider mb-4 text-ob-muted'>Order Summary</h2>
               <CartSummary cart={cart} />
             </div>
 
-            {/* Unavailable warning */}
             {blocked && (
               <div className='rounded-xl bg-amber-50 border border-amber-200 px-4 py-3'>
                 <p className='text-xs text-amber-700 font-semibold'>⚠️ Unavailable items in cart</p>
@@ -160,7 +199,6 @@ export default function CheckoutPage() {
               </div>
             )}
 
-            {/* Price breakdown */}
             <div className='border-t border-ob-border pt-4'>
               {breakdown ? (
                 <PriceBreakdown breakdown={breakdown} orderType={orderType} taxRatePercent={taxRatePercent} />
@@ -171,10 +209,9 @@ export default function CheckoutPage() {
               )}
             </div>
 
-            {/* Place Order button — total comes from breakdown, not re-calculated */}
             <button
               onClick={handleSubmit}
-              disabled={isSubmitting || blocked || cardRequired || !breakdown}
+              disabled={isSubmitting || blocked || cardRequired || addressRequired || !breakdown}
               className='btn-primary w-full justify-center'
             >
               {isSubmitting ? (

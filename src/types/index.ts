@@ -6,6 +6,7 @@ export interface User {
   id: number;
   email: string;
   name: string | null;
+  phone: string | null;
   role: UserRole;
 }
 
@@ -21,6 +22,7 @@ export interface LoginInput {
 export interface RegisterInput {
   email: string;
   password: string;
+  phone: string;
   name?: string;
 }
 
@@ -146,6 +148,26 @@ export interface OrderIngredientItem {
   ingredient: Ingredient;
 }
 
+export interface PaymentMethodSummary {
+  id: number;
+  cardType: string;
+  last4: string;
+  expMonth: number;
+  expYear: number;
+}
+
+export interface Payment {
+  id: number;
+  orderId: number;
+  userId: number;
+  amount: string;
+  status: PaymentStatus;
+  paymentMethodId: number | null;
+  paymentMethod: PaymentMethodSummary | null;
+  createdAt: string;
+  type: PaymentType;
+}
+
 export interface Order {
   id: number;
   userId: number;
@@ -160,6 +182,7 @@ export interface Order {
   paymentStatus: PaymentStatus;
   comment: string | null;
   createdAt: string;
+  address: Address | null;
   items: OrderItem[];
   ingredientItems: OrderIngredientItem[];
   payments: Payment[];
@@ -222,27 +245,19 @@ export interface PaymentMethod {
   last4: string;
   expMonth: number;
   expYear: number;
-}
-
-export interface Payment {
-  id: number;
-  orderId: number;
-  userId: number;
-  amount: string;
-  status: PaymentStatus;
-  paymentMethodId: number | null;
-  createdAt: string;
-  type: PaymentType;
+  isDefault: boolean;
+  isArchived: boolean;
 }
 
 // ─── Address ───────────────────────────────────────────────────────────────
 
 export interface Address {
   id: number;
+  userId: number;
   city: string;
   street: string;
   zip: string;
-  phone: string;
+  isDefault: boolean;
 }
 
 // ─── Settings ──────────────────────────────────────────────────────────────

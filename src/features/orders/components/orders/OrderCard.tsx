@@ -10,6 +10,12 @@ const TYPE_ICON: Record<string, string> = {
   TAKE_OUT: '🥡',
 };
 
+const TYPE_LABEL: Record<string, string> = {
+  DINE_IN: 'Dine In',
+  DELIVERY: 'Delivery',
+  TAKE_OUT: 'Take Out',
+};
+
 interface OrderCardProps {
   order: Order;
 }
@@ -20,14 +26,15 @@ export function OrderCard({ order }: OrderCardProps) {
       to={`/orders/${order.id}`}
       className='card p-5 flex flex-col sm:flex-row sm:items-center gap-4 hover:shadow-[0_8px_32px_rgba(47,47,47,0.10)] hover:-translate-y-0.5 transition-all duration-200'
     >
-      <div className='flex-1 min-w-0'>
-        <div className='flex items-center gap-2 mb-1'>
-          <span className='text-lg'>{TYPE_ICON[order.type]}</span>
+      <div className='flex-1 min-w-0 flex flex-col gap-1.5'>
+        <div className='flex items-center gap-2 flex-wrap'>
+          <span className='text-lg leading-none'>{TYPE_ICON[order.type]}</span>
           <span className='font-display font-semibold text-ob-text'>Order #{order.id}</span>
+          <span className='text-xs text-ob-muted font-medium'>{TYPE_LABEL[order.type]}</span>
           <OrderStatusBadge status={order.status} />
         </div>
 
-        <p className='text-xs text-ob-muted mb-2'>{format(new Date(order.createdAt), 'MMM d, yyyy · HH:mm')}</p>
+        <p className='text-xs text-ob-muted'>{format(new Date(order.createdAt), 'MMM d, yyyy · HH:mm')}</p>
 
         <p className='text-xs text-ob-muted truncate'>{order.items.map(i => `${i.dish.name} ×${i.quantity}`).join(', ')}</p>
       </div>

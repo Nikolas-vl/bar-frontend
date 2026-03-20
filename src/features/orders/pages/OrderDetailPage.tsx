@@ -22,6 +22,12 @@ const PAYMENT_TYPE_LABEL: Record<PaymentType, string> = {
   CARD: '💳 Card',
 };
 
+const CARD_ICON: Record<string, string> = {
+  Visa: '🟦',
+  Mastercard: '🔴',
+  Amex: '🟩',
+};
+
 const CANCELABLE_STATUSES: OrderStatus[] = ['NEW', 'PAID'];
 
 export default function OrderDetailPage() {
@@ -59,9 +65,10 @@ export default function OrderDetailPage() {
     });
   };
 
-  const latestPayment = order.payments.at(-1);
+  const latestPayment = order.payments[0];
   const wasPaid = order.paymentStatus === 'SUCCESS';
   const isCancelable = CANCELABLE_STATUSES.includes(order.status);
+  const isDelivery = order.type === 'DELIVERY';
 
   return (
     <div className='page-container py-10'>
@@ -70,7 +77,6 @@ export default function OrderDetailPage() {
       </Link>
 
       <div className='max-w-2xl mx-auto flex flex-col gap-5'>
-        {/* ── Canceled notice ──────────────────────────── */}
         {order.status === 'CANCELED' && (
           <div className={`rounded-2xl px-5 py-4 border ${wasPaid ? 'bg-blue-50 border-blue-200' : 'bg-ob-border/30 border-ob-border'}`}>
             <p className={`text-sm font-semibold mb-1 ${wasPaid ? 'text-blue-700' : 'text-ob-muted'}`}>
@@ -84,7 +90,6 @@ export default function OrderDetailPage() {
           </div>
         )}
 
-        {/* ── Header card ─────────────────────────────── */}
         <div className='card p-5'>
           <div className='flex items-start justify-between gap-4 mb-4'>
             <div>
@@ -108,20 +113,80 @@ export default function OrderDetailPage() {
             ))}
           </div>
 
+          {isDelivery && (
+            <div className='mt-3 flex justify-between text-xs text-ob-muted border-t border-ob-border pt-3'>
+              <span>Delivery fee</span>
+              <span className='font-medium'>
+                {parseFloat(order.deliveryFee) === 0 ? <span className='text-ob-success'>Free 🎉</span> : formatPrice(order.deliveryFee)}
+              </span>
+            </div>
+          )}
+
           {order.comment && <p className='mt-4 text-sm text-ob-muted italic border-t border-ob-border pt-3'>"{order.comment}"</p>}
         </div>
 
-        {/* ── Payment card ─────────────────────────────── */}
+        {isDelivery && (
+          <div className='card p-5'>
+            <h2 className='font-display font-semibold text-sm uppercase tracking-wider mb-4 text-ob-muted'>Delivery Address</h2>
+
+            {order.address ? (
+              <div className='flex items-start gap-3'>
+                <div className='w-10 h-10 rounded-xl bg-ob-blue flex items-center justify-center text-xl shrink-0'>📍</div>
+                <div>
+                  <p className='font-medium text-sm text-ob-text'>{order.address.street}</p>
+                  <p className='text-xs text-ob-muted mt-0.5'>
+                    {order.address.zip} {order.address.city}
+                  </p>
+                  <a
+                    href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+                      `${order.address.street}, ${order.address.zip} ${order.address.city}`,
+                    )}`}
+                    target='_blank'
+                    rel='noopener noreferrer'
+                    className='text-xs text-ob-caramel underline underline-offset-2 hover:text-ob-wood transition-colors mt-1 inline-block'
+                  >
+                    Open in Maps →
+                  </a>
+                </div>
+              </div>
+            ) : (
+              <p className='text-sm text-ob-muted italic'>No address recorded for this order.</p>
+            )}
+          </div>
+        )}
+
         <div className='card p-5'>
           <h2 className='font-display font-semibold text-sm uppercase tracking-wider mb-4 text-ob-muted'>Payment</h2>
 
           {latestPayment ? (
             <>
               <div className='flex items-center justify-between'>
-                <div className='flex flex-col gap-1'>
-                  <span className='text-sm font-medium text-ob-text'>{PAYMENT_TYPE_LABEL[latestPayment.type]}</span>
-                  <span className='text-xs text-ob-muted'>{format(new Date(latestPayment.createdAt), 'MMM d, yyyy · HH:mm')}</span>
+                <div className='flex items-center gap-3'>
+                  <div className='w-10 h-10 rounded-xl bg-ob-blue flex items-center justify-center text-xl shrink-0'>
+                    {latestPayment.type === 'CARD' && latestPayment.paymentMethod
+                      ? (CARD_ICON[latestPayment.paymentMethod.cardType] ?? '💳')
+                      : latestPayment.type === 'BLIK'
+                        ? '📱'
+                        : '💵'}
+                  </div>
+
+                  <div className='flex flex-col gap-0.5'>
+                    {latestPayment.type === 'CARD' && latestPayment.paymentMethod ? (
+                      <>
+                        <span className='text-sm font-medium text-ob-text'>
+                          {latestPayment.paymentMethod.cardType} ••••{latestPayment.paymentMethod.last4}
+                        </span>
+                        <span className='text-xs text-ob-muted'>
+                          Expires {String(latestPayment.paymentMethod.expMonth).padStart(2, '0')}/{latestPayment.paymentMethod.expYear}
+                        </span>
+                      </>
+                    ) : (
+                      <span className='text-sm font-medium text-ob-text'>{PAYMENT_TYPE_LABEL[latestPayment.type]}</span>
+                    )}
+                    <span className='text-xs text-ob-muted'>{format(new Date(latestPayment.createdAt), 'MMM d, yyyy · HH:mm')}</span>
+                  </div>
                 </div>
+
                 <div className='flex flex-col items-end gap-1.5'>
                   <PaymentStatusBadge status={latestPayment.status} type={latestPayment.type} />
                   <span className='text-sm font-semibold text-ob-caramel'>{formatPrice(latestPayment.amount)}</span>
@@ -148,7 +213,6 @@ export default function OrderDetailPage() {
           )}
         </div>
 
-        {/* ── Dish items ───────────────────────────────── */}
         {order.items.length > 0 && (
           <div className='card p-5'>
             <h2 className='font-display font-semibold text-sm uppercase tracking-wider mb-4 text-ob-muted'>Items</h2>
@@ -165,7 +229,6 @@ export default function OrderDetailPage() {
                   </div>
                   <div className='text-right shrink-0'>
                     <p className='text-xs text-ob-muted'>×{item.quantity}</p>
-                    {/* ✅ shared util — no local duplicate */}
                     <p className='text-sm font-semibold text-ob-caramel'>{formatPrice(calcOrderItemTotal(item).toFixed(2))}</p>
                   </div>
                 </div>
@@ -174,7 +237,6 @@ export default function OrderDetailPage() {
           </div>
         )}
 
-        {/* ── Ingredient-only items ────────────────────── */}
         {order.ingredientItems.length > 0 && (
           <div className='card p-5'>
             <h2 className='font-display font-semibold text-sm uppercase tracking-wider mb-4 text-ob-muted'>Extra Ingredients</h2>
@@ -191,7 +253,6 @@ export default function OrderDetailPage() {
           </div>
         )}
 
-        {/* ── Actions ──────────────────────────────────── */}
         {isCancelable && (
           <button
             onClick={handleCancel}
