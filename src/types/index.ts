@@ -6,6 +6,7 @@ export interface User {
   id: number;
   email: string;
   name: string | null;
+  phone: string | null;
   role: UserRole;
 }
 
@@ -21,6 +22,7 @@ export interface LoginInput {
 export interface RegisterInput {
   email: string;
   password: string;
+  phone: string;
   name?: string;
 }
 
@@ -241,10 +243,10 @@ export interface Payment {
 
 export interface Address {
   id: number;
+  userId: number;
   city: string;
   street: string;
   zip: string;
-  phone: string;
   isDefault: boolean;
 }
 
