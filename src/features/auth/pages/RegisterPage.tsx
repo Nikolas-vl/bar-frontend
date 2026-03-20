@@ -13,6 +13,10 @@ const schema = z
   .object({
     name: z.string().min(1, 'Name is required'),
     email: z.email('Invalid email address'),
+    phone: z
+      .string()
+      .min(1, 'Phone number is required')
+      .regex(/^\+?[0-9\s\-().]{7,20}$/, 'Invalid phone number'),
     password: z.string().min(6, 'Password must be at least 6 characters'),
     confirmPassword: z.string(),
   })
@@ -38,10 +42,11 @@ export default function RegisterPage() {
       const { accessToken, user } = await authApi.register({
         name: data.name,
         email: data.email,
+        phone: data.phone,
         password: data.password,
       });
       setAuth(user, accessToken);
-      toast.success(`Welcome to Jolie, ${user.name}!`);
+      toast.success(`Welcome to Jolie, ${user.name}! ☕`);
       navigate('/', { replace: true });
     } catch (err) {
       toast.error(getErrorMessage(err));
@@ -56,7 +61,7 @@ export default function RegisterPage() {
             <span className='text-2xl'>🍽️</span>
           </div>
           <h1 className='font-display text-3xl font-semibold mb-2 text-ob-text'>Create account</h1>
-          <p className='text-sm text-ob-muted'>Join OceanBar and start ordering</p>
+          <p className='text-sm text-ob-muted'>Join Jolie and start ordering</p>
         </div>
 
         <div className='card p-7'>
@@ -77,6 +82,18 @@ export default function RegisterPage() {
                 autoComplete='email'
               />
               {errors.email && <p className='field-error'>{errors.email.message}</p>}
+            </div>
+
+            <div>
+              <label className='label'>Phone number</label>
+              <input
+                {...register('phone')}
+                type='tel'
+                placeholder='+48 123 456 789'
+                className={cn('input', errors.phone && 'input-error')}
+                autoComplete='tel'
+              />
+              {errors.phone && <p className='field-error'>{errors.phone.message}</p>}
             </div>
 
             <div>

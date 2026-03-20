@@ -8,8 +8,15 @@ import { cn } from '@/utils/cn';
 import { Spinner } from '@/components/shared/ui';
 import type { User } from '@/types';
 
-const nameSchema = z.object({ name: z.string().min(1, 'Name is required') });
-type NameFormData = z.infer<typeof nameSchema>;
+const editProfileSchema = z.object({
+  name: z.string().min(1, 'Name is required'),
+  phone: z
+    .string()
+    .min(1, 'Phone number is required')
+    .regex(/^\+?[0-9\s\-().]{7,20}$/, 'Invalid phone number'),
+});
+
+type EditProfileData = z.infer<typeof editProfileSchema>;
 
 interface EditNameFormProps {
   user: User;
@@ -22,15 +29,18 @@ export function EditNameForm({ user }: EditNameFormProps) {
     register,
     handleSubmit,
     formState: { errors, isDirty },
-  } = useForm<NameFormData>({
-    resolver: zodResolver(nameSchema),
-    defaultValues: { name: user.name ?? '' },
+  } = useForm<EditProfileData>({
+    resolver: zodResolver(editProfileSchema),
+    defaultValues: {
+      name: user.name ?? '',
+      phone: user.phone ?? '',
+    },
   });
 
-  const onSubmit = async (data: NameFormData) => {
+  const onSubmit = async (data: EditProfileData) => {
     try {
-      await mutateAsync({ name: data.name });
-      toast.success('Name updated');
+      await mutateAsync({ name: data.name, phone: data.phone });
+      toast.success('Profile updated');
     } catch (err) {
       toast.error(getErrorMessage(err));
     }
@@ -40,17 +50,39 @@ export function EditNameForm({ user }: EditNameFormProps) {
     <form onSubmit={handleSubmit(onSubmit)} className='flex flex-col gap-4'>
       <div>
         <label className='label'>Full name</label>
-        <input {...register('name')} placeholder='Your name' className={cn('input', errors.name && 'input-error')} />
+        <input {...register('name')} placeholder='Your name' className={cn('input', errors.name && 'input-error')} autoComplete='name' />
         {errors.name && <p className='field-error'>{errors.name.message}</p>}
       </div>
+
       <div>
         <label className='label'>Email address</label>
         <input value={user.email} disabled className='input opacity-60 cursor-not-allowed' />
         <p className='mt-1 text-xs text-ob-muted'>Email cannot be changed.</p>
       </div>
+
+      <div>
+        <label className='label'>Phone number</label>
+        <input
+          {...register('phone')}
+          type='tel'
+          placeholder='+48 123 456 789'
+          className={cn('input', errors.phone && 'input-error')}
+          autoComplete='tel'
+        />
+        {errors.phone && <p className='field-error'>{errors.phone.message}</p>}
+        <p className='mt-1 text-xs text-ob-muted'>Used for order and reservation contact.</p>
+      </div>
+
       <div className='flex justify-end'>
         <button type='submit' disabled={isPending || !isDirty} className='btn-primary disabled:opacity-50'>
-          {isPending ? <Spinner variant='white' /> : 'Save changes'}
+          {isPending ? (
+            <span className='flex items-center gap-2'>
+              <Spinner variant='white' />
+              Saving…
+            </span>
+          ) : (
+            'Save changes'
+          )}
         </button>
       </div>
     </form>
@@ -103,31 +135,41 @@ export function ChangePasswordForm() {
         />
         {errors.currentPassword && <p className='field-error'>{errors.currentPassword.message}</p>}
       </div>
+
       <div>
         <label className='label'>New password</label>
         <input
           {...register('password')}
           type='password'
-          placeholder='••••••••'
+          placeholder='At least 6 characters'
           className={cn('input', errors.password && 'input-error')}
           autoComplete='new-password'
         />
         {errors.password && <p className='field-error'>{errors.password.message}</p>}
       </div>
+
       <div>
         <label className='label'>Confirm new password</label>
         <input
           {...register('confirmPassword')}
           type='password'
-          placeholder='••••••••'
+          placeholder='Repeat new password'
           className={cn('input', errors.confirmPassword && 'input-error')}
           autoComplete='new-password'
         />
         {errors.confirmPassword && <p className='field-error'>{errors.confirmPassword.message}</p>}
       </div>
+
       <div className='flex justify-end'>
         <button type='submit' disabled={isPending} className='btn-primary'>
-          {isPending ? <Spinner variant='white' /> : 'Update password'}
+          {isPending ? (
+            <span className='flex items-center gap-2'>
+              <Spinner variant='white' />
+              Updating…
+            </span>
+          ) : (
+            'Change password'
+          )}
         </button>
       </div>
     </form>

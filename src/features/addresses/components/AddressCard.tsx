@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { toast } from 'sonner';
+import { cn } from '@/utils/cn';
 import { AddressForm, type AddressFormData } from './AddressForm';
 import { useUpdateAddress, useDeleteAddress, useSetDefaultAddress } from '../hooks/useAddresses';
 import { getErrorMessage } from '@/api/client';
-import { cn } from '@/utils/cn';
 import type { Address } from '@/types';
 
 interface AddressCardProps {
@@ -13,10 +13,10 @@ interface AddressCardProps {
 export function AddressCard({ address }: AddressCardProps) {
   const [isEditing, setIsEditing] = useState(false);
   const { mutateAsync: update, isPending: isUpdating } = useUpdateAddress();
-  const { mutate: remove, isPending: isDeleting } = useDeleteAddress();
+  const { mutate: remove, isPending: isRemoving } = useDeleteAddress();
   const { mutate: setDefault, isPending: isSettingDefault } = useSetDefaultAddress();
 
-  const isPending = isUpdating || isDeleting || isSettingDefault;
+  const isPending = isUpdating || isRemoving || isSettingDefault;
 
   const handleUpdate = async (data: AddressFormData) => {
     try {
@@ -47,7 +47,7 @@ export function AddressCard({ address }: AddressCardProps) {
       <div className='card p-5'>
         <h3 className='font-semibold text-sm text-ob-text mb-4'>Edit Address</h3>
         <AddressForm
-          defaultValues={address}
+          defaultValues={{ city: address.city, street: address.street, zip: address.zip }}
           onSubmit={handleUpdate}
           onCancel={() => setIsEditing(false)}
           isPending={isUpdating}
@@ -61,6 +61,7 @@ export function AddressCard({ address }: AddressCardProps) {
     <div
       className={cn('card p-5 flex items-start justify-between gap-4 transition-all', address.isDefault && 'border-ob-caramel/40 bg-ob-caramel/3')}
     >
+      {/* Info */}
       <div className='flex items-start gap-3'>
         <span className='text-xl shrink-0 mt-0.5'>📍</span>
         <div>
@@ -76,6 +77,7 @@ export function AddressCard({ address }: AddressCardProps) {
         </div>
       </div>
 
+      {/* Actions */}
       <div className='flex items-center gap-1 shrink-0'>
         {!address.isDefault && (
           <button
@@ -94,7 +96,7 @@ export function AddressCard({ address }: AddressCardProps) {
           disabled={isPending}
           className='text-xs px-3 py-1.5 rounded-xl transition-colors text-ob-error hover:bg-ob-error/8 font-medium disabled:opacity-40'
         >
-          {isDeleting ? '…' : 'Delete'}
+          {isRemoving ? '…' : 'Remove'}
         </button>
       </div>
     </div>
