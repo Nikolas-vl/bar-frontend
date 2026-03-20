@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { toast } from 'sonner';
 import { useCart } from '@/features/cart/hooks/useCart';
@@ -31,22 +31,26 @@ export default function CheckoutPage() {
   const [comment, setComment] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Must check BOTH arrays — ingredient-only cart is still a valid cart
+  useEffect(() => {
+    if (savedCards.length === 0) return;
+    setPaymentMethodId(prev => {
+      if (prev !== null) return prev;
+      return savedCards.find(c => c.isDefault)?.id ?? savedCards[0].id;
+    });
+  }, [savedCards]);
+
   const isEmpty = !cart || (cart.items.length === 0 && (cart.ingredientItems ?? []).length === 0);
   const blocked = hasUnavailableItems(cart);
   const cardRequired = paymentType === 'CARD' && !paymentMethodId;
 
-  // ── Live price breakdown — recalculates when orderType or cart changes ───
   const breakdown = useMemo(() => {
     if (!cart || !settings) return null;
     const subtotal = calcCartSubtotal(cart);
     return calcFinalTotalClient(subtotal, settings, orderType);
   }, [cart, settings, orderType]);
 
-  // taxRate from backend is a decimal (0.23 → 23%)
   const taxRatePercent = settings ? parseFloat(settings.taxRate) * 100 : 23;
 
-  // ── Submit ───────────────────────────────────────────────────────────────
   const handleSubmit = async () => {
     if (isEmpty || blocked || cardRequired) return;
     setIsSubmitting(true);
@@ -76,7 +80,6 @@ export default function CheckoutPage() {
     }
   };
 
-  // ── Loading / empty states ───────────────────────────────────────────────
   if (cartLoading) {
     return (
       <div className='page-container py-16 flex justify-center'>
@@ -105,15 +108,12 @@ export default function CheckoutPage() {
       <h1 className='font-display text-3xl font-semibold mb-8 text-ob-text'>Checkout</h1>
 
       <div className='grid grid-cols-1 lg:grid-cols-5 gap-8'>
-        {/* ── Left column — order options ── */}
         <div className='lg:col-span-3 flex flex-col gap-6'>
-          {/* Order type */}
           <div className='card p-5'>
             <h2 className='font-display font-semibold text-sm uppercase tracking-wider mb-4 text-ob-muted'>Order Type</h2>
             <OrderTypeSelector value={orderType} onChange={setOrderType} />
           </div>
 
-          {/* Payment */}
           <div className='card p-5'>
             <h2 className='font-display font-semibold text-sm uppercase tracking-wider mb-4 text-ob-muted'>Payment</h2>
             <PaymentMethodSelector
@@ -122,14 +122,17 @@ export default function CheckoutPage() {
               savedCards={savedCards}
               onTypeChange={t => {
                 setPaymentType(t);
-                setPaymentMethodId(null);
+                if (t !== 'CARD') setPaymentMethodId(null);
+                else {
+                  const def = savedCards.find(c => c.isDefault) ?? savedCards[0];
+                  setPaymentMethodId(def?.id ?? null);
+                }
               }}
               onCardChange={setPaymentMethodId}
             />
             {cardRequired && <p className='text-xs text-ob-error mt-2'>Please select a saved card.</p>}
           </div>
 
-          {/* Special instructions */}
           <div className='card p-5'>
             <h2 className='font-display font-semibold text-sm uppercase tracking-wider mb-4 text-ob-muted'>Special Instructions</h2>
             <textarea
@@ -143,16 +146,13 @@ export default function CheckoutPage() {
           </div>
         </div>
 
-        {/* ── Right column — order summary ── */}
         <div className='lg:col-span-2'>
           <div className='card p-5 sticky top-24 flex flex-col gap-5'>
-            {/* Cart items */}
             <div>
               <h2 className='font-display font-semibold text-sm uppercase tracking-wider mb-4 text-ob-muted'>Order Summary</h2>
               <CartSummary cart={cart} />
             </div>
 
-            {/* Unavailable warning */}
             {blocked && (
               <div className='rounded-xl bg-amber-50 border border-amber-200 px-4 py-3'>
                 <p className='text-xs text-amber-700 font-semibold'>⚠️ Unavailable items in cart</p>
@@ -160,7 +160,6 @@ export default function CheckoutPage() {
               </div>
             )}
 
-            {/* Price breakdown */}
             <div className='border-t border-ob-border pt-4'>
               {breakdown ? (
                 <PriceBreakdown breakdown={breakdown} orderType={orderType} taxRatePercent={taxRatePercent} />
@@ -171,7 +170,6 @@ export default function CheckoutPage() {
               )}
             </div>
 
-            {/* Place Order button — total comes from breakdown, not re-calculated */}
             <button
               onClick={handleSubmit}
               disabled={isSubmitting || blocked || cardRequired || !breakdown}

@@ -94,7 +94,10 @@ export default function CartPage() {
             <h2 className='font-display font-semibold text-sm uppercase tracking-wider text-ob-muted'>Summary</h2>
 
             <div className='flex justify-between items-center text-sm'>
-              <span className='text-ob-muted'>Subtotal ({cart!.items.reduce((s, i) => s + i.quantity, 0)} items)</span>
+              <span className='text-ob-muted'>
+                Subtotal ({cart!.items.reduce((s, i) => s + i.quantity, 0)} items, {cart!.ingredientItems.reduce((s, i) => s + i.quantity, 0)} extra
+                ingredients)
+              </span>
               <span className='font-semibold text-ob-text'>{formatPrice(subtotal.toFixed(2))}</span>
             </div>
             <p className='text-[11px] text-ob-muted -mt-2'>Tax &amp; delivery fees calculated at checkout</p>

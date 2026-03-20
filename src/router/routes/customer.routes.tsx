@@ -9,8 +9,8 @@ const OrderDetailPage = lazy(() => import('@/features/orders/pages/OrderDetailPa
 const ReservationsPage = lazy(() => import('@/features/reservations'));
 const NewReservationPage = lazy(() => import('@/features/reservations/pages/NewReservationPage'));
 const ProfilePage = lazy(() => import('@/features/profile'));
-const AddressesPage = lazy(() => import('@/features/profile/pages/AddressesPage'));
-const PaymentMethodsPage = lazy(() => import('@/features/profile/pages/PaymentMethodsPage'));
+const AddressesPage = lazy(() => import('@/features/addresses/pages/AddressesPage'));
+const PaymentMethodsPage = lazy(() => import('@/features/payments/pages/PaymentMethodsPage'));
 
 export const customerRoutes: RouteObject[] = [
   {
