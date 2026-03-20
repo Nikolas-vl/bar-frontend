@@ -20,6 +20,10 @@ export const addressApi = {
     return res.data;
   },
 
+  setDefault: async (id: number): Promise<void> => {
+    await apiClient.patch(`/addresses/${id}/default`);
+  },
+
   update: async (id: number, payload: UpdateAddressPayload): Promise<Address> => {
     const res = await apiClient.patch(`/addresses/${id}`, payload);
     return res.data;

@@ -245,6 +245,7 @@ export interface Address {
   street: string;
   zip: string;
   phone: string;
+  isDefault: boolean;
 }
 
 // ─── Settings ──────────────────────────────────────────────────────────────

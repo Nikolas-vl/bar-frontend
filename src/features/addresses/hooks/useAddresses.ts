@@ -16,6 +16,14 @@ export const useCreateAddress = () => {
   });
 };
 
+export const useSetDefaultAddress = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: number) => addressApi.setDefault(id),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: queryKeys.addresses.mine }),
+  });
+};
+
 export const useUpdateAddress = () => {
   const queryClient = useQueryClient();
   return useMutation({

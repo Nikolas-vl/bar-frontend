@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { toast } from 'sonner';
 import { useCart } from '@/features/cart/hooks/useCart';
 import { usePaymentMethods } from '@/features/payments/hooks/usePaymentMethods';
+import { useAddresses } from '@/features/addresses/hooks/useAddresses';
 import { useCreateOrder } from '../hooks/useCreateOrder';
 import { usePayOrder } from '../hooks/usePayOrder';
 import { useSettings } from '@/features/settings/hooks/useSettings';
@@ -10,6 +11,7 @@ import { hasUnavailableItems, calcCartSubtotal } from '@/features/cart/utils/car
 import { calcFinalTotalClient } from '@/utils/pricingClient';
 import { OrderTypeSelector } from '../components/checkout/OrderTypeSelector';
 import { PaymentMethodSelector } from '../components/checkout/PaymentMethodSelector';
+import { AddressSelector } from '../components/checkout/AddressSelector';
 import { CartSummary } from '../components/checkout/CartSummary';
 import { PriceBreakdown } from '../components/checkout/PriceBreakdown';
 import { Spinner } from '@/components/shared/ui';
@@ -21,6 +23,7 @@ export default function CheckoutPage() {
   const navigate = useNavigate();
   const { data: cart, isLoading: cartLoading } = useCart();
   const { data: savedCards = [] } = usePaymentMethods();
+  const { data: addresses = [] } = useAddresses();
   const { data: settings } = useSettings();
   const { mutateAsync: createOrder } = useCreateOrder();
   const { mutateAsync: payOrder } = usePayOrder();
@@ -28,6 +31,7 @@ export default function CheckoutPage() {
   const [orderType, setOrderType] = useState<OrderType>('DINE_IN');
   const [paymentType, setPaymentType] = useState<PaymentType>('CASH');
   const [paymentMethodId, setPaymentMethodId] = useState<number | null>(null);
+  const [addressId, setAddressId] = useState<number | null>(null);
   const [comment, setComment] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -39,9 +43,18 @@ export default function CheckoutPage() {
     });
   }, [savedCards]);
 
+  useEffect(() => {
+    if (addresses.length === 0) return;
+    setAddressId(prev => {
+      if (prev !== null) return prev;
+      return addresses.find(a => a.isDefault)?.id ?? addresses[0].id;
+    });
+  }, [addresses]);
+
   const isEmpty = !cart || (cart.items.length === 0 && (cart.ingredientItems ?? []).length === 0);
   const blocked = hasUnavailableItems(cart);
   const cardRequired = paymentType === 'CARD' && !paymentMethodId;
+  const addressRequired = orderType === 'DELIVERY' && !addressId;
 
   const breakdown = useMemo(() => {
     if (!cart || !settings) return null;
@@ -52,7 +65,7 @@ export default function CheckoutPage() {
   const taxRatePercent = settings ? parseFloat(settings.taxRate) * 100 : 23;
 
   const handleSubmit = async () => {
-    if (isEmpty || blocked || cardRequired) return;
+    if (isEmpty || blocked || cardRequired || addressRequired) return;
     setIsSubmitting(true);
     try {
       const order = await createOrder({
@@ -109,13 +122,36 @@ export default function CheckoutPage() {
 
       <div className='grid grid-cols-1 lg:grid-cols-5 gap-8'>
         <div className='lg:col-span-3 flex flex-col gap-6'>
+          {/* Order type */}
           <div className='card p-5'>
             <h2 className='font-display font-semibold text-sm uppercase tracking-wider mb-4 text-ob-muted'>Order Type</h2>
             <OrderTypeSelector value={orderType} onChange={setOrderType} />
           </div>
 
+          {/* Delivery address — only for DELIVERY */}
+          {orderType === 'DELIVERY' && (
+            <div className='card p-5'>
+              <div className='flex items-center justify-between mb-4'>
+                <h2 className='font-display font-semibold text-sm uppercase tracking-wider text-ob-muted'>Delivery Address</h2>
+                <Link to='/profile/addresses' className='text-xs font-medium text-ob-caramel hover:underline'>
+                  Manage addresses →
+                </Link>
+              </div>
+              <AddressSelector addresses={addresses} selectedId={addressId} onChange={setAddressId} />
+              {addressRequired && <p className='text-xs text-ob-error mt-2'>Please select a delivery address.</p>}
+            </div>
+          )}
+
+          {/* Payment */}
           <div className='card p-5'>
-            <h2 className='font-display font-semibold text-sm uppercase tracking-wider mb-4 text-ob-muted'>Payment</h2>
+            <div className='flex items-center justify-between mb-4'>
+              <h2 className='font-display font-semibold text-sm uppercase tracking-wider text-ob-muted'>Payment</h2>
+              {paymentType === 'CARD' && (
+                <Link to='/profile/payments' className='text-xs font-medium text-ob-caramel hover:underline'>
+                  Manage cards →
+                </Link>
+              )}
+            </div>
             <PaymentMethodSelector
               paymentType={paymentType}
               paymentMethodId={paymentMethodId}
@@ -133,6 +169,7 @@ export default function CheckoutPage() {
             {cardRequired && <p className='text-xs text-ob-error mt-2'>Please select a saved card.</p>}
           </div>
 
+          {/* Special instructions */}
           <div className='card p-5'>
             <h2 className='font-display font-semibold text-sm uppercase tracking-wider mb-4 text-ob-muted'>Special Instructions</h2>
             <textarea
@@ -146,6 +183,7 @@ export default function CheckoutPage() {
           </div>
         </div>
 
+        {/* Right column */}
         <div className='lg:col-span-2'>
           <div className='card p-5 sticky top-24 flex flex-col gap-5'>
             <div>
@@ -172,7 +210,7 @@ export default function CheckoutPage() {
 
             <button
               onClick={handleSubmit}
-              disabled={isSubmitting || blocked || cardRequired || !breakdown}
+              disabled={isSubmitting || blocked || cardRequired || addressRequired || !breakdown}
               className='btn-primary w-full justify-center'
             >
               {isSubmitting ? (
