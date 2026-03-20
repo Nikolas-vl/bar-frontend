@@ -72,6 +72,7 @@ export default function CheckoutPage() {
         type: orderType,
         comment: comment.trim() || undefined,
         discountPercent: 0,
+        addressId: orderType === 'DELIVERY' && addressId ? addressId : undefined,
       });
 
       const result = await payOrder({

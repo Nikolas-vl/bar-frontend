@@ -5,6 +5,7 @@ export interface CreateOrderPayload {
   type: OrderType;
   comment?: string;
   discountPercent?: number;
+  addressId?: number;
 }
 
 export interface PayOrderPayload {
