@@ -1,5 +1,5 @@
 import { type ReactNode, Fragment } from 'react';
-import { Skeleton } from '@/components/shared/ui';
+import { Skeleton, EmptyState } from '@/components/shared/ui';
 import { cn } from '@/utils/cn';
 
 interface Column<T> {
@@ -43,12 +43,7 @@ export function AdminTable<T>({
   }
 
   if (data.length === 0) {
-    return (
-      <div className='card p-12 flex flex-col items-center gap-3'>
-        <span className='text-4xl'>{emptyIcon}</span>
-        <p className='text-ob-muted text-sm'>{emptyMessage}</p>
-      </div>
-    );
+    return <EmptyState title={emptyMessage} icon={emptyIcon} layout='inline' className='p-12' />;
   }
 
   return (

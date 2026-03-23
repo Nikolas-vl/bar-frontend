@@ -8,7 +8,7 @@ import { ConfirmDialog } from '@/features/admin/components/ConfirmDialog';
 import { AdminTable } from '@/features/admin/components/AdminTable';
 import { Pagination } from '@/features/admin/components/Pagination';
 import { FilterPills } from '@/features/admin/components/FilterPills';
-import { Select } from '@/components/shared/ui';
+import { ErrorState, Select } from '@/components/shared/ui';
 import { ReservationStatusBadge } from '@/features/reservations/components/ReservationStatusBadge';
 import { IconPlus, IconEdit, IconTrash } from '@/assets/icons';
 import { formatDate } from '@/utils/cn';
@@ -122,16 +122,7 @@ export default function AdminReservationsPage() {
   ];
 
   if (error) {
-    return (
-      <div className='page-container py-12'>
-        <div className='card p-8 text-center space-y-4'>
-          <p className='text-ob-error'>Failed to load reservations</p>
-          <button type='button' className='btn-primary' onClick={() => refetch()}>
-            Retry
-          </button>
-        </div>
-      </div>
-    );
+    return <ErrorState title='Failed to load reservations' onRetry={refetch} />;
   }
 
   return (

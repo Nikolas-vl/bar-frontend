@@ -4,8 +4,8 @@ import { useAdminLocations } from '@/features/admin/locations/hooks/useAdminLoca
 import { TableFormModal } from '../components/TableFormModal';
 import { ConfirmDialog } from '@/features/admin/components/ConfirmDialog';
 import { AdminTable } from '@/features/admin/components/AdminTable';
+import { ErrorState } from '@/components/shared/ui';
 import { Select } from '@/components/shared/ui';
-import { Skeleton } from '@/components/shared/ui';
 import { IconPlus, IconEdit, IconTrash } from '@/assets/icons';
 import type { Table } from '@/types';
 
@@ -52,14 +52,7 @@ export default function TablesPage() {
   ];
 
   if (error) {
-    return (
-      <div className='page-container py-12'>
-        <div className='card p-8 text-center space-y-4'>
-          <p className='text-ob-error'>Failed to load tables</p>
-          <button type='button' className='btn-primary' onClick={() => refetch()}>Retry</button>
-        </div>
-      </div>
-    );
+    return <ErrorState title='Failed to load tables' onRetry={refetch} />;
   }
 
   return (

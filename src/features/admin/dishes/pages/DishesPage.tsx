@@ -9,7 +9,7 @@ import { IngredientFormModal } from '../components/IngredientFormModal';
 import { ConfirmDialog } from '@/features/admin/components/ConfirmDialog';
 import { SearchInput } from '@/features/admin/components/SearchInput';
 import { FilterPills } from '@/features/admin/components/FilterPills';
-import { Skeleton } from '@/components/shared/ui';
+import { ErrorState, EmptyState, LoadingState } from '@/components/shared/ui';
 import { IconPlus } from '@/assets/icons';
 import { cn } from '@/utils/cn';
 import type { Category, Dish, Ingredient } from '@/types';
@@ -100,26 +100,20 @@ export default function DishesPage() {
 
           {/* Content */}
           {dishesError ? (
-            <div className='card p-8 text-center space-y-4'>
-              <p className='text-ob-error'>Failed to load dishes</p>
-              <button type='button' className='btn-primary' onClick={() => refetchDishes()}>
-                Retry
-              </button>
-            </div>
+            <ErrorState title='Failed to load dishes' onRetry={refetchDishes} layout='inline' />
           ) : dishesLoading ? (
-            <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6'>
-              {Array.from({ length: 8 }).map((_, i) => (
-                <Skeleton key={i} className='h-80 w-full rounded-2xl' />
-              ))}
-            </div>
+            <LoadingState layout='inline' message='Fetching dishes...' className='min-h-[400px]' />
           ) : dishes && dishes.length === 0 ? (
-            <div className='card p-12 flex flex-col items-center gap-3'>
-              <span className='text-4xl'>🍽️</span>
-              <p className='text-ob-muted text-sm'>No dishes found</p>
-              <button type='button' className='btn-secondary' onClick={() => setIsCreateDishOpen(true)}>
-                Create your first dish
-              </button>
-            </div>
+            <EmptyState
+              layout='inline'
+              title='No dishes found'
+              icon='🍽️'
+              action={
+                <button type='button' className='btn-secondary' onClick={() => setIsCreateDishOpen(true)}>
+                  Create your first dish
+                </button>
+              }
+            />
           ) : (
             <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6'>
               {dishes?.map(dish => (

@@ -5,7 +5,7 @@ import { useAdminReservations } from '@/features/admin/reservations/hooks/useAdm
 import { useAdminUsers } from '@/features/admin/users/hooks/useAdminUsers';
 import { OrderStatusBadge, PaymentStatusBadge } from '@/features/orders/components/orders/OrderStatusBadge';
 import { ReservationStatusBadge } from '@/features/reservations/components/ReservationStatusBadge';
-import { Skeleton } from '@/components/shared/ui';
+import { LoadingState } from '@/components/shared/ui';
 import { IconOrders, IconReservation, IconUsers, IconClock, IconPlus, IconArrowRight } from '@/assets/icons';
 import { formatPrice, formatDate, cn } from '@/utils/cn';
 import type { OrderType } from '@/types';
@@ -69,17 +69,7 @@ export default function DashboardPage() {
   }, [reservationsData, today]);
 
   if (isLoading) {
-    return (
-      <div className='page-container py-12 space-y-8'>
-        <Skeleton className='h-8 w-48' />
-        <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4'>
-          {Array.from({ length: 4 }).map((_, i) => (
-            <Skeleton key={i} className='h-28' />
-          ))}
-        </div>
-        <Skeleton className='h-64' />
-      </div>
-    );
+    return <LoadingState message="Loading dashboard statistics..." />;
   }
 
   return (

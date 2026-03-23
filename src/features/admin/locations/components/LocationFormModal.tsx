@@ -10,7 +10,7 @@ const locationSchema = z.object({
   name: z.string().min(1, 'Name is required'),
   address: z.string().min(1, 'Address is required'),
   phone: z.string().min(1, 'Phone is required'),
-  email: z.string().email('Must be a valid email'),
+  email: z.email('Must be a valid email'),
   openingHours: z.string().min(1, 'Opening hours required'),
   isActive: z.boolean(),
 });
@@ -70,12 +70,7 @@ export function LocationFormModal({ isOpen, onClose, location, onSubmit, isPendi
           <button type='button' className='btn-ghost' onClick={onClose} disabled={isPending}>
             Cancel
           </button>
-          <button
-            type='submit'
-            form='location-form'
-            className='btn-primary inline-flex items-center gap-2'
-            disabled={isPending}
-          >
+          <button type='submit' form='location-form' className='btn-primary inline-flex items-center gap-2' disabled={isPending}>
             {isPending && <Spinner variant='white' size='sm' />}
             {location ? 'Save Changes' : 'Create Location'}
           </button>
@@ -84,33 +79,49 @@ export function LocationFormModal({ isOpen, onClose, location, onSubmit, isPendi
     >
       <form id='location-form' onSubmit={handleSubmit(onSubmit)} className='space-y-4'>
         <div className='space-y-1.5'>
-          <label htmlFor='loc-name' className='label'>Name</label>
+          <label htmlFor='loc-name' className='label'>
+            Name
+          </label>
           <input id='loc-name' type='text' className={errors.name ? 'input input-error' : 'input'} {...register('name')} />
           {errors.name && <p className='field-error'>{errors.name.message}</p>}
         </div>
 
         <div className='space-y-1.5'>
-          <label htmlFor='loc-address' className='label'>Address</label>
+          <label htmlFor='loc-address' className='label'>
+            Address
+          </label>
           <input id='loc-address' type='text' className={errors.address ? 'input input-error' : 'input'} {...register('address')} />
           {errors.address && <p className='field-error'>{errors.address.message}</p>}
         </div>
 
         <div className='grid grid-cols-1 sm:grid-cols-2 gap-4'>
           <div className='space-y-1.5'>
-            <label htmlFor='loc-phone' className='label'>Phone</label>
+            <label htmlFor='loc-phone' className='label'>
+              Phone
+            </label>
             <input id='loc-phone' type='text' className={errors.phone ? 'input input-error' : 'input'} {...register('phone')} />
             {errors.phone && <p className='field-error'>{errors.phone.message}</p>}
           </div>
           <div className='space-y-1.5'>
-            <label htmlFor='loc-email' className='label'>Email</label>
+            <label htmlFor='loc-email' className='label'>
+              Email
+            </label>
             <input id='loc-email' type='email' className={errors.email ? 'input input-error' : 'input'} {...register('email')} />
             {errors.email && <p className='field-error'>{errors.email.message}</p>}
           </div>
         </div>
 
         <div className='space-y-1.5'>
-          <label htmlFor='loc-hours' className='label'>Opening Hours</label>
-          <input id='loc-hours' type='text' placeholder='e.g. 08:00 – 22:00' className={errors.openingHours ? 'input input-error' : 'input'} {...register('openingHours')} />
+          <label htmlFor='loc-hours' className='label'>
+            Opening Hours
+          </label>
+          <input
+            id='loc-hours'
+            type='text'
+            placeholder='e.g. 08:00 – 22:00'
+            className={errors.openingHours ? 'input input-error' : 'input'}
+            {...register('openingHours')}
+          />
           {errors.openingHours && <p className='field-error'>{errors.openingHours.message}</p>}
         </div>
 

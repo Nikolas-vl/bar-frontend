@@ -3,7 +3,7 @@ import { useAdminLocations, useCreateLocation, useUpdateLocation, useDeleteLocat
 import { LocationCard } from '../components/LocationCard';
 import { LocationFormModal } from '../components/LocationFormModal';
 import { ConfirmDialog } from '@/features/admin/components/ConfirmDialog';
-import { Skeleton } from '@/components/shared/ui';
+import { ErrorState, EmptyState, LoadingState } from '@/components/shared/ui';
 import { IconPlus } from '@/assets/icons';
 import type { Location } from '@/types';
 import { useAdminTables } from '@/features/admin/tables/hooks/useAdminTables';
@@ -27,29 +27,11 @@ export default function LocationsPage() {
   }, {});
 
   if (isLoading) {
-    return (
-      <div className='page-container py-12 space-y-6'>
-        <Skeleton className='h-8 w-40' />
-        <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
-          {Array.from({ length: 3 }).map((_, i) => (
-            <Skeleton key={i} className='h-52 w-full' />
-          ))}
-        </div>
-      </div>
-    );
+    return <LoadingState message="Loading locations..." />;
   }
 
   if (error) {
-    return (
-      <div className='page-container py-12'>
-        <div className='card p-8 text-center space-y-4'>
-          <p className='text-ob-error'>Failed to load locations</p>
-          <button type='button' className='btn-primary' onClick={() => refetch()}>
-            Retry
-          </button>
-        </div>
-      </div>
-    );
+    return <ErrorState title='Failed to load locations' onRetry={refetch} />;
   }
 
   return (
@@ -63,13 +45,15 @@ export default function LocationsPage() {
       </div>
 
       {locations && locations.length === 0 ? (
-        <div className='card p-12 flex flex-col items-center gap-3'>
-          <span className='text-4xl'>📍</span>
-          <p className='text-ob-muted text-sm'>No locations yet</p>
-          <button type='button' className='btn-secondary' onClick={() => setIsCreateOpen(true)}>
-            Create your first location
-          </button>
-        </div>
+        <EmptyState
+          title="No locations yet"
+          icon="📍"
+          action={
+            <button type='button' className='btn-secondary' onClick={() => setIsCreateOpen(true)}>
+              Create your first location
+            </button>
+          }
+        />
       ) : (
         <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
           {locations?.map(loc => (

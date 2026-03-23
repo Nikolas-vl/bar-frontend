@@ -1,9 +1,9 @@
-import { useForm } from 'react-hook-form';
+import { useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useSettings } from '@/features/settings/hooks/useSettings';
 import { useUpdateSettings } from '../hooks/useAdminSettings';
-import { Skeleton, Spinner } from '@/components/shared/ui';
+import { ErrorState, LoadingState, Spinner } from '@/components/shared/ui';
 import { formatPrice } from '@/utils/cn';
 import { calcFinalTotalClient } from '@/utils/pricingClient';
 import { useEffect } from 'react';
@@ -21,7 +21,8 @@ const pricingSchema = z.object({
 });
 
 type RestaurantInfoForm = z.infer<typeof restaurantInfoSchema>;
-type PricingForm = z.infer<typeof pricingSchema>;
+type PricingFormInput = z.input<typeof pricingSchema>;
+type PricingFormData = z.output<typeof pricingSchema>;
 
 // ── Component ──────────────────────────────────────────────
 export default function SettingsPage() {
@@ -34,10 +35,14 @@ export default function SettingsPage() {
     defaultValues: { restaurantName: '' },
   });
 
-  // Pricing form
-  const pricingForm = useForm<PricingForm>({
+  const pricingForm = useForm<PricingFormInput, unknown, PricingFormData>({
     resolver: zodResolver(pricingSchema),
-    defaultValues: { taxRate: 0, deliveryFee: 0, serviceFee: 0, freeDeliveryThreshold: 0 },
+    defaultValues: {
+      taxRate: '',
+      deliveryFee: '',
+      serviceFee: '',
+      freeDeliveryThreshold: '',
+    },
   });
 
   // Populate forms when data arrives
@@ -51,13 +56,13 @@ export default function SettingsPage() {
         freeDeliveryThreshold: parseFloat(settings.freeDeliveryThreshold),
       });
     }
-  }, [settings]);
+  }, [settings, infoForm, pricingForm]);
 
   const onSaveInfo = (data: RestaurantInfoForm) => {
     updateMutation.mutate({ restaurantName: data.restaurantName });
   };
 
-  const onSavePricing = (data: PricingForm) => {
+  const onSavePricing = (data: PricingFormData) => {
     updateMutation.mutate({
       taxRate: data.taxRate / 100,
       deliveryFee: data.deliveryFee,
@@ -66,13 +71,21 @@ export default function SettingsPage() {
     });
   };
 
-  // Live preview values
-  const watchedPricing = pricingForm.watch();
+  const watchedPricing = useWatch({
+    control: pricingForm.control,
+  });
+
+  const normalizedPricing = {
+    taxRate: Number(watchedPricing.taxRate ?? 0),
+    deliveryFee: Number(watchedPricing.deliveryFee ?? 0),
+    serviceFee: Number(watchedPricing.serviceFee ?? 0),
+    freeDeliveryThreshold: Number(watchedPricing.freeDeliveryThreshold ?? 0),
+  };
 
   const previewSettings = settings
     ? {
         ...settings,
-        taxRate: String(watchedPricing.taxRate / 100),
+        taxRate: String(normalizedPricing.taxRate / 100),
         deliveryFee: String(watchedPricing.deliveryFee),
         serviceFee: String(watchedPricing.serviceFee),
         freeDeliveryThreshold: String(watchedPricing.freeDeliveryThreshold),
@@ -82,28 +95,11 @@ export default function SettingsPage() {
   const preview = previewSettings ? calcFinalTotalClient(50, previewSettings, 'DELIVERY') : null;
 
   if (isLoading) {
-    return (
-      <div className='page-container py-12 space-y-6'>
-        <Skeleton className='h-8 w-40' />
-        <div className='grid grid-cols-1 lg:grid-cols-2 gap-6'>
-          <Skeleton className='h-64 w-full' />
-          <Skeleton className='h-64 w-full' />
-        </div>
-      </div>
-    );
+    return <LoadingState message='Fetching system settings...' />;
   }
 
   if (error) {
-    return (
-      <div className='page-container py-12'>
-        <div className='card p-8 text-center space-y-4'>
-          <p className='text-ob-error'>Failed to load settings</p>
-          <button type='button' className='btn-primary' onClick={() => refetch()}>
-            Retry
-          </button>
-        </div>
-      </div>
-    );
+    return <ErrorState title='Failed to load settings' onRetry={refetch} />;
   }
 
   return (
@@ -116,23 +112,19 @@ export default function SettingsPage() {
           <h2 className='text-base font-display font-semibold text-ob-text'>Restaurant Info</h2>
 
           <div className='space-y-1.5'>
-            <label htmlFor='restaurantName' className='label'>Restaurant Name</label>
+            <label htmlFor='restaurantName' className='label'>
+              Restaurant Name
+            </label>
             <input
               id='restaurantName'
               type='text'
               className={infoForm.formState.errors.restaurantName ? 'input input-error' : 'input'}
               {...infoForm.register('restaurantName')}
             />
-            {infoForm.formState.errors.restaurantName && (
-              <p className='field-error'>{infoForm.formState.errors.restaurantName.message}</p>
-            )}
+            {infoForm.formState.errors.restaurantName && <p className='field-error'>{infoForm.formState.errors.restaurantName.message}</p>}
           </div>
 
-          <button
-            type='submit'
-            className='btn-primary inline-flex items-center gap-2'
-            disabled={updateMutation.isPending}
-          >
+          <button type='submit' className='btn-primary inline-flex items-center gap-2' disabled={updateMutation.isPending}>
             {updateMutation.isPending && <Spinner variant='white' size='sm' />}
             Save restaurant info
           </button>
@@ -144,7 +136,9 @@ export default function SettingsPage() {
 
           <div className='space-y-4'>
             <div className='space-y-1.5'>
-              <label htmlFor='taxRate' className='label'>Tax Rate (%)</label>
+              <label htmlFor='taxRate' className='label'>
+                Tax Rate (%)
+              </label>
               <input
                 id='taxRate'
                 type='number'
@@ -154,16 +148,14 @@ export default function SettingsPage() {
                 className={pricingForm.formState.errors.taxRate ? 'input input-error' : 'input'}
                 {...pricingForm.register('taxRate')}
               />
-              {settings && (
-                <p className='text-xs text-ob-muted'>Current: {(parseFloat(settings.taxRate) * 100).toFixed(0)}%</p>
-              )}
-              {pricingForm.formState.errors.taxRate && (
-                <p className='field-error'>{pricingForm.formState.errors.taxRate.message}</p>
-              )}
+              {settings && <p className='text-xs text-ob-muted'>Current: {(parseFloat(settings.taxRate) * 100).toFixed(0)}%</p>}
+              {pricingForm.formState.errors.taxRate && <p className='field-error'>{pricingForm.formState.errors.taxRate.message}</p>}
             </div>
 
             <div className='space-y-1.5'>
-              <label htmlFor='deliveryFee' className='label'>Delivery Fee (PLN)</label>
+              <label htmlFor='deliveryFee' className='label'>
+                Delivery Fee (PLN)
+              </label>
               <input
                 id='deliveryFee'
                 type='number'
@@ -172,13 +164,13 @@ export default function SettingsPage() {
                 className={pricingForm.formState.errors.deliveryFee ? 'input input-error' : 'input'}
                 {...pricingForm.register('deliveryFee')}
               />
-              {pricingForm.formState.errors.deliveryFee && (
-                <p className='field-error'>{pricingForm.formState.errors.deliveryFee.message}</p>
-              )}
+              {pricingForm.formState.errors.deliveryFee && <p className='field-error'>{pricingForm.formState.errors.deliveryFee.message}</p>}
             </div>
 
             <div className='space-y-1.5'>
-              <label htmlFor='serviceFee' className='label'>Service Fee (PLN)</label>
+              <label htmlFor='serviceFee' className='label'>
+                Service Fee (PLN)
+              </label>
               <input
                 id='serviceFee'
                 type='number'
@@ -187,13 +179,13 @@ export default function SettingsPage() {
                 className={pricingForm.formState.errors.serviceFee ? 'input input-error' : 'input'}
                 {...pricingForm.register('serviceFee')}
               />
-              {pricingForm.formState.errors.serviceFee && (
-                <p className='field-error'>{pricingForm.formState.errors.serviceFee.message}</p>
-              )}
+              {pricingForm.formState.errors.serviceFee && <p className='field-error'>{pricingForm.formState.errors.serviceFee.message}</p>}
             </div>
 
             <div className='space-y-1.5'>
-              <label htmlFor='freeDeliveryThreshold' className='label'>Free Delivery Threshold (PLN)</label>
+              <label htmlFor='freeDeliveryThreshold' className='label'>
+                Free Delivery Threshold (PLN)
+              </label>
               <input
                 id='freeDeliveryThreshold'
                 type='number'
@@ -209,11 +201,7 @@ export default function SettingsPage() {
             </div>
           </div>
 
-          <button
-            type='submit'
-            className='btn-primary inline-flex items-center gap-2'
-            disabled={updateMutation.isPending}
-          >
+          <button type='submit' className='btn-primary inline-flex items-center gap-2' disabled={updateMutation.isPending}>
             {updateMutation.isPending && <Spinner variant='white' size='sm' />}
             Save pricing
           </button>
@@ -231,7 +219,7 @@ export default function SettingsPage() {
               <span>{formatPrice(preview.subtotal)}</span>
             </div>
             <div className='flex justify-between'>
-              <span className='text-ob-muted'>Tax ({watchedPricing.taxRate}%)</span>
+              <span className='text-ob-muted'>Tax ({normalizedPricing.taxRate}%)</span>
               <span>{formatPrice(preview.tax)}</span>
             </div>
             <div className='flex justify-between'>

@@ -7,6 +7,7 @@ import { AdminTable } from '@/features/admin/components/AdminTable';
 import { Pagination } from '@/features/admin/components/Pagination';
 import { SearchInput } from '@/features/admin/components/SearchInput';
 import { FilterPills } from '@/features/admin/components/FilterPills';
+import { ErrorState } from '@/components/shared/ui';
 import { useDebounce } from '@/hooks/useDebounce';
 import { IconEdit, IconTrash } from '@/assets/icons';
 import { formatDateShort, cn } from '@/utils/cn';
@@ -73,16 +74,7 @@ export default function UsersPage() {
   ];
 
   if (error) {
-    return (
-      <div className='page-container py-12'>
-        <div className='card p-8 text-center space-y-4'>
-          <p className='text-ob-error'>Failed to load users</p>
-          <button type='button' className='btn-primary' onClick={() => refetch()}>
-            Retry
-          </button>
-        </div>
-      </div>
-    );
+    return <ErrorState title='Failed to load users' onRetry={refetch} />;
   }
 
   return (
