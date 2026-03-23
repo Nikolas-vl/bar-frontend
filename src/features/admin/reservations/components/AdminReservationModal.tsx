@@ -1,30 +1,20 @@
 import { useForm, useWatch, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
 import { useEffect } from 'react';
 import { AdminModal } from '@/features/admin/components/AdminModal';
 import { Select, Spinner, DateTimePicker } from '@/components/shared/ui';
 import { useAdminTables } from '@/features/admin/tables/hooks/useAdminTables';
-import type { Reservation } from '@/types';
-
-const reservationSchema = z.object({
-  userId: z.coerce.number().int().positive('User ID is required'),
-  date: z.string().min(1, 'Date is required'),
-  guests: z.coerce.number().int().min(1, 'At least 1 guest'),
-  tableId: z.preprocess(v => (v === '' ? undefined : v), z.coerce.number().optional()),
-  status: z.enum(['PENDING', 'CONFIRMED', 'CANCELED']),
-  comment: z.string().optional(),
-});
-
-type ReservationFormInput = z.input<typeof reservationSchema>;
-type ReservationFormData = z.output<typeof reservationSchema>;
+import type { Reservation } from '@/shared/types/reservation.types';
+import { adminReservationSchema, type AdminReservationFormInput, type AdminReservationFormOutput } from '../schemas/reservation.schema';
+import { mapAdminReservationToForm, mapAdminReservationFormToDto, mapAdminReservationFormToUpdateDto } from '../mappers/reservation.mapper';
+import type { CreateReservationDto, UpdateReservationDto } from '../dto/reservation.dto';
 
 interface AdminReservationModalProps {
   isOpen: boolean;
   onClose: () => void;
   reservation: Reservation | null;
-  onSubmitCreate: (data: ReservationFormData) => void;
-  onSubmitUpdate: (data: Partial<ReservationFormData>) => void;
+  onSubmitCreate: (data: CreateReservationDto) => void;
+  onSubmitUpdate: (data: UpdateReservationDto) => void;
   isPending: boolean;
   error?: string | null;
 }
@@ -47,8 +37,8 @@ export function AdminReservationModal({
     setValue,
     control,
     formState: { errors },
-  } = useForm<ReservationFormInput, unknown, ReservationFormData>({
-    resolver: zodResolver(reservationSchema),
+  } = useForm<AdminReservationFormInput, unknown, AdminReservationFormOutput>({
+    resolver: zodResolver(adminReservationSchema),
     defaultValues: {
       userId: '',
       date: '',
@@ -65,14 +55,7 @@ export function AdminReservationModal({
   useEffect(() => {
     if (isOpen) {
       if (reservation) {
-        reset({
-          userId: reservation.userId,
-          date: reservation.date.slice(0, 16),
-          guests: reservation.guests,
-          tableId: reservation.tableId ?? undefined,
-          status: reservation.status,
-          comment: reservation.comment ?? '',
-        });
+        reset(mapAdminReservationToForm(reservation));
       } else {
         reset({
           userId: '',
@@ -102,16 +85,11 @@ export function AdminReservationModal({
     })),
   ];
 
-  const onSubmit = (data: ReservationFormData) => {
-    const cleaned: ReservationFormData = {
-      ...data,
-      tableId: data.tableId === 0 ? undefined : data.tableId,
-      comment: data.comment || undefined,
-    };
+  const onSubmit = (data: AdminReservationFormOutput) => {
     if (isEdit) {
-      onSubmitUpdate(cleaned);
+      onSubmitUpdate(mapAdminReservationFormToUpdateDto(data));
     } else {
-      onSubmitCreate(cleaned);
+      onSubmitCreate(mapAdminReservationFormToDto(data));
     }
   };
 
@@ -191,7 +169,7 @@ export function AdminReservationModal({
           <label className='label'>Status</label>
           <Select
             value={currentStatus}
-            onChange={v => setValue('status', v as z.infer<typeof reservationSchema>['status'], { shouldValidate: true })}
+            onChange={v => setValue('status', v as AdminReservationFormOutput['status'], { shouldValidate: true })}
             options={statusOptions}
           />
         </div>

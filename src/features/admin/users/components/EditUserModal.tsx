@@ -1,26 +1,19 @@
 import { useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
 import { useEffect } from 'react';
 import { AdminModal } from '@/features/admin/components/AdminModal';
 import { Spinner } from '@/components/shared/ui';
 import { Select } from '@/components/shared/ui';
 import type { AdminUserWithDate } from '@/types';
-
-const editUserSchema = z.object({
-  name: z.string().optional(),
-  phone: z.string().optional(),
-  password: z.string().min(6, 'Min 6 characters').optional().or(z.literal('')),
-  role: z.enum(['USER', 'ADMIN']),
-});
-
-type EditUserFormData = z.infer<typeof editUserSchema>;
+import { editUserSchema, type EditUserFormInput, type EditUserFormOutput } from '../schemas/user.schema';
+import { mapUserToForm, mapUserFormToDto } from '../mappers/user.mapper';
+import type { UpdateUserDto } from '../dto/user.dto';
 
 interface EditUserModalProps {
   isOpen: boolean;
   onClose: () => void;
   user: AdminUserWithDate | null;
-  onSubmit: (data: Partial<EditUserFormData>) => void;
+  onSubmit: (data: UpdateUserDto) => void;
   isPending: boolean;
 }
 
@@ -32,7 +25,7 @@ export function EditUserModal({ isOpen, onClose, user, onSubmit, isPending }: Ed
     setValue,
     control,
     formState: { errors },
-  } = useForm<EditUserFormData>({
+  } = useForm<EditUserFormInput, unknown, EditUserFormOutput>({
     resolver: zodResolver(editUserSchema),
     defaultValues: { name: '', phone: '', password: '', role: 'USER' },
   });
@@ -45,22 +38,14 @@ export function EditUserModal({ isOpen, onClose, user, onSubmit, isPending }: Ed
 
   useEffect(() => {
     if (isOpen && user) {
-      reset({
-        name: user.name ?? '',
-        phone: user.phone ?? '',
-        password: '',
-        role: user.role,
-      });
+      reset(mapUserToForm(user));
+    } else {
+      reset({ name: '', phone: '', password: '', role: 'USER' });
     }
   }, [isOpen, user, reset]);
 
-  const handleFormSubmit = (data: EditUserFormData) => {
-    const cleaned: Partial<EditUserFormData> = {};
-    if (data.name && data.name !== user?.name) cleaned.name = data.name;
-    if (data.phone && data.phone !== user?.phone) cleaned.phone = data.phone;
-    if (data.password) cleaned.password = data.password;
-    if (data.role !== user?.role) cleaned.role = data.role;
-    onSubmit(cleaned);
+  const handleFormSubmit = (data: EditUserFormOutput) => {
+    onSubmit(mapUserFormToDto(data, user));
   };
 
   const roleOptions = [

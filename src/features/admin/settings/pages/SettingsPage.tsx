@@ -1,28 +1,13 @@
 import { useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
 import { useSettings } from '@/features/settings/hooks/useSettings';
 import { useUpdateSettings } from '../hooks/useAdminSettings';
 import { ErrorState, LoadingState, Spinner } from '@/components/shared/ui';
 import { formatPrice } from '@/utils/cn';
 import { calcFinalTotalClient } from '@/utils/pricingClient';
 import { useEffect } from 'react';
-
-// ── Schemas ────────────────────────────────────────────────
-const restaurantInfoSchema = z.object({
-  restaurantName: z.string().min(1, 'Restaurant name is required'),
-});
-
-const pricingSchema = z.object({
-  taxRate: z.coerce.number().min(0).max(100, 'Must be 0–100'),
-  deliveryFee: z.coerce.number().min(0),
-  serviceFee: z.coerce.number().min(0),
-  freeDeliveryThreshold: z.coerce.number().min(0),
-});
-
-type RestaurantInfoForm = z.infer<typeof restaurantInfoSchema>;
-type PricingFormInput = z.input<typeof pricingSchema>;
-type PricingFormData = z.output<typeof pricingSchema>;
+import { restaurantInfoSchema, pricingSchema, type RestaurantInfoFormOutput, type PricingFormInput, type PricingFormOutput } from '../schemas/settings.schema';
+import { mapSettingsToInfoForm, mapSettingsToPricingForm, mapInfoFormToDto, mapPricingFormToDto } from '../mappers/settings.mapper';
 
 // ── Component ──────────────────────────────────────────────
 export default function SettingsPage() {
@@ -30,12 +15,12 @@ export default function SettingsPage() {
   const updateMutation = useUpdateSettings();
 
   // Restaurant info form
-  const infoForm = useForm<RestaurantInfoForm>({
+  const infoForm = useForm<RestaurantInfoFormOutput>({
     resolver: zodResolver(restaurantInfoSchema),
     defaultValues: { restaurantName: '' },
   });
 
-  const pricingForm = useForm<PricingFormInput, unknown, PricingFormData>({
+  const pricingForm = useForm<PricingFormInput, unknown, PricingFormOutput>({
     resolver: zodResolver(pricingSchema),
     defaultValues: {
       taxRate: '',
@@ -48,27 +33,17 @@ export default function SettingsPage() {
   // Populate forms when data arrives
   useEffect(() => {
     if (settings) {
-      infoForm.reset({ restaurantName: settings.restaurantName });
-      pricingForm.reset({
-        taxRate: parseFloat(settings.taxRate) * 100,
-        deliveryFee: parseFloat(settings.deliveryFee),
-        serviceFee: parseFloat(settings.serviceFee),
-        freeDeliveryThreshold: parseFloat(settings.freeDeliveryThreshold),
-      });
+      infoForm.reset(mapSettingsToInfoForm(settings));
+      pricingForm.reset(mapSettingsToPricingForm(settings));
     }
   }, [settings, infoForm, pricingForm]);
 
-  const onSaveInfo = (data: RestaurantInfoForm) => {
-    updateMutation.mutate({ restaurantName: data.restaurantName });
+  const onSaveInfo = (data: RestaurantInfoFormOutput) => {
+    updateMutation.mutate(mapInfoFormToDto(data));
   };
 
-  const onSavePricing = (data: PricingFormData) => {
-    updateMutation.mutate({
-      taxRate: data.taxRate / 100,
-      deliveryFee: data.deliveryFee,
-      serviceFee: data.serviceFee,
-      freeDeliveryThreshold: data.freeDeliveryThreshold,
-    });
+  const onSavePricing = (data: PricingFormOutput) => {
+    updateMutation.mutate(mapPricingFormToDto(data));
   };
 
   const watchedPricing = useWatch({

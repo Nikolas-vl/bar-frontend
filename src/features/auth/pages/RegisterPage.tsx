@@ -1,31 +1,14 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
 import { toast } from 'sonner';
 import { authApi } from '@/api/auth.api';
 import { useAuthStore } from '@/store/auth.store';
 import { getErrorMessage } from '@/api/client';
 import { cn } from '@/utils/cn';
 import { Spinner } from '@/components/shared/ui';
-
-const schema = z
-  .object({
-    name: z.string().min(1, 'Name is required'),
-    email: z.email('Invalid email address'),
-    phone: z
-      .string()
-      .min(1, 'Phone number is required')
-      .regex(/^\+?[0-9\s\-().]{7,20}$/, 'Invalid phone number'),
-    password: z.string().min(6, 'Password must be at least 6 characters'),
-    confirmPassword: z.string(),
-  })
-  .refine(data => data.password === data.confirmPassword, {
-    message: 'Passwords do not match',
-    path: ['confirmPassword'],
-  });
-
-type FormData = z.infer<typeof schema>;
+import { registerSchema, type RegisterFormOutput } from '../schemas/auth.schema';
+import { mapRegisterFormToDto } from '../mappers/auth.mapper';
+import { zodResolver } from '@hookform/resolvers/zod';
 
 export default function RegisterPage() {
   const { setAuth } = useAuthStore();
@@ -35,16 +18,11 @@ export default function RegisterPage() {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
-  } = useForm<FormData>({ resolver: zodResolver(schema) });
+  } = useForm<RegisterFormOutput>({ resolver: zodResolver(registerSchema) });
 
-  const onSubmit = async (data: FormData) => {
+  const onSubmit = async (data: RegisterFormOutput) => {
     try {
-      const { accessToken, user } = await authApi.register({
-        name: data.name,
-        email: data.email,
-        phone: data.phone,
-        password: data.password,
-      });
+      const { accessToken, user } = await authApi.register(mapRegisterFormToDto(data));
       setAuth(user, accessToken);
       toast.success(`Welcome to Jolie, ${user.name}! ☕`);
       navigate('/', { replace: true });

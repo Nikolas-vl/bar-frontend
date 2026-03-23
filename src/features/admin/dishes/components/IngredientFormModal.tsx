@@ -1,24 +1,18 @@
+import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-import { useEffect } from 'react';
 import { AdminModal } from '@/features/admin/components/AdminModal';
 import { Spinner } from '@/components/shared/ui';
 import type { Ingredient } from '@/types';
-
-const ingredientSchema = z.object({
-  name: z.string().min(1, 'Name is required'),
-  price: z.coerce.number().min(0, 'Price must be 0 or above'),
-});
-
-type IngredientFormInput = z.input<typeof ingredientSchema>;
-type IngredientFormOutput = z.output<typeof ingredientSchema>;
+import { ingredientSchema, type IngredientFormInput, type IngredientFormOutput } from '../schemas/ingredient.schema';
+import { mapIngredientToForm, mapIngredientFormToDto } from '../mappers/ingredient.mapper';
+import type { CreateIngredientDto } from '../dto/ingredient.dto';
 
 interface IngredientFormModalProps {
   isOpen: boolean;
   onClose: () => void;
   ingredient: Ingredient | null;
-  onSubmit: (data: IngredientFormOutput) => void;
+  onSubmit: (data: CreateIngredientDto) => void;
   isPending: boolean;
 }
 
@@ -31,7 +25,7 @@ export function IngredientFormModal({ isOpen, onClose, ingredient, onSubmit, isP
   useEffect(() => {
     if (isOpen) {
       if (ingredient) {
-        reset({ name: ingredient.name, price: parseFloat(ingredient.price) });
+        reset(mapIngredientToForm(ingredient));
       } else {
         reset({ name: '', price: 0 });
       }
@@ -54,7 +48,7 @@ export function IngredientFormModal({ isOpen, onClose, ingredient, onSubmit, isP
         </>
       }
     >
-      <form id='ingredient-form' onSubmit={handleSubmit(onSubmit)} className='space-y-4'>
+      <form id='ingredient-form' onSubmit={handleSubmit((data) => onSubmit(mapIngredientFormToDto(data)))} className='space-y-4'>
         <div className='space-y-1.5'>
           <label htmlFor='ing-name' className='label'>Name</label>
           <input id='ing-name' type='text' className={errors.name ? 'input input-error' : 'input'} {...register('name')} />

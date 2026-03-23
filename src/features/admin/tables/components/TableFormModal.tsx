@@ -1,27 +1,20 @@
 import { useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
 import { useEffect } from 'react';
 import { AdminModal } from '@/features/admin/components/AdminModal';
 import { Spinner } from '@/components/shared/ui';
 import { Select } from '@/components/shared/ui';
 import type { Table, Location } from '@/types';
-
-const tableSchema = z.object({
-  number: z.coerce.number().int().positive('Must be a positive integer'),
-  capacity: z.coerce.number().int().min(1, 'Min capacity is 1'),
-  locationId: z.coerce.number().int().positive('Select a location'),
-});
-
-type TableFormInput = z.input<typeof tableSchema>;
-type TableFormOutput = z.output<typeof tableSchema>;
+import { tableSchema, type TableFormInput, type TableFormOutput } from '../schemas/table.schema';
+import { mapTableToForm, mapTableFormToDto } from '../mappers/table.mapper';
+import type { CreateTableDto } from '../dto/table.dto';
 
 interface TableFormModalProps {
   isOpen: boolean;
   onClose: () => void;
   table: Table | null;
   locations: Location[];
-  onSubmit: (data: TableFormOutput) => void;
+  onSubmit: (data: CreateTableDto) => void;
   isPending: boolean;
 }
 
@@ -47,7 +40,7 @@ export function TableFormModal({ isOpen, onClose, table, locations, onSubmit, is
   useEffect(() => {
     if (isOpen) {
       if (table) {
-        reset({ number: table.number, capacity: table.capacity, locationId: table.locationId });
+        reset(mapTableToForm(table));
       } else {
         reset({ number: 1, capacity: 2, locationId: locations[0]?.id ?? 0 });
       }
@@ -74,7 +67,7 @@ export function TableFormModal({ isOpen, onClose, table, locations, onSubmit, is
         </>
       }
     >
-      <form id='table-form' onSubmit={handleSubmit(onSubmit)} className='space-y-4'>
+      <form id='table-form' onSubmit={handleSubmit((data) => onSubmit(mapTableFormToDto(data)))} className='space-y-4'>
         <div className='grid grid-cols-2 gap-4'>
           <div className='space-y-1.5'>
             <label htmlFor='table-number' className='label'>

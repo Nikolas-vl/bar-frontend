@@ -1,27 +1,18 @@
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
 import { useEffect } from 'react';
 import { AdminModal } from '@/features/admin/components/AdminModal';
 import { Spinner } from '@/components/shared/ui';
 import type { Location } from '@/types';
-
-const locationSchema = z.object({
-  name: z.string().min(1, 'Name is required'),
-  address: z.string().min(1, 'Address is required'),
-  phone: z.string().min(1, 'Phone is required'),
-  email: z.email('Must be a valid email'),
-  openingHours: z.string().min(1, 'Opening hours required'),
-  isActive: z.boolean(),
-});
-
-type LocationFormData = z.infer<typeof locationSchema>;
+import { locationSchema, type LocationFormInput, type LocationFormOutput } from '../schemas/location.schema';
+import { mapLocationToForm, mapLocationFormToDto } from '../mappers/location.mapper';
+import type { CreateLocationDto } from '../dto/location.dto';
 
 interface LocationFormModalProps {
   isOpen: boolean;
   onClose: () => void;
   location: Location | null;
-  onSubmit: (data: LocationFormData) => void;
+  onSubmit: (data: CreateLocationDto) => void;
   isPending: boolean;
 }
 
@@ -31,7 +22,7 @@ export function LocationFormModal({ isOpen, onClose, location, onSubmit, isPendi
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm<LocationFormData>({
+  } = useForm<LocationFormInput, unknown, LocationFormOutput>({
     resolver: zodResolver(locationSchema),
     defaultValues: {
       name: '',
@@ -46,14 +37,7 @@ export function LocationFormModal({ isOpen, onClose, location, onSubmit, isPendi
   useEffect(() => {
     if (isOpen) {
       if (location) {
-        reset({
-          name: location.name,
-          address: location.address,
-          phone: location.phone,
-          email: location.email,
-          openingHours: location.openingHours,
-          isActive: location.isActive,
-        });
+        reset(mapLocationToForm(location));
       } else {
         reset({ name: '', address: '', phone: '', email: '', openingHours: '', isActive: true });
       }
@@ -77,7 +61,7 @@ export function LocationFormModal({ isOpen, onClose, location, onSubmit, isPendi
         </>
       }
     >
-      <form id='location-form' onSubmit={handleSubmit(onSubmit)} className='space-y-4'>
+      <form id='location-form' onSubmit={handleSubmit((data) => onSubmit(mapLocationFormToDto(data)))} className='space-y-4'>
         <div className='space-y-1.5'>
           <label htmlFor='loc-name' className='label'>
             Name

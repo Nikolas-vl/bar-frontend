@@ -1,35 +1,13 @@
 import { useEffect } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
 import { AdminModal } from '@/features/admin/components/AdminModal';
 import { Select, Spinner } from '@/components/shared/ui';
 import type { Dish } from '@/types';
 
-// ── Schema ─────────────────────────────────────────────────────────────────
-
-const optionalNumber = (min = 0) =>
-  z.preprocess(val => {
-    if (val === '' || val == null) return undefined;
-    const num = Number(val);
-    return isNaN(num) ? undefined : num;
-  }, z.number().min(min).optional());
-
-const dishSchema = z.object({
-  name: z.string().min(1, 'Name is required'),
-  description: z.string().optional(),
-  price: z.coerce.number().min(0.01, 'Price must be at least 0.01'),
-  imageUrl: z.preprocess(val => (val === '' ? undefined : val), z.string().url('Must be a valid URL').optional()),
-  calories: optionalNumber(0),
-  protein: optionalNumber(0),
-  fat: optionalNumber(0),
-  carbs: optionalNumber(0),
-  category: z.enum(['BREAKFAST', 'LUNCH']),
-  isAvailable: z.boolean(),
-});
-
-type DishFormInput = z.input<typeof dishSchema>;
-type DishFormOutput = z.output<typeof dishSchema>;
+import { mapDishToForm, mapDishFormToDto } from '../mappers/dish.mapper';
+import { dishSchema, type DishFormInput, type DishFormOutput } from '../schemas/dish.schema';
+import type { CreateDishDto } from '../dto/dish.dto';
 
 // ── Props ──────────────────────────────────────────────────────────────────
 
@@ -37,7 +15,7 @@ interface DishFormModalProps {
   isOpen: boolean;
   onClose: () => void;
   dish: Dish | null;
-  onSubmit: (data: DishFormOutput) => void;
+  onSubmit: (data: CreateDishDto) => void;
   isPending: boolean;
 }
 
@@ -85,18 +63,7 @@ export function DishFormModal({ isOpen, onClose, dish, onSubmit, isPending }: Di
     if (!isOpen) return;
 
     if (dish) {
-      reset({
-        name: dish.name,
-        description: dish.description ?? undefined,
-        price: parseFloat(dish.price),
-        imageUrl: dish.imageUrl ?? undefined,
-        calories: dish.calories ?? undefined,
-        protein: dish.protein ?? undefined,
-        fat: dish.fat ?? undefined,
-        carbs: dish.carbs ?? undefined,
-        category: dish.category,
-        isAvailable: dish.isAvailable,
-      });
+      reset(mapDishToForm(dish));
     } else {
       reset(EMPTY_DEFAULTS);
     }
@@ -120,7 +87,7 @@ export function DishFormModal({ isOpen, onClose, dish, onSubmit, isPending }: Di
         </>
       }
     >
-      <form id='dish-form' onSubmit={handleSubmit(onSubmit)} className='space-y-4'>
+      <form id='dish-form' onSubmit={handleSubmit((data) => onSubmit(mapDishFormToDto(data)))} className='space-y-4'>
         {/* Name */}
         <div className='space-y-1.5'>
           <label htmlFor='dish-name' className='label'>
