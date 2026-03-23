@@ -8,6 +8,7 @@ import { IngredientTable } from '../components/IngredientTable';
 import { IngredientFormModal } from '../components/IngredientFormModal';
 import { ConfirmDialog } from '@/features/admin/components/ConfirmDialog';
 import { SearchInput } from '@/features/admin/components/SearchInput';
+import { FilterPills } from '@/features/admin/components/FilterPills';
 import { Skeleton } from '@/components/shared/ui';
 import { IconPlus } from '@/assets/icons';
 import { cn } from '@/utils/cn';
@@ -85,21 +86,12 @@ export default function DishesPage() {
           <div className='flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4'>
             <div className='flex flex-wrap items-center gap-3'>
               <SearchInput value={searchInput} onChange={setSearchInput} placeholder='Search dishes…' className='w-64' />
-              <div className='flex gap-1'>
-                {CATEGORIES.map(cat => (
-                  <button
-                    key={cat.value}
-                    type='button'
-                    onClick={() => setCategoryFilter(cat.value)}
-                    className={cn(
-                      'px-3 py-1.5 text-xs font-medium rounded-full transition-colors',
-                      categoryFilter === cat.value ? 'bg-ob-caramel text-white' : 'bg-ob-blue text-ob-text hover:bg-ob-border',
-                    )}
-                  >
-                    {cat.label}
-                  </button>
-                ))}
-              </div>
+              <FilterPills
+                options={CATEGORIES.map(c => c.value)}
+                value={categoryFilter}
+                onChange={v => setCategoryFilter(v as Category | 'ALL')}
+                labelMap={Object.fromEntries(CATEGORIES.map(c => [c.value, c.label])) as Record<Category | 'ALL', string>}
+              />
             </div>
             <button type='button' className='btn-primary inline-flex items-center gap-2' onClick={() => setIsCreateDishOpen(true)}>
               <IconPlus className='w-4 h-4' /> Add Dish

@@ -1,6 +1,6 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useEffect, useRef, useCallback } from 'react';
 import { cn } from '@/utils/cn';
-import { useDebounce } from '@/hooks/useDebounce';
+import { useDebouncedSearch } from '@/hooks/useDebouncedSearch';
 import type { DishQuery, Category } from '@/types';
 
 interface DishFiltersProps {
@@ -18,8 +18,7 @@ function omitKeys<T extends object, K extends keyof T>(obj: T, ...keys: K[]): Om
 }
 
 export function DishFilters({ value, onChange, totalCount }: DishFiltersProps) {
-  const [searchInput, setSearchInput] = useState(value.search ?? '');
-  const debouncedSearch = useDebounce(searchInput);
+  const [searchInput, setSearchInput, debouncedSearch] = useDebouncedSearch(value.search ?? '', 900);
 
   const latestRef = useRef({ value, onChange });
   useEffect(() => {
@@ -71,7 +70,7 @@ export function DishFilters({ value, onChange, totalCount }: DishFiltersProps) {
   const clearAll = useCallback(() => {
     setSearchInput('');
     onChange({ isAvailable: value.isAvailable });
-  }, [value.isAvailable, onChange]);
+  }, [value.isAvailable, onChange, setSearchInput]);
 
   const currentSort = value.sortBy ? `${value.sortBy}:${value.sortOrder ?? 'asc'}` : '';
 

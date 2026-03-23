@@ -8,15 +8,17 @@ interface StatusSelectProps {
   isPending?: boolean;
   disabled?: boolean;
   className?: string;
+  placeholder?: string;
 }
 
-export function StatusSelect({ current, options, onChange, isPending = false, disabled, className }: StatusSelectProps) {
+export function StatusSelect({ current, options, onChange, isPending = false, disabled, className, placeholder }: StatusSelectProps) {
   return (
     <div className='inline-flex items-center gap-2'>
       <Select
         value={current}
         onChange={onChange}
         options={options}
+        placeholder={placeholder}
         disabled={disabled || isPending}
         className={className}
       />

@@ -7,10 +7,11 @@ import { AdminReservationModal } from '../components/AdminReservationModal';
 import { ConfirmDialog } from '@/features/admin/components/ConfirmDialog';
 import { AdminTable } from '@/features/admin/components/AdminTable';
 import { Pagination } from '@/features/admin/components/Pagination';
+import { FilterPills } from '@/features/admin/components/FilterPills';
 import { Select } from '@/components/shared/ui';
 import { ReservationStatusBadge } from '@/features/reservations/components/ReservationStatusBadge';
 import { IconPlus, IconEdit, IconTrash } from '@/assets/icons';
-import { formatDate, cn } from '@/utils/cn';
+import { formatDate } from '@/utils/cn';
 import { getErrorMessage } from '@/api/client';
 import type { Reservation } from '@/types';
 
@@ -144,27 +145,18 @@ export default function AdminReservationsPage() {
 
       {/* Filters */}
       <div className='flex flex-wrap items-center gap-4'>
-        <div className='flex gap-1'>
-          {STATUS_OPTIONS.map(s => (
-            <button
-              key={s}
-              type='button'
-              onClick={() => updateFilter('status', s)}
-              className={cn(
-                'px-3 py-1.5 text-xs font-medium rounded-full transition-colors',
-                filters.status === s ? 'bg-ob-caramel text-white' : 'bg-ob-blue text-ob-text hover:bg-ob-border',
-              )}
-            >
-              {s === 'ALL' ? 'All' : s}
-            </button>
-          ))}
-        </div>
+        <FilterPills
+          options={STATUS_OPTIONS}
+          value={filters.status as typeof STATUS_OPTIONS[number]}
+          onChange={v => updateFilter('status', v)}
+          labelMap={{ ALL: 'All' }}
+        />
 
         <input
           type='date'
           value={filters.date}
           onChange={e => updateFilter('date', e.target.value)}
-          className='input w-40'
+          className='input datetime-local-themed w-40'
           aria-label='Filter by date'
         />
 

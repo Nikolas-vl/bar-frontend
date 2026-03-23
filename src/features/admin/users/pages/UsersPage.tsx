@@ -6,6 +6,7 @@ import { ConfirmDialog } from '@/features/admin/components/ConfirmDialog';
 import { AdminTable } from '@/features/admin/components/AdminTable';
 import { Pagination } from '@/features/admin/components/Pagination';
 import { SearchInput } from '@/features/admin/components/SearchInput';
+import { FilterPills } from '@/features/admin/components/FilterPills';
 import { useDebounce } from '@/hooks/useDebounce';
 import { IconEdit, IconTrash } from '@/assets/icons';
 import { formatDateShort, cn } from '@/utils/cn';
@@ -92,21 +93,12 @@ export default function UsersPage() {
       <div className='flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4'>
         <div className='flex flex-wrap items-center gap-3'>
           <SearchInput value={filters.search} onChange={v => updateFilter('search', v)} placeholder='Search users…' className='w-64' />
-          <div className='flex gap-1'>
-            {ROLES.map(role => (
-              <button
-                key={role}
-                type='button'
-                onClick={() => updateFilter('role', role)}
-                className={cn(
-                  'px-3 py-1.5 text-xs font-medium rounded-full transition-colors',
-                  filters.role === role ? 'bg-ob-caramel text-white' : 'bg-ob-blue text-ob-text hover:bg-ob-border',
-                )}
-              >
-                {role === 'ALL' ? 'All' : role}
-              </button>
-            ))}
-          </div>
+          <FilterPills
+            options={ROLES}
+            value={filters.role as typeof ROLES[number]}
+            onChange={v => updateFilter('role', v)}
+            labelMap={{ ALL: 'All' }}
+          />
         </div>
         {data && <span className='text-sm text-ob-muted'>{data.total} users</span>}
       </div>

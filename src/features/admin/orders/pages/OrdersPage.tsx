@@ -4,11 +4,12 @@ import { useAdminOrders, useAdminUpdateOrderStatus, useAdminDeleteOrder } from '
 import { ConfirmDialog } from '@/features/admin/components/ConfirmDialog';
 import { AdminTable } from '@/features/admin/components/AdminTable';
 import { Pagination } from '@/features/admin/components/Pagination';
-import { Select } from '@/components/shared/ui';
-import { Spinner } from '@/components/shared/ui';
+import { StatusSelect } from '@/features/admin/components/StatusSelect';
+import { FilterPills } from '@/features/admin/components/FilterPills';
 import { OrderStatusBadge, PaymentStatusBadge } from '@/features/orders/components/orders/OrderStatusBadge';
 import { IconTrash } from '@/assets/icons';
-import { formatPrice, formatDate, cn } from '@/utils/cn';
+import { formatPrice, formatDate } from '@/utils/cn';
+import { ORDER_STATUS_TRANSITIONS } from '@/constants/order';
 import type { Order, OrderStatus, OrderType } from '@/types';
 
 const STATUS_OPTIONS = ['ALL', 'NEW', 'PAID', 'PREPARING', 'COMPLETED', 'CANCELED'] as const;
@@ -24,14 +25,6 @@ const ORDER_TYPE_LABEL: Record<OrderType, string> = {
   DINE_IN: 'Dine In',
   DELIVERY: 'Delivery',
   TAKE_OUT: 'Take Out',
-};
-
-const ALLOWED_TRANSITIONS: Record<OrderStatus, OrderStatus[]> = {
-  NEW: ['PAID', 'CANCELED'],
-  PAID: ['PREPARING', 'CANCELED'],
-  PREPARING: ['COMPLETED', 'CANCELED'],
-  COMPLETED: [],
-  CANCELED: [],
 };
 
 export default function AdminOrdersPage() {
@@ -112,8 +105,8 @@ export default function AdminOrdersPage() {
   ];
 
   const renderExpanded = (o: Order) => {
-    const transitions = ALLOWED_TRANSITIONS[o.status];
-    const transitionOptions = transitions.map(s => ({ value: s, label: s }));
+    const transitions = ORDER_STATUS_TRANSITIONS[o.status];
+    const transitionOptions = transitions.map((s: OrderStatus) => ({ value: s, label: s }));
 
     return (
       <div className='space-y-4'>
@@ -186,15 +179,14 @@ export default function AdminOrdersPage() {
         {transitions.length > 0 && (
           <div className='flex items-center gap-3 pt-3 border-t border-ob-border'>
             <span className='text-xs text-ob-muted'>Update status:</span>
-            <Select
-              value=''
-              onChange={v => updateStatusMutation.mutate({ id: o.id, status: v as OrderStatus })}
+            <StatusSelect
+              current=''
               options={transitionOptions}
+              onChange={v => updateStatusMutation.mutate({ id: o.id, status: v as OrderStatus })}
+              isPending={updateStatusMutation.isPending}
               placeholder='Select new status…'
-              disabled={updateStatusMutation.isPending}
               className='w-48'
             />
-            {updateStatusMutation.isPending && <Spinner variant='caramel' size='sm' />}
           </div>
         )}
       </div>
@@ -219,21 +211,12 @@ export default function AdminOrdersPage() {
       <h1 className='section-title'>Orders</h1>
 
       {/* Status filter */}
-      <div className='flex flex-wrap gap-1'>
-        {STATUS_OPTIONS.map(s => (
-          <button
-            key={s}
-            type='button'
-            onClick={() => updateFilter('status', s)}
-            className={cn(
-              'px-3 py-1.5 text-xs font-medium rounded-full transition-colors',
-              filters.status === s ? 'bg-ob-caramel text-white' : 'bg-ob-blue text-ob-text hover:bg-ob-border',
-            )}
-          >
-            {s === 'ALL' ? 'All' : s}
-          </button>
-        ))}
-      </div>
+      <FilterPills
+        options={STATUS_OPTIONS}
+        value={filters.status as (typeof STATUS_OPTIONS)[number]}
+        onChange={v => updateFilter('status', v)}
+        labelMap={{ ALL: 'All' }}
+      />
 
       <AdminTable
         columns={columns}

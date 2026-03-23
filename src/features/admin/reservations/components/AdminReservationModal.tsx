@@ -1,9 +1,9 @@
-import { useForm, useWatch } from 'react-hook-form';
+import { useForm, useWatch, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useEffect } from 'react';
 import { AdminModal } from '@/features/admin/components/AdminModal';
-import { Select, Spinner } from '@/components/shared/ui';
+import { Select, Spinner, DateTimePicker } from '@/components/shared/ui';
 import { useAdminTables } from '@/features/admin/tables/hooks/useAdminTables';
 import type { Reservation, ReservationStatus } from '@/types';
 
@@ -151,10 +151,19 @@ export function AdminReservationModal({
 
         <div className='grid grid-cols-1 sm:grid-cols-2 gap-4'>
           <div className='space-y-1.5'>
-            <label htmlFor='res-date' className='label'>
-              Date & Time *
-            </label>
-            <input id='res-date' type='datetime-local' className={errors.date ? 'input input-error' : 'input'} {...register('date')} />
+            <label className='label'>Date & Time *</label>
+            <Controller
+              name='date'
+              control={control}
+              render={({ field }) => (
+                <DateTimePicker
+                  value={field.value ?? ''}
+                  onChange={field.onChange}
+                  minDate={isEdit ? undefined : new Date()}
+                  hasError={!!errors.date}
+                />
+              )}
+            />
             {errors.date && <p className='field-error'>{errors.date.message}</p>}
           </div>
 
