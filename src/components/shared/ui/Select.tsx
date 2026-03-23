@@ -46,7 +46,7 @@ export function Select({ value, onChange, options, placeholder = 'Select…', di
           position='popper'
           sideOffset={6}
           className={cn(
-            'z-50 overflow-hidden',
+            'z-200 overflow-hidden',
             'w-(--radix-select-trigger-width)',
             'bg-ob-surface border border-ob-border rounded-xl',
             'shadow-[0_8px_24px_rgba(47,47,47,0.12)]',

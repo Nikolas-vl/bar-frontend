@@ -1,4 +1,5 @@
-import { useEffect, useRef, type ReactNode } from 'react';
+import { useEffect, type ReactNode } from 'react';
+import { createPortal } from 'react-dom';
 import { cn } from '@/utils/cn';
 import { IconClose } from '@/assets/icons';
 
@@ -20,75 +21,51 @@ const SIZE_CLASS: Record<ModalSize, string> = {
 };
 
 export function AdminModal({ isOpen, onClose, title, children, size = 'md', footer }: AdminModalProps) {
-  const dialogRef = useRef<HTMLDialogElement>(null);
-
+  // ESC to close
   useEffect(() => {
-    const dialog = dialogRef.current;
-    if (!dialog) return;
+    if (!isOpen) return;
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    document.addEventListener('keydown', handler);
+    return () => document.removeEventListener('keydown', handler);
+  }, [isOpen, onClose]);
 
-    if (isOpen) {
-      if (!dialog.open) dialog.showModal();
-    } else {
-      if (dialog.open) dialog.close();
-    }
+  // Prevent body scroll
+  useEffect(() => {
+    if (!isOpen) return;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = '';
+    };
   }, [isOpen]);
 
-  // Close on backdrop click
-  const handleBackdropClick = (e: React.MouseEvent<HTMLDialogElement>) => {
-    if (e.target === dialogRef.current) {
-      onClose();
-    }
-  };
+  if (!isOpen) return null;
 
-  // Close on Escape
-  useEffect(() => {
-    const dialog = dialogRef.current;
-    if (!dialog) return;
-    const handleCancel = (e: Event) => {
-      e.preventDefault();
-      onClose();
-    };
-    dialog.addEventListener('cancel', handleCancel);
-    return () => dialog.removeEventListener('cancel', handleCancel);
-  }, [onClose]);
-
-  return (
-    <dialog
-      ref={dialogRef}
-      onClick={handleBackdropClick}
+  return createPortal(
+    <div
+      role='dialog'
       aria-modal='true'
-      className={cn(
-        'backdrop:bg-black/40 backdrop:backdrop-blur-sm',
-        'bg-transparent p-0 m-auto',
-        'open:animate-in open:fade-in-0 open:zoom-in-95',
-        'w-[calc(100%-2rem)]',
-        SIZE_CLASS[size],
-      )}
+      className='fixed inset-0 z-100 flex items-center justify-center p-4'
+      onMouseDown={e => {
+        if (e.target === e.currentTarget) onClose();
+      }}
     >
-      <div className='card p-0 overflow-hidden'>
-        {/* Header */}
+      <div className='absolute inset-0 bg-black/40 backdrop-blur-sm' />
+
+      <div className={cn('relative card p-0 overflow-hidden w-full', SIZE_CLASS[size])}>
         <div className='flex items-center justify-between px-6 py-4 border-b border-ob-border'>
           <h2 className='text-lg font-display font-semibold text-ob-text'>{title}</h2>
-          <button
-            type='button'
-            onClick={onClose}
-            className='btn-icon-ghost'
-            aria-label='Close modal'
-          >
+          <button type='button' onClick={onClose} className='btn-icon-ghost' aria-label='Close modal'>
             <IconClose className='w-5 h-5' />
           </button>
         </div>
 
-        {/* Body */}
         <div className='px-6 py-5 max-h-[70vh] overflow-y-auto'>{children}</div>
 
-        {/* Footer */}
-        {footer && (
-          <div className='flex items-center justify-end gap-3 px-6 py-4 border-t border-ob-border bg-ob-bg/50'>
-            {footer}
-          </div>
-        )}
+        {footer && <div className='flex items-center justify-end gap-3 px-6 py-4 border-t border-ob-border bg-ob-bg/50'>{footer}</div>}
       </div>
-    </dialog>
+    </div>,
+    document.body,
   );
 }

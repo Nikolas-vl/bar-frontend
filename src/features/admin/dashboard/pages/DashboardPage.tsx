@@ -16,6 +16,16 @@ const ORDER_TYPE_ICON: Record<OrderType, string> = {
   TAKE_OUT: '🥡',
 };
 
+function formatElapsed(minutes: number): string {
+  if (minutes < 60) return `${minutes}m ago`;
+  const h = Math.floor(minutes / 60);
+  const m = minutes % 60;
+  if (h < 24) return m > 0 ? `${h}h ${m}m ago` : `${h}h ago`;
+  const d = Math.floor(h / 24);
+  const rh = h % 24;
+  return rh > 0 ? `${d}d ${rh}h ago` : `${d}d ago`;
+}
+
 export default function DashboardPage() {
   const navigate = useNavigate();
   const today = useMemo(() => new Date().toISOString().slice(0, 10), []);
@@ -69,7 +79,7 @@ export default function DashboardPage() {
   }, [reservationsData, today]);
 
   if (isLoading) {
-    return <LoadingState message="Loading dashboard statistics..." />;
+    return <LoadingState message='Loading dashboard statistics...' />;
   }
 
   return (
@@ -97,7 +107,7 @@ export default function DashboardPage() {
           icon={<IconClock className='w-5 h-5 text-ob-error' />}
           label='Pending Orders'
           primary={String(stats.pendingCount)}
-          secondary={stats.oldestPendingMinutes > 0 ? `Oldest: ${stats.oldestPendingMinutes}m ago` : 'None pending'}
+          secondary={stats.oldestPendingMinutes > 0 ? `Oldest: ${formatElapsed(stats.oldestPendingMinutes)}` : 'None pending'}
           accent={stats.pendingCount > 0}
         />
         <StatCard

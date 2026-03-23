@@ -28,6 +28,15 @@ const ORDER_TYPE_LABEL: Record<OrderType, string> = {
   TAKE_OUT: 'Take Out',
 };
 
+const STATUS_LABELS: Record<string, string> = {
+  ALL: 'All',
+  NEW: 'New',
+  PAID: 'Paid',
+  PREPARING: 'Preparing',
+  COMPLETED: 'Completed',
+  CANCELED: 'Canceled',
+};
+
 export default function AdminOrdersPage() {
   const { filters, page, setPage, updateFilter, resetFilters } = useFilteredPage({
     status: 'ALL' as string,
@@ -109,7 +118,10 @@ export default function AdminOrdersPage() {
 
   const renderExpanded = (o: Order) => {
     const transitions = ORDER_STATUS_TRANSITIONS[o.status];
-    const transitionOptions = transitions.map((s: OrderStatus) => ({ value: s, label: s }));
+    const transitionOptions = transitions.map((s: OrderStatus) => ({
+      value: s,
+      label: STATUS_LABELS[s] ?? s,
+    }));
 
     return (
       <div className='space-y-4'>
@@ -210,7 +222,7 @@ export default function AdminOrdersPage() {
           options={STATUS_OPTIONS}
           value={filters.status as (typeof STATUS_OPTIONS)[number]}
           onChange={v => updateFilter('status', v)}
-          labelMap={{ ALL: 'All' }}
+          labelMap={STATUS_LABELS as Record<(typeof STATUS_OPTIONS)[number], string>}
         />
 
         {isFiltered && (

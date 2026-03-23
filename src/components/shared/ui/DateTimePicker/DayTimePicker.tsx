@@ -5,6 +5,7 @@ import { cn } from '@/utils/cn';
 import { TimePicker } from './TimePicker';
 import { getHoursForDate, generateTimeSlots, isOpenDay } from '@/config/businessHours';
 import 'react-day-picker/dist/style.css';
+import { createPortal } from 'react-dom';
 
 // ─── Types ─────────────────────────────────────────────────────────────────
 
@@ -42,7 +43,9 @@ function snapToSlot(timeStr: string, slots: string[]): string {
 
 export function DateTimePicker({ value, onChange, minDate, hasError, placeholder = 'Pick a date & time…' }: DateTimePickerProps) {
   const [open, setOpen] = useState(false);
-  const containerRef = useRef<HTMLDivElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
+  const [anchorRect, setAnchorRect] = useState<DOMRect | null>(null);
 
   const currentDate = value && isValid(new Date(value)) ? new Date(value) : undefined;
 
@@ -61,19 +64,21 @@ export function DateTimePicker({ value, onChange, minDate, hasError, placeholder
   useEffect(() => {
     const handler = (e: MouseEvent) => {
       const target = e.target as Element;
-
-      // 1. Click is inside our own panel — keep open
-      if (containerRef.current?.contains(target)) return;
-
-      // 2. Click is inside any Radix portal (Select content, etc.) — keep open
+      if (buttonRef.current?.contains(target)) return;
+      if (panelRef.current?.contains(target)) return;
       if (target.closest('[data-radix-popper-content-wrapper]')) return;
-
       setOpen(false);
     };
-
     document.addEventListener('mousedown', handler);
     return () => document.removeEventListener('mousedown', handler);
   }, []);
+
+  const handleToggle = () => {
+    if (!open && buttonRef.current) {
+      setAnchorRect(buttonRef.current.getBoundingClientRect());
+    }
+    setOpen(v => !v);
+  };
 
   const handleDaySelect = (day: Date | undefined) => {
     if (!day) return;
@@ -98,11 +103,11 @@ export function DateTimePicker({ value, onChange, minDate, hasError, placeholder
   const hoursHint = currentDate ? `Open reservation hours ${minTime}-${maxTime}` : 'Mon-Fri 08:00-19:00 · Sat-Sun 08:00-09:30';
 
   return (
-    <div ref={containerRef} className='relative'>
-      {/* Trigger */}
+    <div>
       <button
+        ref={buttonRef}
         type='button'
-        onClick={() => setOpen(v => !v)}
+        onClick={handleToggle}
         className={cn(
           'flex items-center justify-between w-full px-4 py-3 rounded-xl text-sm text-left',
           'transition-all duration-200 focus:outline-none cursor-pointer',
@@ -116,86 +121,93 @@ export function DateTimePicker({ value, onChange, minDate, hasError, placeholder
         <span className='text-base shrink-0 ml-2 opacity-60'>📅</span>
       </button>
 
-      {/* Panel */}
-      {open && (
-        <div
-          className={cn(
-            'absolute z-50 top-[calc(100%+6px)] left-0',
-            'w-[320px]',
-            'bg-ob-surface border border-ob-border rounded-2xl',
-            'shadow-[0_8px_32px_rgba(47,47,47,0.14)]',
-            'p-4 flex flex-col gap-4',
-          )}
-        >
-          {/* Calendar */}
-          <DayPicker
-            mode='single'
-            selected={currentDate}
-            onSelect={handleDaySelect}
-            disabled={[
-              // Disable past dates
-              ...(minDate ? [{ before: minDate }] : []),
-              // Disable restaurant closed dates (holidays etc.)
-              (day: Date) => !isOpenDay(day),
-            ]}
-            showOutsideDays
-            classNames={{
-              root: 'w-full',
-              months: 'w-full',
-              month: 'w-full',
-              month_caption: 'flex justify-between items-center px-1 mb-2',
-              caption_label: 'font-display font-semibold text-sm text-ob-text',
-              nav: 'flex items-center gap-1',
-              button_previous: cn(
-                'w-7 h-7 flex items-center justify-center rounded-lg transition-colors',
-                'text-ob-muted hover:bg-ob-blue hover:text-ob-text focus:outline-none',
-              ),
-              button_next: cn(
-                'w-7 h-7 flex items-center justify-center rounded-lg transition-colors',
-                'text-ob-muted hover:bg-ob-blue hover:text-ob-text focus:outline-none',
-              ),
-              month_grid: 'w-full border-collapse',
-              weekdays: 'flex',
-              weekday: 'text-ob-muted text-[11px] font-semibold w-9 text-center py-1',
-              weeks: 'w-full',
-              week: 'flex w-full mt-1',
-              day: 'w-9 h-9 p-0',
-              day_button: cn(
-                'w-9 h-9 flex items-center justify-center rounded-xl',
-                'text-sm font-medium text-ob-text transition-colors cursor-pointer',
-                'hover:bg-ob-blue focus:outline-none',
-              ),
-              selected: '[&>button]:!bg-ob-caramel [&>button]:!text-white [&>button]:hover:!bg-ob-caramel-h',
-              today: '[&>button]:font-bold [&>button]:text-ob-caramel',
-              outside: '[&>button]:text-ob-light [&>button]:opacity-40',
-              disabled: '[&>button]:opacity-30 [&>button]:cursor-not-allowed [&>button]:hover:bg-transparent',
+      {open &&
+        anchorRect &&
+        createPortal(
+          <div
+            ref={panelRef}
+            className={cn(
+              'fixed z-200',
+              'w-[320px]',
+              'bg-ob-surface border border-ob-border rounded-2xl',
+              'shadow-[0_8px_32px_rgba(47,47,47,0.14)]',
+              'p-4 flex flex-col gap-4',
+            )}
+            style={{
+              top: anchorRect.bottom + 6,
+              left: Math.min(anchorRect.left, window.innerWidth - 332),
             }}
-          />
-
-          <div className='h-px bg-ob-border' />
-
-          {/* Time row */}
-          <div className='flex flex-col gap-2'>
-            <div className='flex items-center gap-3'>
-              <span className='text-xs font-semibold text-ob-muted shrink-0 uppercase tracking-wider'>Time</span>
-              <div className='flex-1'>
-                <TimePicker value={timeStr} onChange={handleTimeChange} minTime={minTime} maxTime={maxTime} />
-              </div>
-            </div>
-            <p className='text-[11px] text-ob-muted text-right'>🕐 {hoursHint}</p>
-          </div>
-
-          {/* Confirm */}
-          <button
-            type='button'
-            onClick={() => setOpen(false)}
-            disabled={!currentDate}
-            className='btn-primary w-full justify-center py-2.5 text-sm disabled:opacity-40'
           >
-            {currentDate ? `Confirm — ${format(currentDate, 'MMM d')} at ${timeStr}` : 'Select a date first'}
-          </button>
-        </div>
-      )}
+            {/* Calendar */}
+            <DayPicker
+              mode='single'
+              selected={currentDate}
+              onSelect={handleDaySelect}
+              disabled={[
+                // Disable past dates
+                ...(minDate ? [{ before: minDate }] : []),
+                // Disable restaurant closed dates (holidays etc.)
+                (day: Date) => !isOpenDay(day),
+              ]}
+              showOutsideDays
+              classNames={{
+                root: 'w-full',
+                months: 'w-full',
+                month: 'w-full',
+                month_caption: 'flex justify-between items-center px-1 mb-2',
+                caption_label: 'font-display font-semibold text-sm text-ob-text',
+                nav: 'flex items-center gap-1',
+                button_previous: cn(
+                  'w-7 h-7 flex items-center justify-center rounded-lg transition-colors',
+                  'text-ob-muted hover:bg-ob-blue hover:text-ob-text focus:outline-none',
+                ),
+                button_next: cn(
+                  'w-7 h-7 flex items-center justify-center rounded-lg transition-colors',
+                  'text-ob-muted hover:bg-ob-blue hover:text-ob-text focus:outline-none',
+                ),
+                month_grid: 'w-full border-collapse',
+                weekdays: 'flex',
+                weekday: 'text-ob-muted text-[11px] font-semibold w-9 text-center py-1',
+                weeks: 'w-full',
+                week: 'flex w-full mt-1',
+                day: 'w-9 h-9 p-0',
+                day_button: cn(
+                  'w-9 h-9 flex items-center justify-center rounded-xl',
+                  'text-sm font-medium text-ob-text transition-colors cursor-pointer',
+                  'hover:bg-ob-blue focus:outline-none',
+                ),
+                selected: '[&>button]:!bg-ob-caramel [&>button]:!text-white [&>button]:hover:!bg-ob-caramel-h',
+                today: '[&>button]:font-bold [&>button]:text-ob-caramel',
+                outside: '[&>button]:text-ob-light [&>button]:opacity-40',
+                disabled: '[&>button]:opacity-30 [&>button]:cursor-not-allowed [&>button]:hover:bg-transparent',
+              }}
+            />
+
+            <div className='h-px bg-ob-border' />
+
+            {/* Time row */}
+            <div className='flex flex-col gap-2'>
+              <div className='flex items-center gap-3'>
+                <span className='text-xs font-semibold text-ob-muted shrink-0 uppercase tracking-wider'>Time</span>
+                <div className='flex-1'>
+                  <TimePicker value={timeStr} onChange={handleTimeChange} minTime={minTime} maxTime={maxTime} />
+                </div>
+              </div>
+              <p className='text-[11px] text-ob-muted text-right'>🕐 {hoursHint}</p>
+            </div>
+
+            {/* Confirm */}
+            <button
+              type='button'
+              onClick={() => setOpen(false)}
+              disabled={!currentDate}
+              className='btn-primary w-full justify-center py-2.5 text-sm disabled:opacity-40'
+            >
+              {currentDate ? `Confirm — ${format(currentDate, 'MMM d')} at ${timeStr}` : 'Select a date first'}
+            </button>
+          </div>,
+          document.body,
+        )}
     </div>
   );
 }
