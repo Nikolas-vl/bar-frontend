@@ -22,7 +22,7 @@ export default function AdminReservationsPage() {
   const { filters, page, setPage, updateFilter } = useFilteredPage({
     status: 'ALL' as string,
     date: '',
-    location: '',
+    location: 'all',
   });
 
   const { data: locations } = useAdminLocations();
@@ -55,11 +55,11 @@ export default function AdminReservationsPage() {
 
   const filteredData =
     data?.reservations?.filter(r => {
-      if (!filters.location) return true;
+      if (filters.location === 'all') return true;
       return r.table?.locationId === Number(filters.location);
     }) ?? [];
 
-  const locationOptions = [{ value: '', label: 'All Locations' }, ...(locations ?? []).map(l => ({ value: String(l.id), label: l.name }))];
+  const locationOptions = [{ value: 'all', label: 'All Locations' }, ...(locations ?? []).map(l => ({ value: String(l.id), label: l.name }))];
 
   const columns = [
     { key: 'id', header: '#', render: (r: Reservation) => <span className='font-mono text-xs text-ob-muted'>{r.id}</span> },

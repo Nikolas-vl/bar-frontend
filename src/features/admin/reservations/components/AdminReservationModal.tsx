@@ -1,24 +1,23 @@
-import { useForm, Controller } from 'react-hook-form';
+import { useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { AdminModal } from '@/features/admin/components/AdminModal';
 import { Select, Spinner } from '@/components/shared/ui';
 import { useAdminTables } from '@/features/admin/tables/hooks/useAdminTables';
-import { useAdminLocations } from '@/features/admin/locations/hooks/useAdminLocations';
-import { getErrorMessage } from '@/api/client';
 import type { Reservation, ReservationStatus } from '@/types';
 
 const reservationSchema = z.object({
   userId: z.coerce.number().int().positive('User ID is required'),
   date: z.string().min(1, 'Date is required'),
   guests: z.coerce.number().int().min(1, 'At least 1 guest'),
-  tableId: z.coerce.number().optional(),
+  tableId: z.preprocess(v => (v === '' ? undefined : v), z.coerce.number().optional()),
   status: z.enum(['PENDING', 'CONFIRMED', 'CANCELED']),
   comment: z.string().optional(),
 });
 
-type ReservationFormData = z.infer<typeof reservationSchema>;
+type ReservationFormInput = z.input<typeof reservationSchema>;
+type ReservationFormData = z.output<typeof reservationSchema>;
 
 interface AdminReservationModalProps {
   isOpen: boolean;
@@ -40,19 +39,18 @@ export function AdminReservationModal({
   error,
 }: AdminReservationModalProps) {
   const { data: tables } = useAdminTables();
-  const { data: locations } = useAdminLocations();
 
   const {
     register,
     handleSubmit,
     reset,
     setValue,
-    watch,
+    control,
     formState: { errors },
-  } = useForm<ReservationFormData>({
+  } = useForm<ReservationFormInput, unknown, ReservationFormData>({
     resolver: zodResolver(reservationSchema),
     defaultValues: {
-      userId: 0,
+      userId: '',
       date: '',
       guests: 1,
       tableId: undefined,
@@ -61,15 +59,15 @@ export function AdminReservationModal({
     },
   });
 
-  const currentStatus = watch('status');
-  const currentTableId = watch('tableId');
+  const currentStatus = useWatch({ control, name: 'status' });
+  const currentTableId = useWatch({ control, name: 'tableId' });
 
   useEffect(() => {
     if (isOpen) {
       if (reservation) {
         reset({
           userId: reservation.userId,
-          date: reservation.date.slice(0, 16), // YYYY-MM-DDTHH:MM
+          date: reservation.date.slice(0, 16),
           guests: reservation.guests,
           tableId: reservation.tableId ?? undefined,
           status: reservation.status,
@@ -77,7 +75,7 @@ export function AdminReservationModal({
         });
       } else {
         reset({
-          userId: 0,
+          userId: '',
           date: '',
           guests: 1,
           tableId: undefined,
@@ -105,7 +103,7 @@ export function AdminReservationModal({
   ];
 
   const onSubmit = (data: ReservationFormData) => {
-    const cleaned = {
+    const cleaned: ReservationFormData = {
       ...data,
       tableId: data.tableId === 0 ? undefined : data.tableId,
       comment: data.comment || undefined,
@@ -113,7 +111,7 @@ export function AdminReservationModal({
     if (isEdit) {
       onSubmitUpdate(cleaned);
     } else {
-      onSubmitCreate(cleaned as ReservationFormData);
+      onSubmitCreate(cleaned);
     }
   };
 
@@ -125,7 +123,9 @@ export function AdminReservationModal({
       size='md'
       footer={
         <>
-          <button type='button' className='btn-ghost' onClick={onClose} disabled={isPending}>Cancel</button>
+          <button type='button' className='btn-ghost' onClick={onClose} disabled={isPending}>
+            Cancel
+          </button>
           <button type='submit' form='reservation-form' className='btn-primary inline-flex items-center gap-2' disabled={isPending}>
             {isPending && <Spinner variant='white' size='sm' />}
             {isEdit ? 'Save Changes' : 'Create Reservation'}
@@ -135,7 +135,9 @@ export function AdminReservationModal({
     >
       <form id='reservation-form' onSubmit={handleSubmit(onSubmit)} className='space-y-4'>
         <div className='space-y-1.5'>
-          <label htmlFor='res-userId' className='label'>User ID {!isEdit && '*'}</label>
+          <label htmlFor='res-userId' className='label'>
+            User ID {!isEdit && '*'}
+          </label>
           <input
             id='res-userId'
             type='number'
@@ -149,25 +151,18 @@ export function AdminReservationModal({
 
         <div className='grid grid-cols-1 sm:grid-cols-2 gap-4'>
           <div className='space-y-1.5'>
-            <label htmlFor='res-date' className='label'>Date & Time *</label>
-            <input
-              id='res-date'
-              type='datetime-local'
-              className={errors.date ? 'input input-error' : 'input'}
-              {...register('date')}
-            />
+            <label htmlFor='res-date' className='label'>
+              Date & Time *
+            </label>
+            <input id='res-date' type='datetime-local' className={errors.date ? 'input input-error' : 'input'} {...register('date')} />
             {errors.date && <p className='field-error'>{errors.date.message}</p>}
           </div>
 
           <div className='space-y-1.5'>
-            <label htmlFor='res-guests' className='label'>Guests *</label>
-            <input
-              id='res-guests'
-              type='number'
-              min='1'
-              className={errors.guests ? 'input input-error' : 'input'}
-              {...register('guests')}
-            />
+            <label htmlFor='res-guests' className='label'>
+              Guests *
+            </label>
+            <input id='res-guests' type='number' min='1' className={errors.guests ? 'input input-error' : 'input'} {...register('guests')} />
             {errors.guests && <p className='field-error'>{errors.guests.message}</p>}
           </div>
         </div>
@@ -180,9 +175,7 @@ export function AdminReservationModal({
             options={tableOptions}
             placeholder='Select table'
           />
-          {error && (
-            <p className='field-error'>{error}</p>
-          )}
+          {error && <p className='field-error'>{error}</p>}
         </div>
 
         <div className='space-y-1.5'>
@@ -195,7 +188,9 @@ export function AdminReservationModal({
         </div>
 
         <div className='space-y-1.5'>
-          <label htmlFor='res-comment' className='label'>Comment</label>
+          <label htmlFor='res-comment' className='label'>
+            Comment
+          </label>
           <textarea id='res-comment' className='textarea' rows={3} {...register('comment')} />
         </div>
       </form>
