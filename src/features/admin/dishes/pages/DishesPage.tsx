@@ -10,7 +10,7 @@ import { ConfirmDialog } from '@/features/admin/components/ConfirmDialog';
 import { SearchInput } from '@/features/admin/components/SearchInput';
 import { FilterPills } from '@/features/admin/components/FilterPills';
 import { ErrorState, EmptyState, LoadingState } from '@/components/shared/ui';
-import { IconPlus } from '@/assets/icons';
+import { IconPlus, IconClose } from '@/assets/icons';
 import { cn } from '@/utils/cn';
 import type { Category, Dish, Ingredient } from '@/types';
 import { useDebouncedSearch } from '@/hooks/useDebouncedSearch';
@@ -41,6 +41,12 @@ export default function DishesPage() {
   const deleteDishMutation = useDeleteDish();
   const toggleMutation = useToggleDishAvailability();
 
+  const isDishFiltered = searchInput !== '' || categoryFilter !== 'ALL';
+  const clearDishFilters = () => {
+    setSearchInput('');
+    setCategoryFilter('ALL');
+  };
+
   const [editDish, setEditDish] = useState<Dish | null>(null);
   const [deleteDishTarget, setDeleteDishTarget] = useState<number | null>(null);
 
@@ -55,6 +61,8 @@ export default function DishesPage() {
   const deleteIngMutation = useDeleteIngredient();
 
   const [editIngredient, setEditIngredient] = useState<Ingredient | null>(null);
+  const isIngFiltered = ingSearch !== '';
+  const clearIngFilters = () => setIngSearch('');
   const [isCreateIngOpen, setIsCreateIngOpen] = useState(false);
   const [deleteIngTarget, setDeleteIngTarget] = useState<number | null>(null);
 
@@ -92,6 +100,12 @@ export default function DishesPage() {
                 onChange={v => setCategoryFilter(v as Category | 'ALL')}
                 labelMap={Object.fromEntries(CATEGORIES.map(c => [c.value, c.label])) as Record<Category | 'ALL', string>}
               />
+
+              {isDishFiltered && (
+                <button type='button' onClick={clearDishFilters} className='btn-ghost gap-2 text-ob-muted hover:text-ob-text'>
+                  <IconClose className='w-4 h-4' /> Clear Filters
+                </button>
+              )}
             </div>
             <button type='button' className='btn-primary inline-flex items-center gap-2' onClick={() => setIsCreateDishOpen(true)}>
               <IconPlus className='w-4 h-4' /> Add Dish
@@ -160,7 +174,14 @@ export default function DishesPage() {
       {activeTab === 'ingredients' && (
         <>
           <div className='flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4'>
+          <div className='flex flex-wrap items-center gap-4'>
             <SearchInput value={ingSearch} onChange={setIngSearch} placeholder='Search ingredients…' className='w-64' />
+            {isIngFiltered && (
+              <button type='button' onClick={clearIngFilters} className='btn-ghost gap-2 text-ob-muted hover:text-ob-text'>
+                <IconClose className='w-4 h-4' /> Clear Filters
+              </button>
+            )}
+          </div>
             <button type='button' className='btn-primary inline-flex items-center gap-2' onClick={() => setIsCreateIngOpen(true)}>
               <IconPlus className='w-4 h-4' /> Add Ingredient
             </button>

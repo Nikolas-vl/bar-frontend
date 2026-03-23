@@ -9,7 +9,7 @@ import { SearchInput } from '@/features/admin/components/SearchInput';
 import { FilterPills } from '@/features/admin/components/FilterPills';
 import { ErrorState } from '@/components/shared/ui';
 import { useDebounce } from '@/hooks/useDebounce';
-import { IconEdit, IconTrash } from '@/assets/icons';
+import { IconEdit, IconTrash, IconClose } from '@/assets/icons';
 import { formatDateShort, cn } from '@/utils/cn';
 import type { AdminUserWithDate } from '@/types';
 
@@ -17,10 +17,12 @@ const ROLES = ['ALL', 'USER', 'ADMIN'] as const;
 const LIMIT = 20;
 
 export default function UsersPage() {
-  const { filters, page, setPage, updateFilter } = useFilteredPage({
+  const { filters, page, setPage, updateFilter, resetFilters } = useFilteredPage({
     search: '',
     role: 'ALL' as string,
   });
+
+  const isFiltered = filters.search !== '' || filters.role !== 'ALL';
 
   const debouncedSearch = useDebounce(filters.search, 500);
 
@@ -91,6 +93,12 @@ export default function UsersPage() {
             onChange={v => updateFilter('role', v)}
             labelMap={{ ALL: 'All' }}
           />
+
+          {isFiltered && (
+            <button type='button' onClick={resetFilters} className='btn-ghost gap-2 text-ob-muted hover:text-ob-text'>
+              <IconClose className='w-4 h-4' /> Clear Filters
+            </button>
+          )}
         </div>
         {data && <span className='text-sm text-ob-muted'>{data.total} users</span>}
       </div>

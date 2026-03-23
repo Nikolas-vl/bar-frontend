@@ -9,5 +9,10 @@ export function useFilteredPage<T extends Record<string, unknown>>(initialFilter
     setPage(1);
   };
 
-  return { filters, page, setPage, updateFilter };
+  const resetFilters = () => {
+    setFilters(initialFilters);
+    setPage(1);
+  };
+
+  return { filters, page, setPage, updateFilter, resetFilters };
 }

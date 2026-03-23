@@ -5,7 +5,7 @@ import { useEffect } from 'react';
 import { AdminModal } from '@/features/admin/components/AdminModal';
 import { Select, Spinner, DateTimePicker } from '@/components/shared/ui';
 import { useAdminTables } from '@/features/admin/tables/hooks/useAdminTables';
-import type { Reservation, ReservationStatus } from '@/types';
+import type { Reservation } from '@/types';
 
 const reservationSchema = z.object({
   userId: z.coerce.number().int().positive('User ID is required'),
@@ -191,7 +191,7 @@ export function AdminReservationModal({
           <label className='label'>Status</label>
           <Select
             value={currentStatus}
-            onChange={v => setValue('status', v as ReservationStatus, { shouldValidate: true })}
+            onChange={v => setValue('status', v as z.infer<typeof reservationSchema>['status'], { shouldValidate: true })}
             options={statusOptions}
           />
         </div>

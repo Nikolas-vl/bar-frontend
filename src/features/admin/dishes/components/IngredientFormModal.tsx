@@ -11,18 +11,19 @@ const ingredientSchema = z.object({
   price: z.coerce.number().min(0, 'Price must be 0 or above'),
 });
 
-type IngredientFormData = z.infer<typeof ingredientSchema>;
+type IngredientFormInput = z.input<typeof ingredientSchema>;
+type IngredientFormOutput = z.output<typeof ingredientSchema>;
 
 interface IngredientFormModalProps {
   isOpen: boolean;
   onClose: () => void;
   ingredient: Ingredient | null;
-  onSubmit: (data: IngredientFormData) => void;
+  onSubmit: (data: IngredientFormOutput) => void;
   isPending: boolean;
 }
 
 export function IngredientFormModal({ isOpen, onClose, ingredient, onSubmit, isPending }: IngredientFormModalProps) {
-  const { register, handleSubmit, reset, formState: { errors } } = useForm<IngredientFormData>({
+  const { register, handleSubmit, reset, formState: { errors } } = useForm<IngredientFormInput, unknown, IngredientFormOutput>({
     resolver: zodResolver(ingredientSchema),
     defaultValues: { name: '', price: 0 },
   });

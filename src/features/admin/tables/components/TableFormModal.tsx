@@ -1,4 +1,4 @@
-import { useForm } from 'react-hook-form';
+import { useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useEffect } from 'react';
@@ -13,14 +13,15 @@ const tableSchema = z.object({
   locationId: z.coerce.number().int().positive('Select a location'),
 });
 
-type TableFormData = z.infer<typeof tableSchema>;
+type TableFormInput = z.input<typeof tableSchema>;
+type TableFormOutput = z.output<typeof tableSchema>;
 
 interface TableFormModalProps {
   isOpen: boolean;
   onClose: () => void;
   table: Table | null;
   locations: Location[];
-  onSubmit: (data: TableFormData) => void;
+  onSubmit: (data: TableFormOutput) => void;
   isPending: boolean;
 }
 
@@ -30,14 +31,18 @@ export function TableFormModal({ isOpen, onClose, table, locations, onSubmit, is
     handleSubmit,
     reset,
     setValue,
-    watch,
+    control,
     formState: { errors },
-  } = useForm<TableFormData>({
+  } = useForm<TableFormInput, unknown, TableFormOutput>({
     resolver: zodResolver(tableSchema),
     defaultValues: { number: 1, capacity: 2, locationId: 0 },
   });
 
-  const currentLocationId = watch('locationId');
+  const currentLocationId = useWatch({
+    control,
+    name: 'locationId',
+    defaultValue: 0,
+  });
 
   useEffect(() => {
     if (isOpen) {
@@ -62,12 +67,7 @@ export function TableFormModal({ isOpen, onClose, table, locations, onSubmit, is
           <button type='button' className='btn-ghost' onClick={onClose} disabled={isPending}>
             Cancel
           </button>
-          <button
-            type='submit'
-            form='table-form'
-            className='btn-primary inline-flex items-center gap-2'
-            disabled={isPending}
-          >
+          <button type='submit' form='table-form' className='btn-primary inline-flex items-center gap-2' disabled={isPending}>
             {isPending && <Spinner variant='white' size='sm' />}
             {table ? 'Save' : 'Create Table'}
           </button>
@@ -77,12 +77,16 @@ export function TableFormModal({ isOpen, onClose, table, locations, onSubmit, is
       <form id='table-form' onSubmit={handleSubmit(onSubmit)} className='space-y-4'>
         <div className='grid grid-cols-2 gap-4'>
           <div className='space-y-1.5'>
-            <label htmlFor='table-number' className='label'>Table Number</label>
+            <label htmlFor='table-number' className='label'>
+              Table Number
+            </label>
             <input id='table-number' type='number' min='1' className={errors.number ? 'input input-error' : 'input'} {...register('number')} />
             {errors.number && <p className='field-error'>{errors.number.message}</p>}
           </div>
           <div className='space-y-1.5'>
-            <label htmlFor='table-capacity' className='label'>Capacity</label>
+            <label htmlFor='table-capacity' className='label'>
+              Capacity
+            </label>
             <input id='table-capacity' type='number' min='1' className={errors.capacity ? 'input input-error' : 'input'} {...register('capacity')} />
             {errors.capacity && <p className='field-error'>{errors.capacity.message}</p>}
           </div>

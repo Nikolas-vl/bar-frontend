@@ -18,11 +18,7 @@ const optionalNumber = (min = 0) =>
 const dishSchema = z.object({
   name: z.string().min(1, 'Name is required'),
   description: z.string().optional(),
-  price: z.preprocess(val => {
-    if (val === '' || val == null) return undefined;
-    const num = Number(val);
-    return isNaN(num) ? undefined : num;
-  }, z.number().min(0.01)),
+  price: z.coerce.number().min(0.01, 'Price must be at least 0.01'),
   imageUrl: z.preprocess(val => (val === '' ? undefined : val), z.string().url('Must be a valid URL').optional()),
   calories: optionalNumber(0),
   protein: optionalNumber(0),
@@ -32,7 +28,8 @@ const dishSchema = z.object({
   isAvailable: z.boolean(),
 });
 
-type DishFormData = z.infer<typeof dishSchema>;
+type DishFormInput = z.input<typeof dishSchema>;
+type DishFormOutput = z.output<typeof dishSchema>;
 
 // ── Props ──────────────────────────────────────────────────────────────────
 
@@ -40,13 +37,11 @@ interface DishFormModalProps {
   isOpen: boolean;
   onClose: () => void;
   dish: Dish | null;
-  onSubmit: (data: DishFormData) => void;
+  onSubmit: (data: DishFormOutput) => void;
   isPending: boolean;
 }
 
 // ── Component ──────────────────────────────────────────────────────────────
-
-type DishFormInput = z.input<typeof dishSchema>;
 
 const EMPTY_DEFAULTS: DishFormInput = {
   name: '',
@@ -74,7 +69,7 @@ export function DishFormModal({ isOpen, onClose, dish, onSubmit, isPending }: Di
     reset,
     setValue,
     formState: { errors },
-  } = useForm<z.input<typeof dishSchema>, unknown, z.output<typeof dishSchema>>({
+  } = useForm<DishFormInput, unknown, DishFormOutput>({
     resolver: zodResolver(dishSchema),
     defaultValues: EMPTY_DEFAULTS,
   });

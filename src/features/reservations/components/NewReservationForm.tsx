@@ -33,7 +33,6 @@ export function NewReservationForm({ dishes }: NewReservationFormProps) {
 
   const preOrderSubtotal = preOrders.reduce((sum, e) => sum + parseFloat(e.dish.price) * e.quantity, 0);
 
-  // minDate as a Date object for DayPicker's disabled prop
   const minDate = new Date(minDateTimeLocal());
 
   const onSubmit = async (data: NewReservationFormData) => {

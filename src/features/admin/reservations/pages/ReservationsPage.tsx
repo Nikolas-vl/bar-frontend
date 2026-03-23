@@ -8,9 +8,9 @@ import { ConfirmDialog } from '@/features/admin/components/ConfirmDialog';
 import { AdminTable } from '@/features/admin/components/AdminTable';
 import { Pagination } from '@/features/admin/components/Pagination';
 import { FilterPills } from '@/features/admin/components/FilterPills';
-import { ErrorState, Select } from '@/components/shared/ui';
+import { ErrorState, Select, DateTimePicker } from '@/components/shared/ui';
 import { ReservationStatusBadge } from '@/features/reservations/components/ReservationStatusBadge';
-import { IconPlus, IconEdit, IconTrash } from '@/assets/icons';
+import { IconPlus, IconEdit, IconTrash, IconClose } from '@/assets/icons';
 import { formatDate } from '@/utils/cn';
 import { getErrorMessage } from '@/api/client';
 import type { Reservation } from '@/types';
@@ -20,11 +20,13 @@ const LIMIT = 20;
 
 export default function AdminReservationsPage() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const { filters, page, setPage, updateFilter } = useFilteredPage({
+  const { filters, page, setPage, updateFilter, resetFilters } = useFilteredPage({
     status: 'ALL' as string,
     date: '',
     location: 'all',
   });
+
+  const isFiltered = filters.status !== 'ALL' || filters.date !== '' || filters.location !== 'all';
 
   const { data: locations } = useAdminLocations();
 
@@ -134,26 +136,25 @@ export default function AdminReservationsPage() {
         </button>
       </div>
 
-      {/* Filters */}
       <div className='flex flex-wrap items-center gap-4'>
         <FilterPills
           options={STATUS_OPTIONS}
-          value={filters.status as typeof STATUS_OPTIONS[number]}
+          value={filters.status as (typeof STATUS_OPTIONS)[number]}
           onChange={v => updateFilter('status', v)}
           labelMap={{ ALL: 'All' }}
         />
 
-        <input
-          type='date'
-          value={filters.date}
-          onChange={e => updateFilter('date', e.target.value)}
-          className='input datetime-local-themed w-40'
-          aria-label='Filter by date'
-        />
+        <DateTimePicker value={filters.date} onChange={val => updateFilter('date', val)} aria-label='Filter by date' />
 
         <div className='w-48'>
           <Select value={filters.location} onChange={v => updateFilter('location', v)} options={locationOptions} placeholder='Filter by location' />
         </div>
+
+        {isFiltered && (
+          <button type='button' onClick={resetFilters} className='btn-ghost gap-2 text-ob-muted hover:text-ob-text'>
+            <IconClose className='w-4 h-4' /> Clear Filters
+          </button>
+        )}
       </div>
 
       <AdminTable
@@ -203,7 +204,6 @@ export default function AdminReservationsPage() {
         }}
       />
 
-      {/* Delete Confirm */}
       <ConfirmDialog
         isOpen={deleteTarget !== null}
         title='Delete reservation'

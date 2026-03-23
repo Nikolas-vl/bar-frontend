@@ -8,7 +8,7 @@ import { StatusSelect } from '@/features/admin/components/StatusSelect';
 import { FilterPills } from '@/features/admin/components/FilterPills';
 import { ErrorState } from '@/components/shared/ui';
 import { OrderStatusBadge, PaymentStatusBadge } from '@/features/orders/components/orders/OrderStatusBadge';
-import { IconTrash } from '@/assets/icons';
+import { IconTrash, IconClose } from '@/assets/icons';
 import { formatPrice, formatDate } from '@/utils/cn';
 import { ORDER_STATUS_TRANSITIONS } from '@/constants/order';
 import type { Order, OrderStatus, OrderType } from '@/types';
@@ -29,9 +29,11 @@ const ORDER_TYPE_LABEL: Record<OrderType, string> = {
 };
 
 export default function AdminOrdersPage() {
-  const { filters, page, setPage, updateFilter } = useFilteredPage({
+  const { filters, page, setPage, updateFilter, resetFilters } = useFilteredPage({
     status: 'ALL' as string,
   });
+
+  const isFiltered = filters.status !== 'ALL';
 
   const params = {
     page,
@@ -203,12 +205,20 @@ export default function AdminOrdersPage() {
       <h1 className='section-title'>Orders</h1>
 
       {/* Status filter */}
-      <FilterPills
-        options={STATUS_OPTIONS}
-        value={filters.status as (typeof STATUS_OPTIONS)[number]}
-        onChange={v => updateFilter('status', v)}
-        labelMap={{ ALL: 'All' }}
-      />
+      <div className='flex items-center gap-4'>
+        <FilterPills
+          options={STATUS_OPTIONS}
+          value={filters.status as (typeof STATUS_OPTIONS)[number]}
+          onChange={v => updateFilter('status', v)}
+          labelMap={{ ALL: 'All' }}
+        />
+
+        {isFiltered && (
+          <button type='button' onClick={resetFilters} className='btn-ghost gap-2 text-ob-muted hover:text-ob-text'>
+            <IconClose className='w-4 h-4' /> Clear Filters
+          </button>
+        )}
+      </div>
 
       <AdminTable
         columns={columns}

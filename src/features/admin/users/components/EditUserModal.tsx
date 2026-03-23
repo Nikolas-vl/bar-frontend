@@ -1,11 +1,11 @@
-import { useForm } from 'react-hook-form';
+import { useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useEffect } from 'react';
 import { AdminModal } from '@/features/admin/components/AdminModal';
 import { Spinner } from '@/components/shared/ui';
 import { Select } from '@/components/shared/ui';
-import type { AdminUserWithDate } from '@/api/admin/users.api';
+import type { AdminUserWithDate } from '@/types';
 
 const editUserSchema = z.object({
   name: z.string().optional(),
@@ -20,7 +20,7 @@ interface EditUserModalProps {
   isOpen: boolean;
   onClose: () => void;
   user: AdminUserWithDate | null;
-  onSubmit: (data: EditUserFormData) => void;
+  onSubmit: (data: Partial<EditUserFormData>) => void;
   isPending: boolean;
 }
 
@@ -30,14 +30,18 @@ export function EditUserModal({ isOpen, onClose, user, onSubmit, isPending }: Ed
     handleSubmit,
     reset,
     setValue,
-    watch,
+    control,
     formState: { errors },
   } = useForm<EditUserFormData>({
     resolver: zodResolver(editUserSchema),
     defaultValues: { name: '', phone: '', password: '', role: 'USER' },
   });
 
-  const currentRole = watch('role');
+  const currentRole = useWatch({
+    control,
+    name: 'role',
+    defaultValue: 'USER',
+  });
 
   useEffect(() => {
     if (isOpen && user) {
@@ -51,12 +55,12 @@ export function EditUserModal({ isOpen, onClose, user, onSubmit, isPending }: Ed
   }, [isOpen, user, reset]);
 
   const handleFormSubmit = (data: EditUserFormData) => {
-    const cleaned: Record<string, string | undefined> = {};
+    const cleaned: Partial<EditUserFormData> = {};
     if (data.name && data.name !== user?.name) cleaned.name = data.name;
     if (data.phone && data.phone !== user?.phone) cleaned.phone = data.phone;
     if (data.password) cleaned.password = data.password;
     if (data.role !== user?.role) cleaned.role = data.role;
-    onSubmit(cleaned as EditUserFormData);
+    onSubmit(cleaned);
   };
 
   const roleOptions = [
