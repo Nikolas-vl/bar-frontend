@@ -15,7 +15,7 @@ export interface CreateDishBody {
   ingredients?: { ingredientId: number; quantity: number; optional: boolean }[];
 }
 
-export interface UpdateDishBody extends Partial<CreateDishBody> {}
+export type UpdateDishBody = Partial<CreateDishBody>;
 
 export interface AddDishIngredientBody {
   ingredientId: number;
@@ -29,20 +29,15 @@ export interface UpdateDishIngredientBody {
 }
 
 export const adminDishesApi = {
-  getAll: (query?: DishQuery): Promise<Dish[]> =>
-    apiClient.get('/dishes', { params: query }).then(r => r.data),
+  getAll: (query?: DishQuery): Promise<Dish[]> => apiClient.get('/dishes', { params: query }).then(r => r.data),
 
-  getOne: (id: number): Promise<Dish> =>
-    apiClient.get(`/dishes/${id}`).then(r => r.data),
+  getOne: (id: number): Promise<Dish> => apiClient.get(`/dishes/${id}`).then(r => r.data),
 
-  create: (body: CreateDishBody): Promise<Dish> =>
-    apiClient.post('/dishes', body).then(r => r.data),
+  create: (body: CreateDishBody): Promise<Dish> => apiClient.post('/dishes', body).then(r => r.data),
 
-  update: (id: number, body: UpdateDishBody): Promise<Dish> =>
-    apiClient.patch(`/dishes/${id}`, body).then(r => r.data),
+  update: (id: number, body: UpdateDishBody): Promise<Dish> => apiClient.patch(`/dishes/${id}`, body).then(r => r.data),
 
-  delete: (id: number): Promise<void> =>
-    apiClient.delete(`/dishes/${id}`).then(r => r.data),
+  delete: (id: number): Promise<void> => apiClient.delete(`/dishes/${id}`).then(r => r.data),
 
   // Dish ingredients
   addIngredient: (dishId: number, body: AddDishIngredientBody): Promise<void> =>
@@ -61,18 +56,15 @@ export interface CreateIngredientBody {
   price: number;
 }
 
-export interface UpdateIngredientBody extends Partial<CreateIngredientBody> {}
+export type UpdateIngredientBody = Partial<CreateIngredientBody>;
 
 export const adminIngredientsApi = {
   getAll: (params?: { search?: string; sortBy?: string; sortOrder?: string }): Promise<Ingredient[]> =>
     apiClient.get('/ingredients', { params }).then(r => r.data),
 
-  create: (body: CreateIngredientBody): Promise<Ingredient> =>
-    apiClient.post('/ingredients', body).then(r => r.data),
+  create: (body: CreateIngredientBody): Promise<Ingredient> => apiClient.post('/ingredients', body).then(r => r.data),
 
-  update: (id: number, body: UpdateIngredientBody): Promise<Ingredient> =>
-    apiClient.patch(`/ingredients/${id}`, body).then(r => r.data),
+  update: (id: number, body: UpdateIngredientBody): Promise<Ingredient> => apiClient.patch(`/ingredients/${id}`, body).then(r => r.data),
 
-  delete: (id: number): Promise<void> =>
-    apiClient.delete(`/ingredients/${id}`).then(r => r.data),
+  delete: (id: number): Promise<void> => apiClient.delete(`/ingredients/${id}`).then(r => r.data),
 };

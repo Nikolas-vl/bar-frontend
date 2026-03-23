@@ -8,7 +8,7 @@ import { ReservationStatusBadge } from '@/features/reservations/components/Reser
 import { Skeleton } from '@/components/shared/ui';
 import { IconOrders, IconReservation, IconUsers, IconClock, IconPlus, IconArrowRight } from '@/assets/icons';
 import { formatPrice, formatDate, cn } from '@/utils/cn';
-import type { Order, Reservation, OrderType } from '@/types';
+import type { OrderType } from '@/types';
 
 const ORDER_TYPE_ICON: Record<OrderType, string> = {
   DINE_IN: '🍽️',
@@ -18,7 +18,7 @@ const ORDER_TYPE_ICON: Record<OrderType, string> = {
 
 export default function DashboardPage() {
   const navigate = useNavigate();
-  const today = new Date().toISOString().slice(0, 10);
+  const today = useMemo(() => new Date().toISOString().slice(0, 10), []);
 
   // Parallel data fetching
   const { data: ordersData, isLoading: ordersLoading } = useAdminOrders({ page: 1, limit: 100 });
@@ -30,24 +30,20 @@ export default function DashboardPage() {
 
   // ── Computed stats ────────────────────────────
   const stats = useMemo(() => {
-    const todayOrders = ordersData?.orders.filter(o =>
-      o.createdAt.startsWith(today),
-    ) ?? [];
+    const referenceNow = new Date();
+    const referenceTimestamp = referenceNow.getTime();
+
+    const todayOrders = ordersData?.orders.filter(o => o.createdAt.startsWith(today)) ?? [];
     const todayRevenue = todayOrders.reduce((sum, o) => sum + Number(o.total), 0);
 
-    const upcomingReservations = reservationsData?.data?.filter(r =>
-      new Date(r.date) >= new Date(),
-    ) ?? [];
+    const upcomingReservations = reservationsData?.reservations?.filter(r => new Date(r.date) >= referenceNow) ?? [];
     const nextReservation = upcomingReservations[0];
 
     const pending = pendingOrders?.orders ?? [];
-    const oldestPending = pending.length > 0
-      ? Math.round((Date.now() - new Date(pending[pending.length - 1].createdAt).getTime()) / 60000)
-      : 0;
+    const oldestPending =
+      pending.length > 0 ? Math.round((referenceTimestamp - new Date(pending[pending.length - 1].createdAt).getTime()) / 60000) : 0;
 
-    const todayUsers = usersData?.data?.filter(u =>
-      u.createdAt.startsWith(today),
-    ) ?? [];
+    const todayUsers = usersData?.users?.filter(u => u.createdAt.startsWith(today)) ?? [];
 
     return {
       todayOrderCount: todayOrders.length,
@@ -69,7 +65,7 @@ export default function DashboardPage() {
 
   // ── Today's reservations ──────────────────────
   const todaysReservations = useMemo(() => {
-    return reservationsData?.data?.filter(r => r.date.startsWith(today)) ?? [];
+    return reservationsData?.reservations?.filter(r => r.date.startsWith(today)) ?? [];
   }, [reservationsData, today]);
 
   if (isLoading) {
@@ -77,7 +73,9 @@ export default function DashboardPage() {
       <div className='page-container py-12 space-y-8'>
         <Skeleton className='h-8 w-48' />
         <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4'>
-          {Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className='h-28' />)}
+          {Array.from({ length: 4 }).map((_, i) => (
+            <Skeleton key={i} className='h-28' />
+          ))}
         </div>
         <Skeleton className='h-64' />
       </div>
@@ -129,18 +127,10 @@ export default function DashboardPage() {
         >
           <IconPlus className='w-4 h-4' /> New Reservation
         </button>
-        <button
-          type='button'
-          className='btn-secondary inline-flex items-center gap-2 text-sm'
-          onClick={() => navigate('/admin/dishes?action=new')}
-        >
+        <button type='button' className='btn-secondary inline-flex items-center gap-2 text-sm' onClick={() => navigate('/admin/dishes?action=new')}>
           <IconPlus className='w-4 h-4' /> New Dish
         </button>
-        <button
-          type='button'
-          className='btn-ghost inline-flex items-center gap-2 text-sm'
-          onClick={() => navigate('/admin/orders')}
-        >
+        <button type='button' className='btn-ghost inline-flex items-center gap-2 text-sm' onClick={() => navigate('/admin/orders')}>
           View All Orders <IconArrowRight className='w-4 h-4' />
         </button>
       </div>
@@ -168,19 +158,19 @@ export default function DashboardPage() {
                 </thead>
                 <tbody>
                   {recentOrders.map(o => (
-                    <tr
-                      key={o.id}
-                      className='cursor-pointer hover:bg-ob-blue/30 transition-colors'
-                      onClick={() => navigate('/admin/orders')}
-                    >
+                    <tr key={o.id} className='cursor-pointer hover:bg-ob-blue/30 transition-colors' onClick={() => navigate('/admin/orders')}>
                       <td className='font-mono text-xs'>#{o.id}</td>
-                      <td><span>{ORDER_TYPE_ICON[o.type]}</span></td>
-                      <td className='text-xs text-ob-muted truncate max-w-[120px]'>
-                        {o.items.map(i => i.dish.name).join(', ') || '—'}
+                      <td>
+                        <span>{ORDER_TYPE_ICON[o.type]}</span>
                       </td>
+                      <td className='text-xs text-ob-muted truncate max-w-[120px]'>{o.items.map(i => i.dish.name).join(', ') || '—'}</td>
                       <td className='font-mono text-xs font-semibold text-ob-caramel'>{formatPrice(o.total)}</td>
-                      <td><OrderStatusBadge status={o.status} /></td>
-                      <td><PaymentStatusBadge status={o.paymentStatus} type={o.payments?.[0]?.type} /></td>
+                      <td>
+                        <OrderStatusBadge status={o.status} />
+                      </td>
+                      <td>
+                        <PaymentStatusBadge status={o.paymentStatus} type={o.payments?.[0]?.type} />
+                      </td>
                       <td className='text-xs text-ob-muted whitespace-nowrap'>{formatDate(o.createdAt)}</td>
                     </tr>
                   ))}
@@ -214,15 +204,17 @@ export default function DashboardPage() {
                       <td>{r.guests}</td>
                       <td>
                         {r.table ? (
-                          <span className='text-sm'>#{r.table.number} — {r.table.location?.name}</span>
+                          <span className='text-sm'>
+                            #{r.table.number} — {r.table.location?.name}
+                          </span>
                         ) : (
                           <span className='text-sm italic text-ob-muted'>No table assigned</span>
                         )}
                       </td>
-                      <td><ReservationStatusBadge status={r.status} /></td>
-                      <td className='text-xs text-ob-muted'>
-                        {r.preOrders.length > 0 ? `${r.preOrders.length} items` : '—'}
+                      <td>
+                        <ReservationStatusBadge status={r.status} />
                       </td>
+                      <td className='text-xs text-ob-muted'>{r.preOrders.length > 0 ? `${r.preOrders.length} items` : '—'}</td>
                     </tr>
                   ))}
                 </tbody>

@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import { type ReactNode, Fragment } from 'react';
 import { Skeleton } from '@/components/shared/ui';
 import { cn } from '@/utils/cn';
 
@@ -94,5 +94,3 @@ export function AdminTable<T>({
     </div>
   );
 }
-
-import { Fragment } from 'react';

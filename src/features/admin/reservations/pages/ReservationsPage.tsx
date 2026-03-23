@@ -1,11 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import {
-  useAdminReservations,
-  useAdminCreateReservation,
-  useAdminUpdateReservation,
-  useAdminDeleteReservation,
-} from '../hooks/useAdminReservations';
+import { useFilteredPage } from '../../hooks/useFilteredPage';
+import { useAdminReservations, useAdminCreateReservation, useAdminUpdateReservation, useAdminDeleteReservation } from '../hooks/useAdminReservations';
 import { useAdminLocations } from '@/features/admin/locations/hooks/useAdminLocations';
 import { AdminReservationModal } from '../components/AdminReservationModal';
 import { ConfirmDialog } from '@/features/admin/components/ConfirmDialog';
@@ -22,21 +18,20 @@ const STATUS_OPTIONS = ['ALL', 'PENDING', 'CONFIRMED', 'CANCELED'] as const;
 const LIMIT = 20;
 
 export default function AdminReservationsPage() {
-  const [searchParams] = useSearchParams();
-  const [statusFilter, setStatusFilter] = useState<string>('ALL');
-  const [dateFilter, setDateFilter] = useState('');
-  const [locationFilter, setLocationFilter] = useState<string>('');
-  const [page, setPage] = useState(1);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const { filters, page, setPage, updateFilter } = useFilteredPage({
+    status: 'ALL' as string,
+    date: '',
+    location: '',
+  });
 
   const { data: locations } = useAdminLocations();
-
-  useEffect(() => { setPage(1); }, [statusFilter, dateFilter, locationFilter]);
 
   const params = {
     page,
     limit: LIMIT,
-    status: statusFilter === 'ALL' ? undefined : statusFilter,
-    date: dateFilter || undefined,
+    status: filters.status === 'ALL' ? undefined : filters.status,
+    date: filters.date || undefined,
   };
 
   const { data, isLoading, error, refetch } = useAdminReservations(params);
@@ -46,27 +41,25 @@ export default function AdminReservationsPage() {
   const deleteMutation = useAdminDeleteReservation();
 
   const [editTarget, setEditTarget] = useState<Reservation | null>(null);
-  const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<number | null>(null);
   const [formError, setFormError] = useState<string | null>(null);
 
-  // Open create modal from URL param
-  useEffect(() => {
-    if (searchParams.get('action') === 'new') setIsCreateOpen(true);
-  }, [searchParams]);
+  const [isCreateOpen, setIsCreateOpen] = useState(() => searchParams.get('action') === 'new');
 
+  if (searchParams.get('action') === 'new') {
+    const cleaned = new URLSearchParams(searchParams);
+    cleaned.delete('action');
+    setSearchParams(cleaned, { replace: true });
+  }
   const totalPages = data ? Math.ceil(data.total / LIMIT) : 1;
 
-  // Filter by location client-side (if the backend doesn't support it directly)
-  const filteredData = data?.data?.filter(r => {
-    if (!locationFilter) return true;
-    return r.table?.locationId === Number(locationFilter);
-  }) ?? [];
+  const filteredData =
+    data?.reservations?.filter(r => {
+      if (!filters.location) return true;
+      return r.table?.locationId === Number(filters.location);
+    }) ?? [];
 
-  const locationOptions = [
-    { value: '', label: 'All Locations' },
-    ...(locations ?? []).map(l => ({ value: String(l.id), label: l.name })),
-  ];
+  const locationOptions = [{ value: '', label: 'All Locations' }, ...(locations ?? []).map(l => ({ value: String(l.id), label: l.name }))];
 
   const columns = [
     { key: 'id', header: '#', render: (r: Reservation) => <span className='font-mono text-xs text-ob-muted'>{r.id}</span> },
@@ -81,7 +74,9 @@ export default function AdminReservationsPage() {
       header: 'Table',
       render: (r: Reservation) =>
         r.table ? (
-          <span className='text-sm'>Table #{r.table.number} — {r.table.location?.name}</span>
+          <span className='text-sm'>
+            Table #{r.table.number} — {r.table.location?.name}
+          </span>
         ) : (
           <span className='text-sm italic text-ob-muted'>Unassigned</span>
         ),
@@ -90,21 +85,33 @@ export default function AdminReservationsPage() {
     {
       key: 'preOrders',
       header: 'Pre-orders',
-      render: (r: Reservation) => (
-        <span className='text-xs text-ob-muted'>
-          {r.preOrders.length > 0 ? `${r.preOrders.length} items` : '—'}
-        </span>
-      ),
+      render: (r: Reservation) => <span className='text-xs text-ob-muted'>{r.preOrders.length > 0 ? `${r.preOrders.length} items` : '—'}</span>,
     },
     {
       key: 'actions',
       header: '',
       render: (r: Reservation) => (
         <div className='flex items-center gap-1 justify-end'>
-          <button type='button' onClick={e => { e.stopPropagation(); setEditTarget(r); }} className='btn-icon-ghost' aria-label='Edit reservation'>
+          <button
+            type='button'
+            onClick={e => {
+              e.stopPropagation();
+              setEditTarget(r);
+            }}
+            className='btn-icon-ghost'
+            aria-label='Edit reservation'
+          >
             <IconEdit className='w-4 h-4' />
           </button>
-          <button type='button' onClick={e => { e.stopPropagation(); setDeleteTarget(r.id); }} className='btn-icon-ghost text-ob-error' aria-label='Delete reservation'>
+          <button
+            type='button'
+            onClick={e => {
+              e.stopPropagation();
+              setDeleteTarget(r.id);
+            }}
+            className='btn-icon-ghost text-ob-error'
+            aria-label='Delete reservation'
+          >
             <IconTrash className='w-4 h-4' />
           </button>
         </div>
@@ -118,7 +125,9 @@ export default function AdminReservationsPage() {
       <div className='page-container py-12'>
         <div className='card p-8 text-center space-y-4'>
           <p className='text-ob-error'>Failed to load reservations</p>
-          <button type='button' className='btn-primary' onClick={() => refetch()}>Retry</button>
+          <button type='button' className='btn-primary' onClick={() => refetch()}>
+            Retry
+          </button>
         </div>
       </div>
     );
@@ -140,12 +149,10 @@ export default function AdminReservationsPage() {
             <button
               key={s}
               type='button'
-              onClick={() => setStatusFilter(s)}
+              onClick={() => updateFilter('status', s)}
               className={cn(
                 'px-3 py-1.5 text-xs font-medium rounded-full transition-colors',
-                statusFilter === s
-                  ? 'bg-ob-caramel text-white'
-                  : 'bg-ob-blue text-ob-text hover:bg-ob-border',
+                filters.status === s ? 'bg-ob-caramel text-white' : 'bg-ob-blue text-ob-text hover:bg-ob-border',
               )}
             >
               {s === 'ALL' ? 'All' : s}
@@ -155,14 +162,14 @@ export default function AdminReservationsPage() {
 
         <input
           type='date'
-          value={dateFilter}
-          onChange={e => setDateFilter(e.target.value)}
+          value={filters.date}
+          onChange={e => updateFilter('date', e.target.value)}
           className='input w-40'
           aria-label='Filter by date'
         />
 
         <div className='w-48'>
-          <Select value={locationFilter} onChange={setLocationFilter} options={locationOptions} placeholder='Filter by location' />
+          <Select value={filters.location} onChange={v => updateFilter('location', v)} options={locationOptions} placeholder='Filter by location' />
         </div>
       </div>
 
@@ -177,10 +184,13 @@ export default function AdminReservationsPage() {
 
       <Pagination page={page} totalPages={totalPages} onChange={setPage} />
 
-      {/* Create / Edit Modal */}
       <AdminReservationModal
         isOpen={!!editTarget || isCreateOpen}
-        onClose={() => { setEditTarget(null); setIsCreateOpen(false); setFormError(null); }}
+        onClose={() => {
+          setEditTarget(null);
+          setIsCreateOpen(false);
+          setFormError(null);
+        }}
         reservation={editTarget}
         isPending={createMutation.isPending || updateMutation.isPending}
         error={formError}

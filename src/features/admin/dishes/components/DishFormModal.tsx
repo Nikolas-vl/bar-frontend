@@ -1,26 +1,40 @@
-import { useForm } from 'react-hook-form';
+import { useEffect } from 'react';
+import { useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { useEffect } from 'react';
 import { AdminModal } from '@/features/admin/components/AdminModal';
-import { Spinner } from '@/components/shared/ui';
-import { Select } from '@/components/shared/ui';
+import { Select, Spinner } from '@/components/shared/ui';
 import type { Dish } from '@/types';
+
+// ── Schema ─────────────────────────────────────────────────────────────────
+
+const optionalNumber = (min = 0) =>
+  z.preprocess(val => {
+    if (val === '' || val == null) return undefined;
+    const num = Number(val);
+    return isNaN(num) ? undefined : num;
+  }, z.number().min(min).optional());
 
 const dishSchema = z.object({
   name: z.string().min(1, 'Name is required'),
   description: z.string().optional(),
-  price: z.coerce.number().min(0.01, 'Price must be above 0'),
-  imageUrl: z.string().url('Must be a valid URL').optional().or(z.literal('')),
-  calories: z.coerce.number().int().min(0).optional().or(z.literal('')),
-  protein: z.coerce.number().min(0).optional().or(z.literal('')),
-  fat: z.coerce.number().min(0).optional().or(z.literal('')),
-  carbs: z.coerce.number().min(0).optional().or(z.literal('')),
+  price: z.preprocess(val => {
+    if (val === '' || val == null) return undefined;
+    const num = Number(val);
+    return isNaN(num) ? undefined : num;
+  }, z.number().min(0.01)),
+  imageUrl: z.preprocess(val => (val === '' ? undefined : val), z.string().url('Must be a valid URL').optional()),
+  calories: optionalNumber(0),
+  protein: optionalNumber(0),
+  fat: optionalNumber(0),
+  carbs: optionalNumber(0),
   category: z.enum(['BREAKFAST', 'LUNCH']),
   isAvailable: z.boolean(),
 });
 
 type DishFormData = z.infer<typeof dishSchema>;
+
+// ── Props ──────────────────────────────────────────────────────────────────
 
 interface DishFormModalProps {
   isOpen: boolean;
@@ -30,81 +44,68 @@ interface DishFormModalProps {
   isPending: boolean;
 }
 
+// ── Component ──────────────────────────────────────────────────────────────
+
+type DishFormInput = z.input<typeof dishSchema>;
+
+const EMPTY_DEFAULTS: DishFormInput = {
+  name: '',
+  description: '',
+  price: '',
+  imageUrl: '',
+  calories: '',
+  protein: '',
+  fat: '',
+  carbs: '',
+  category: 'LUNCH',
+  isAvailable: true,
+};
+
+const CATEGORY_OPTIONS = [
+  { value: 'BREAKFAST', label: 'Breakfast' },
+  { value: 'LUNCH', label: 'Lunch' },
+];
+
 export function DishFormModal({ isOpen, onClose, dish, onSubmit, isPending }: DishFormModalProps) {
   const {
+    control,
     register,
     handleSubmit,
     reset,
     setValue,
-    watch,
     formState: { errors },
-  } = useForm<DishFormData>({
+  } = useForm<z.input<typeof dishSchema>, unknown, z.output<typeof dishSchema>>({
     resolver: zodResolver(dishSchema),
-    defaultValues: {
-      name: '',
-      description: '',
-      price: 0,
-      imageUrl: '',
-      calories: '',
-      protein: '',
-      fat: '',
-      carbs: '',
-      category: 'LUNCH',
-      isAvailable: true,
-    },
+    defaultValues: EMPTY_DEFAULTS,
   });
 
-  const category = watch('category');
+  const category = useWatch({
+    control,
+    name: 'category',
+    defaultValue: 'LUNCH',
+  });
 
+  // Populate form when modal opens
   useEffect(() => {
-    if (isOpen) {
-      if (dish) {
-        reset({
-          name: dish.name,
-          description: dish.description ?? '',
-          price: parseFloat(dish.price),
-          imageUrl: dish.imageUrl ?? '',
-          calories: dish.calories ?? '',
-          protein: dish.protein ?? '',
-          fat: dish.fat ?? '',
-          carbs: dish.carbs ?? '',
-          category: dish.category,
-          isAvailable: dish.isAvailable,
-        });
-      } else {
-        reset({
-          name: '',
-          description: '',
-          price: 0,
-          imageUrl: '',
-          calories: '',
-          protein: '',
-          fat: '',
-          carbs: '',
-          category: 'LUNCH',
-          isAvailable: true,
-        });
-      }
+    if (!isOpen) return;
+
+    if (dish) {
+      reset({
+        name: dish.name,
+        description: dish.description ?? undefined,
+        price: parseFloat(dish.price),
+        imageUrl: dish.imageUrl ?? undefined,
+        calories: dish.calories ?? undefined,
+        protein: dish.protein ?? undefined,
+        fat: dish.fat ?? undefined,
+        carbs: dish.carbs ?? undefined,
+        category: dish.category,
+        isAvailable: dish.isAvailable,
+      });
+    } else {
+      reset(EMPTY_DEFAULTS);
     }
   }, [isOpen, dish, reset]);
-
-  const handleFormSubmit = (data: DishFormData) => {
-    const cleaned = {
-      ...data,
-      imageUrl: data.imageUrl || undefined,
-      description: data.description || undefined,
-      calories: data.calories === '' ? undefined : Number(data.calories),
-      protein: data.protein === '' ? undefined : Number(data.protein),
-      fat: data.fat === '' ? undefined : Number(data.fat),
-      carbs: data.carbs === '' ? undefined : Number(data.carbs),
-    };
-    onSubmit(cleaned as DishFormData);
-  };
-
-  const categoryOptions = [
-    { value: 'BREAKFAST', label: 'Breakfast' },
-    { value: 'LUNCH', label: 'Lunch' },
-  ];
 
   return (
     <AdminModal
@@ -124,7 +125,8 @@ export function DishFormModal({ isOpen, onClose, dish, onSubmit, isPending }: Di
         </>
       }
     >
-      <form id='dish-form' onSubmit={handleSubmit(handleFormSubmit)} className='space-y-4'>
+      <form id='dish-form' onSubmit={handleSubmit(onSubmit)} className='space-y-4'>
+        {/* Name */}
         <div className='space-y-1.5'>
           <label htmlFor='dish-name' className='label'>
             Name *
@@ -133,6 +135,7 @@ export function DishFormModal({ isOpen, onClose, dish, onSubmit, isPending }: Di
           {errors.name && <p className='field-error'>{errors.name.message}</p>}
         </div>
 
+        {/* Description */}
         <div className='space-y-1.5'>
           <label htmlFor='dish-desc' className='label'>
             Description
@@ -140,6 +143,7 @@ export function DishFormModal({ isOpen, onClose, dish, onSubmit, isPending }: Di
           <textarea id='dish-desc' className='textarea' rows={3} {...register('description')} />
         </div>
 
+        {/* Price + Category */}
         <div className='grid grid-cols-1 sm:grid-cols-2 gap-4'>
           <div className='space-y-1.5'>
             <label htmlFor='dish-price' className='label'>
@@ -155,16 +159,18 @@ export function DishFormModal({ isOpen, onClose, dish, onSubmit, isPending }: Di
             />
             {errors.price && <p className='field-error'>{errors.price.message}</p>}
           </div>
+
           <div className='space-y-1.5'>
             <label className='label'>Category</label>
             <Select
               value={category}
               onChange={v => setValue('category', v as 'BREAKFAST' | 'LUNCH', { shouldValidate: true })}
-              options={categoryOptions}
+              options={CATEGORY_OPTIONS}
             />
           </div>
         </div>
 
+        {/* Image URL */}
         <div className='space-y-1.5'>
           <label htmlFor='dish-img' className='label'>
             Image URL
@@ -172,13 +178,14 @@ export function DishFormModal({ isOpen, onClose, dish, onSubmit, isPending }: Di
           <input
             id='dish-img'
             type='text'
-            className={errors.imageUrl ? 'input input-error' : 'input'}
             placeholder='https://...'
+            className={errors.imageUrl ? 'input input-error' : 'input'}
             {...register('imageUrl')}
           />
           {errors.imageUrl && <p className='field-error'>{errors.imageUrl.message}</p>}
         </div>
 
+        {/* Nutrition */}
         <div className='grid grid-cols-2 sm:grid-cols-4 gap-4'>
           <div className='space-y-1.5'>
             <label htmlFor='dish-cal' className='label'>
@@ -206,8 +213,9 @@ export function DishFormModal({ isOpen, onClose, dish, onSubmit, isPending }: Di
           </div>
         </div>
 
+        {/* Availability */}
         <label className='flex items-center gap-2 cursor-pointer'>
-          <input type='checkbox' {...register('isAvailable')} className='accent-ob-caramel w-4 h-4' />
+          <input type='checkbox' className='accent-ob-caramel w-4 h-4' {...register('isAvailable')} />
           <span className='text-sm text-ob-text'>Available for ordering</span>
         </label>
       </form>

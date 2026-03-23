@@ -1,5 +1,5 @@
 import { apiClient } from '../client';
-import type { User, PaginatedResponse } from '@/types';
+import type { PaginatedUsers, AdminUserWithDate } from '@/types';
 
 export interface AdminUsersParams {
   page?: number;
@@ -15,20 +15,12 @@ export interface AdminUpdateUserBody {
   role?: string;
 }
 
-export interface AdminUserWithDate extends User {
-  createdAt: string;
-}
-
 export const adminUsersApi = {
-  getAll: (params?: AdminUsersParams): Promise<PaginatedResponse<AdminUserWithDate>> =>
-    apiClient.get('/users/admin/all', { params }).then(r => r.data),
+  getAll: (params?: AdminUsersParams): Promise<PaginatedUsers> => apiClient.get('/users/admin/all', { params }).then(r => r.data),
 
-  getOne: (id: number): Promise<AdminUserWithDate> =>
-    apiClient.get(`/users/admin/${id}`).then(r => r.data),
+  getOne: (id: number): Promise<AdminUserWithDate> => apiClient.get(`/users/admin/${id}`).then(r => r.data),
 
-  update: (id: number, body: AdminUpdateUserBody): Promise<AdminUserWithDate> =>
-    apiClient.patch(`/users/admin/${id}`, body).then(r => r.data),
+  update: (id: number, body: AdminUpdateUserBody): Promise<AdminUserWithDate> => apiClient.patch(`/users/admin/${id}`, body).then(r => r.data),
 
-  delete: (id: number): Promise<void> =>
-    apiClient.delete(`/users/admin/${id}`).then(r => r.data),
+  delete: (id: number): Promise<void> => apiClient.delete(`/users/admin/${id}`).then(r => r.data),
 };

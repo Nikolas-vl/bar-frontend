@@ -1,5 +1,5 @@
 import { apiClient } from '../client';
-import type { Reservation, ReservationStatus } from '@/types';
+import type { Reservation, ReservationStatus, PaginatedReservations } from '@/types';
 
 export interface AdminReservationsParams {
   status?: string;
@@ -28,23 +28,14 @@ export interface AdminUpdateReservationBody {
   preOrders?: { dishId: number; quantity: number }[];
 }
 
-export interface PaginatedReservations {
-  data: Reservation[];
-  total: number;
-  page: number;
-  limit: number;
-}
-
 export const adminReservationsApi = {
   getAll: (params?: AdminReservationsParams): Promise<PaginatedReservations> =>
     apiClient.get('/reservations/admin/all', { params }).then(r => r.data),
 
-  create: (body: AdminCreateReservationBody): Promise<Reservation> =>
-    apiClient.post('/reservations/admin', body).then(r => r.data),
+  create: (body: AdminCreateReservationBody): Promise<Reservation> => apiClient.post('/reservations/admin', body).then(r => r.data),
 
   update: (id: number, body: AdminUpdateReservationBody): Promise<Reservation> =>
     apiClient.patch(`/reservations/admin/${id}`, body).then(r => r.data),
 
-  delete: (id: number): Promise<void> =>
-    apiClient.delete(`/reservations/admin/${id}`).then(r => r.data),
+  delete: (id: number): Promise<void> => apiClient.delete(`/reservations/admin/${id}`).then(r => r.data),
 };

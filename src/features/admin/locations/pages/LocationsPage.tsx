@@ -5,14 +5,12 @@ import { LocationFormModal } from '../components/LocationFormModal';
 import { ConfirmDialog } from '@/features/admin/components/ConfirmDialog';
 import { Skeleton } from '@/components/shared/ui';
 import { IconPlus } from '@/assets/icons';
-import { adminTablesApi } from '@/api/admin/tables.api';
-import { useQuery } from '@tanstack/react-query';
-import { queryKeys } from '@/utils/queryKeys';
 import type { Location } from '@/types';
+import { useAdminTables } from '@/features/admin/tables/hooks/useAdminTables';
 
 export default function LocationsPage() {
   const { data: locations, isLoading, error, refetch } = useAdminLocations();
-  const { data: allTables } = useQuery({ queryKey: queryKeys.tables.all, queryFn: () => adminTablesApi.getAll() });
+  const { data: allTables } = useAdminTables();
 
   const createMutation = useCreateLocation();
   const updateMutation = useUpdateLocation();
@@ -46,7 +44,9 @@ export default function LocationsPage() {
       <div className='page-container py-12'>
         <div className='card p-8 text-center space-y-4'>
           <p className='text-ob-error'>Failed to load locations</p>
-          <button type='button' className='btn-primary' onClick={() => refetch()}>Retry</button>
+          <button type='button' className='btn-primary' onClick={() => refetch()}>
+            Retry
+          </button>
         </div>
       </div>
     );
@@ -89,7 +89,10 @@ export default function LocationsPage() {
       {/* Create / Edit Modal */}
       <LocationFormModal
         isOpen={!!editTarget || isCreateOpen}
-        onClose={() => { setEditTarget(null); setIsCreateOpen(false); }}
+        onClose={() => {
+          setEditTarget(null);
+          setIsCreateOpen(false);
+        }}
         location={editTarget}
         isPending={createMutation.isPending || updateMutation.isPending}
         onSubmit={data => {

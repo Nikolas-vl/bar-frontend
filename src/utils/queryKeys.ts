@@ -51,8 +51,7 @@ export const queryKeys = {
   // Admin
   users: {
     all: ['users'] as const,
-    list: (filters?: { search?: string; role?: string; page?: number; limit?: number }) =>
-      ['users', 'list', filters] as const,
+    list: (filters?: { search?: string; role?: string; page?: number; limit?: number }) => ['users', 'list', filters] as const,
     detail: (id: number) => ['users', id] as const,
   },
 

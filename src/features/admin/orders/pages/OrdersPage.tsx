@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+import { useFilteredPage } from '../../hooks/useFilteredPage';
 import { useAdminOrders, useAdminUpdateOrderStatus, useAdminDeleteOrder } from '../hooks/useAdminOrders';
 import { ConfirmDialog } from '@/features/admin/components/ConfirmDialog';
 import { AdminTable } from '@/features/admin/components/AdminTable';
@@ -34,17 +35,14 @@ const ALLOWED_TRANSITIONS: Record<OrderStatus, OrderStatus[]> = {
 };
 
 export default function AdminOrdersPage() {
-  const [statusFilter, setStatusFilter] = useState<string>('ALL');
-  const [page, setPage] = useState(1);
-
-  useEffect(() => {
-    setPage(1);
-  }, [statusFilter]);
+  const { filters, page, setPage, updateFilter } = useFilteredPage({
+    status: 'ALL' as string,
+  });
 
   const params = {
     page,
     limit: LIMIT,
-    status: statusFilter === 'ALL' ? undefined : statusFilter,
+    status: filters.status === 'ALL' ? undefined : filters.status,
   };
 
   const { data, isLoading, error, refetch } = useAdminOrders(params);
@@ -127,7 +125,7 @@ export default function AdminOrdersPage() {
               <div key={item.id} className='flex items-start justify-between text-sm'>
                 <div>
                   <span className='font-medium'>{item.dish.name}</span>
-                  <span className='text-ob-muted'> ×{item.quantity}</span>
+                  <span className='text-ob-muted'> x{item.quantity}</span>
                   {item.note && <p className='text-xs text-ob-muted italic mt-0.5'>Note: {item.note}</p>}
                   {item.extras.length > 0 && (
                     <p className='text-xs text-ob-muted mt-0.5'>Extras: {item.extras.map(e => e.ingredient.name).join(', ')}</p>
@@ -139,7 +137,7 @@ export default function AdminOrdersPage() {
             {o.ingredientItems.map(item => (
               <div key={item.id} className='flex items-start justify-between text-sm'>
                 <span className='font-medium'>
-                  {item.ingredient.name} ×{item.quantity}
+                  {item.ingredient.name} x{item.quantity}
                 </span>
                 <span className='font-mono text-xs'>{formatPrice(Number(item.ingredient.price) * item.quantity)}</span>
               </div>
@@ -226,10 +224,10 @@ export default function AdminOrdersPage() {
           <button
             key={s}
             type='button'
-            onClick={() => setStatusFilter(s)}
+            onClick={() => updateFilter('status', s)}
             className={cn(
               'px-3 py-1.5 text-xs font-medium rounded-full transition-colors',
-              statusFilter === s ? 'bg-ob-caramel text-white' : 'bg-ob-blue text-ob-text hover:bg-ob-border',
+              filters.status === s ? 'bg-ob-caramel text-white' : 'bg-ob-blue text-ob-text hover:bg-ob-border',
             )}
           >
             {s === 'ALL' ? 'All' : s}

@@ -10,6 +10,17 @@ export interface User {
   role: UserRole;
 }
 
+export interface AdminUserWithDate extends User {
+  createdAt: string;
+}
+
+export interface PaginatedUsers {
+  users: AdminUserWithDate[];
+  total: number;
+  page: number;
+  limit: number;
+}
+
 export interface AuthTokens {
   accessToken: string;
 }
@@ -235,6 +246,13 @@ export interface Reservation {
   table: Table | null;
   preOrders: ReservationPreOrder[];
   createdAt: string;
+}
+
+export interface PaginatedReservations {
+  reservations: Reservation[];
+  total: number;
+  page: number;
+  limit: number;
 }
 
 // ─── Payments ──────────────────────────────────────────────────────────────

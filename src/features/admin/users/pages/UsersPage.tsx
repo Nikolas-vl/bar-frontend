@@ -1,30 +1,32 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+import { useFilteredPage } from '../../hooks/useFilteredPage';
 import { useAdminUsers, useAdminUpdateUser, useAdminDeleteUser } from '../hooks/useAdminUsers';
 import { EditUserModal } from '../components/EditUserModal';
 import { ConfirmDialog } from '@/features/admin/components/ConfirmDialog';
 import { AdminTable } from '@/features/admin/components/AdminTable';
 import { Pagination } from '@/features/admin/components/Pagination';
-import { SearchInput, useDebouncedSearch } from '@/features/admin/components/SearchInput';
+import { SearchInput } from '@/features/admin/components/SearchInput';
+import { useDebounce } from '@/hooks/useDebounce';
 import { IconEdit, IconTrash } from '@/assets/icons';
 import { formatDateShort, cn } from '@/utils/cn';
-import type { AdminUserWithDate } from '@/api/admin/users.api';
+import type { AdminUserWithDate } from '@/types';
 
 const ROLES = ['ALL', 'USER', 'ADMIN'] as const;
 const LIMIT = 20;
 
 export default function UsersPage() {
-  const [searchInput, setSearchInput, debouncedSearch] = useDebouncedSearch();
-  const [roleFilter, setRoleFilter] = useState<string>('ALL');
-  const [page, setPage] = useState(1);
+  const { filters, page, setPage, updateFilter } = useFilteredPage({
+    search: '',
+    role: 'ALL' as string,
+  });
 
-  // Reset page on filter change
-  useEffect(() => { setPage(1); }, [debouncedSearch, roleFilter]);
+  const debouncedSearch = useDebounce(filters.search, 500);
 
   const params = {
     page,
     limit: LIMIT,
     search: debouncedSearch || undefined,
-    role: roleFilter === 'ALL' ? undefined : roleFilter,
+    role: filters.role === 'ALL' ? undefined : filters.role,
   };
   const { data, isLoading, error, refetch } = useAdminUsers(params);
   const updateMutation = useAdminUpdateUser();
@@ -44,12 +46,7 @@ export default function UsersPage() {
       key: 'role',
       header: 'Role',
       render: (u: AdminUserWithDate) => (
-        <span className={cn(
-          'badge',
-          u.role === 'ADMIN' ? 'bg-ob-caramel/15 text-ob-caramel' : 'bg-ob-blue text-ob-text',
-        )}>
-          {u.role}
-        </span>
+        <span className={cn('badge', u.role === 'ADMIN' ? 'bg-ob-caramel/15 text-ob-caramel' : 'bg-ob-blue text-ob-text')}>{u.role}</span>
       ),
     },
     {
@@ -79,7 +76,9 @@ export default function UsersPage() {
       <div className='page-container py-12'>
         <div className='card p-8 text-center space-y-4'>
           <p className='text-ob-error'>Failed to load users</p>
-          <button type='button' className='btn-primary' onClick={() => refetch()}>Retry</button>
+          <button type='button' className='btn-primary' onClick={() => refetch()}>
+            Retry
+          </button>
         </div>
       </div>
     );
@@ -92,18 +91,16 @@ export default function UsersPage() {
       {/* Toolbar */}
       <div className='flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4'>
         <div className='flex flex-wrap items-center gap-3'>
-          <SearchInput value={searchInput} onChange={setSearchInput} placeholder='Search users…' className='w-64' />
+          <SearchInput value={filters.search} onChange={v => updateFilter('search', v)} placeholder='Search users…' className='w-64' />
           <div className='flex gap-1'>
             {ROLES.map(role => (
               <button
                 key={role}
                 type='button'
-                onClick={() => setRoleFilter(role)}
+                onClick={() => updateFilter('role', role)}
                 className={cn(
                   'px-3 py-1.5 text-xs font-medium rounded-full transition-colors',
-                  roleFilter === role
-                    ? 'bg-ob-caramel text-white'
-                    : 'bg-ob-blue text-ob-text hover:bg-ob-border',
+                  filters.role === role ? 'bg-ob-caramel text-white' : 'bg-ob-blue text-ob-text hover:bg-ob-border',
                 )}
               >
                 {role === 'ALL' ? 'All' : role}
@@ -114,14 +111,7 @@ export default function UsersPage() {
         {data && <span className='text-sm text-ob-muted'>{data.total} users</span>}
       </div>
 
-      <AdminTable
-        columns={columns}
-        data={data?.data ?? []}
-        isLoading={isLoading}
-        rowKey={u => u.id}
-        emptyMessage='No users found'
-        emptyIcon='👤'
-      />
+      <AdminTable columns={columns} data={data?.users ?? []} isLoading={isLoading} rowKey={u => u.id} emptyMessage='No users found' emptyIcon='👤' />
 
       <Pagination page={page} totalPages={totalPages} onChange={setPage} />
 
@@ -133,10 +123,7 @@ export default function UsersPage() {
         isPending={updateMutation.isPending}
         onSubmit={data => {
           if (editTarget) {
-            updateMutation.mutate(
-              { id: editTarget.id, body: data },
-              { onSuccess: () => setEditTarget(null) },
-            );
+            updateMutation.mutate({ id: editTarget.id, body: data }, { onSuccess: () => setEditTarget(null) });
           }
         }}
       />

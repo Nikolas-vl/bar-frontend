@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useAdminDishes, useCreateDish, useUpdateDish, useDeleteDish, useToggleDishAvailability } from '../hooks/useAdminDishes';
 import { useAdminIngredients, useCreateIngredient, useUpdateIngredient, useDeleteIngredient } from '../hooks/useAdminIngredients';
@@ -7,11 +7,12 @@ import { DishFormModal } from '../components/DishFormModal';
 import { IngredientTable } from '../components/IngredientTable';
 import { IngredientFormModal } from '../components/IngredientFormModal';
 import { ConfirmDialog } from '@/features/admin/components/ConfirmDialog';
-import { SearchInput, useDebouncedSearch } from '@/features/admin/components/SearchInput';
+import { SearchInput } from '@/features/admin/components/SearchInput';
 import { Skeleton } from '@/components/shared/ui';
 import { IconPlus } from '@/assets/icons';
 import { cn } from '@/utils/cn';
 import type { Category, Dish, Ingredient } from '@/types';
+import { useDebouncedSearch } from '@/hooks/useDebouncedSearch';
 
 type Tab = 'dishes' | 'ingredients';
 
@@ -40,13 +41,10 @@ export default function DishesPage() {
   const toggleMutation = useToggleDishAvailability();
 
   const [editDish, setEditDish] = useState<Dish | null>(null);
-  const [isCreateDishOpen, setIsCreateDishOpen] = useState(false);
   const [deleteDishTarget, setDeleteDishTarget] = useState<number | null>(null);
 
   // Open create modal from URL param (?action=new)
-  useEffect(() => {
-    if (searchParams.get('action') === 'new') setIsCreateDishOpen(true);
-  }, [searchParams]);
+  const [isCreateDishOpen, setIsCreateDishOpen] = useState(() => searchParams.get('action') === 'new');
 
   // ── Ingredients state ─────────────────────────
   const [ingSearch, setIngSearch, debouncedIngSearch] = useDebouncedSearch();
@@ -72,9 +70,7 @@ export default function DishesPage() {
             onClick={() => setActiveTab(tab)}
             className={cn(
               'px-4 py-2.5 text-sm font-medium capitalize transition-colors border-b-2 -mb-px',
-              activeTab === tab
-                ? 'border-ob-caramel text-ob-caramel'
-                : 'border-transparent text-ob-muted hover:text-ob-text',
+              activeTab === tab ? 'border-ob-caramel text-ob-caramel' : 'border-transparent text-ob-muted hover:text-ob-text',
             )}
           >
             {tab}
@@ -97,9 +93,7 @@ export default function DishesPage() {
                     onClick={() => setCategoryFilter(cat.value)}
                     className={cn(
                       'px-3 py-1.5 text-xs font-medium rounded-full transition-colors',
-                      categoryFilter === cat.value
-                        ? 'bg-ob-caramel text-white'
-                        : 'bg-ob-blue text-ob-text hover:bg-ob-border',
+                      categoryFilter === cat.value ? 'bg-ob-caramel text-white' : 'bg-ob-blue text-ob-text hover:bg-ob-border',
                     )}
                   >
                     {cat.label}
@@ -116,17 +110,23 @@ export default function DishesPage() {
           {dishesError ? (
             <div className='card p-8 text-center space-y-4'>
               <p className='text-ob-error'>Failed to load dishes</p>
-              <button type='button' className='btn-primary' onClick={() => refetchDishes()}>Retry</button>
+              <button type='button' className='btn-primary' onClick={() => refetchDishes()}>
+                Retry
+              </button>
             </div>
           ) : dishesLoading ? (
             <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6'>
-              {Array.from({ length: 8 }).map((_, i) => <Skeleton key={i} className='h-80 w-full rounded-2xl' />)}
+              {Array.from({ length: 8 }).map((_, i) => (
+                <Skeleton key={i} className='h-80 w-full rounded-2xl' />
+              ))}
             </div>
           ) : dishes && dishes.length === 0 ? (
             <div className='card p-12 flex flex-col items-center gap-3'>
               <span className='text-4xl'>🍽️</span>
               <p className='text-ob-muted text-sm'>No dishes found</p>
-              <button type='button' className='btn-secondary' onClick={() => setIsCreateDishOpen(true)}>Create your first dish</button>
+              <button type='button' className='btn-secondary' onClick={() => setIsCreateDishOpen(true)}>
+                Create your first dish
+              </button>
             </div>
           ) : (
             <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6'>
@@ -145,20 +145,17 @@ export default function DishesPage() {
           {/* Dish modals */}
           <DishFormModal
             isOpen={!!editDish || isCreateDishOpen}
-            onClose={() => { setEditDish(null); setIsCreateDishOpen(false); }}
+            onClose={() => {
+              setEditDish(null);
+              setIsCreateDishOpen(false);
+            }}
             dish={editDish}
             isPending={createDishMutation.isPending || updateDishMutation.isPending}
             onSubmit={data => {
               if (editDish) {
-                updateDishMutation.mutate(
-                  { id: editDish.id, body: { ...data, price: Number(data.price) } },
-                  { onSuccess: () => setEditDish(null) },
-                );
+                updateDishMutation.mutate({ id: editDish.id, body: data }, { onSuccess: () => setEditDish(null) });
               } else {
-                createDishMutation.mutate(
-                  { ...data, price: Number(data.price) },
-                  { onSuccess: () => setIsCreateDishOpen(false) },
-                );
+                createDishMutation.mutate(data, { onSuccess: () => setIsCreateDishOpen(false) });
               }
             }}
           />
@@ -183,24 +180,19 @@ export default function DishesPage() {
             </button>
           </div>
 
-          <IngredientTable
-            ingredients={ingredients ?? []}
-            isLoading={ingLoading}
-            onEdit={setEditIngredient}
-            onDelete={setDeleteIngTarget}
-          />
+          <IngredientTable ingredients={ingredients ?? []} isLoading={ingLoading} onEdit={setEditIngredient} onDelete={setDeleteIngTarget} />
 
           <IngredientFormModal
             isOpen={!!editIngredient || isCreateIngOpen}
-            onClose={() => { setEditIngredient(null); setIsCreateIngOpen(false); }}
+            onClose={() => {
+              setEditIngredient(null);
+              setIsCreateIngOpen(false);
+            }}
             ingredient={editIngredient}
             isPending={createIngMutation.isPending || updateIngMutation.isPending}
             onSubmit={data => {
               if (editIngredient) {
-                updateIngMutation.mutate(
-                  { id: editIngredient.id, body: data },
-                  { onSuccess: () => setEditIngredient(null) },
-                );
+                updateIngMutation.mutate({ id: editIngredient.id, body: data }, { onSuccess: () => setEditIngredient(null) });
               } else {
                 createIngMutation.mutate(data, { onSuccess: () => setIsCreateIngOpen(false) });
               }

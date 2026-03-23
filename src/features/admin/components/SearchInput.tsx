@@ -1,5 +1,3 @@
-import { useState } from 'react';
-import { useDebounce } from '@/hooks/useDebounce';
 import { IconSearch, IconClose } from '@/assets/icons';
 import { cn } from '@/utils/cn';
 
@@ -34,10 +32,4 @@ export function SearchInput({ value, onChange, placeholder = 'Search…', classN
       )}
     </div>
   );
-}
-
-export function useDebouncedSearch(delay = 500) {
-  const [searchInput, setSearchInput] = useState('');
-  const debouncedSearch = useDebounce(searchInput, delay);
-  return [searchInput, setSearchInput, debouncedSearch] as const;
 }
