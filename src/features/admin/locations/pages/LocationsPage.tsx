@@ -27,7 +27,7 @@ export default function LocationsPage() {
   }, {});
 
   if (isLoading) {
-    return <LoadingState message="Loading locations..." />;
+    return <LoadingState message='Loading locations...' />;
   }
 
   if (error) {
@@ -46,8 +46,8 @@ export default function LocationsPage() {
 
       {locations && locations.length === 0 ? (
         <EmptyState
-          title="No locations yet"
-          icon="📍"
+          title='No locations yet'
+          icon='📍'
           action={
             <button type='button' className='btn-secondary' onClick={() => setIsCreateOpen(true)}>
               Create your first location
@@ -88,11 +88,14 @@ export default function LocationsPage() {
         }}
       />
 
-      {/* Delete Confirm */}
       <ConfirmDialog
         isOpen={deleteTarget !== null}
         title='Delete location'
-        message='This action cannot be undone. Deleting a location with tables that have reservations will fail.'
+        message={
+          deleteTarget !== null && (tableCountMap[deleteTarget] ?? 0) > 0
+            ? `This location has ${tableCountMap[deleteTarget]} table(s). All tables must be removed before deleting the location.`
+            : 'This action cannot be undone.'
+        }
         isPending={deleteMutation.isPending}
         onConfirm={() => deleteMutation.mutate(deleteTarget!, { onSettled: () => setDeleteTarget(null) })}
         onCancel={() => setDeleteTarget(null)}

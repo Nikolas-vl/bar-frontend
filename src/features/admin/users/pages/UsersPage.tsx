@@ -124,7 +124,7 @@ export default function UsersPage() {
       <ConfirmDialog
         isOpen={deleteTarget !== null}
         title='Delete user'
-        message='This action cannot be undone. Users with existing orders cannot be deleted.'
+        message='This action cannot be undone. Admins and users with existing orders or payments cannot be deleted.'
         isPending={deleteMutation.isPending}
         onConfirm={() => deleteMutation.mutate(deleteTarget!, { onSettled: () => setDeleteTarget(null) })}
         onCancel={() => setDeleteTarget(null)}
