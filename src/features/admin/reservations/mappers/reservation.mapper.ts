@@ -11,8 +11,7 @@ export const mapAdminReservationToForm = (reservation: Reservation): AdminReserv
   comment: reservation.comment ?? '',
 });
 
-export const mapAdminReservationFormToDto = (formData: AdminReservationFormOutput): CreateReservationDto => ({
-  userId: formData.userId,
+const mapCommonFields = (formData: AdminReservationFormOutput) => ({
   date: formData.date,
   guests: formData.guests,
   tableId: formData.tableId === 0 ? undefined : formData.tableId,
@@ -20,11 +19,11 @@ export const mapAdminReservationFormToDto = (formData: AdminReservationFormOutpu
   comment: formData.comment || undefined,
 });
 
-export const mapAdminReservationFormToUpdateDto = (formData: AdminReservationFormOutput): UpdateReservationDto => ({
+export const mapAdminReservationFormToDto = (formData: AdminReservationFormOutput): CreateReservationDto => ({
   userId: formData.userId,
-  date: formData.date,
-  guests: formData.guests,
-  tableId: formData.tableId === 0 ? undefined : formData.tableId,
-  status: formData.status,
-  comment: formData.comment || undefined,
+  ...mapCommonFields(formData),
 });
+
+export const mapAdminReservationFormToUpdateDto = (
+  formData: AdminReservationFormOutput,
+): Omit<UpdateReservationDto, 'userId'> => mapCommonFields(formData);

@@ -14,7 +14,7 @@ interface AdminReservationModalProps {
   onClose: () => void;
   reservation: Reservation | null;
   onSubmitCreate: (data: CreateReservationDto) => void;
-  onSubmitUpdate: (data: UpdateReservationDto) => void;
+  onSubmitUpdate: (data: Omit<UpdateReservationDto, 'userId'>) => void;
   isPending: boolean;
   error?: string | null;
 }
@@ -111,7 +111,12 @@ export function AdminReservationModal({
         </>
       }
     >
-      <form id='reservation-form' onSubmit={handleSubmit(onSubmit)} className='space-y-4'>
+      <form id='reservation-form' onSubmit={handleSubmit(onSubmit)} className='space-y-4 text-left'>
+        {error && (
+          <div className='rounded-xl bg-ob-error/10 border border-ob-error/30 px-4 py-3 text-sm text-ob-error font-medium'>
+            {error}
+          </div>
+        )}
         <div className='space-y-1.5'>
           <label htmlFor='res-userId' className='label'>
             User ID {!isEdit && '*'}
@@ -162,7 +167,6 @@ export function AdminReservationModal({
             options={tableOptions}
             placeholder='Select table'
           />
-          {error && <p className='field-error'>{error}</p>}
         </div>
 
         <div className='space-y-1.5'>

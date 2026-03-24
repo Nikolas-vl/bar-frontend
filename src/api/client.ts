@@ -86,7 +86,14 @@ apiClient.interceptors.response.use(
 // ── Error helper ──────────────────────────────────────────
 export const getErrorMessage = (error: unknown): string => {
   if (axios.isAxiosError(error)) {
-    return error.response?.data?.message ?? 'Something went wrong';
+    const data = error.response?.data;
+
+    if (Array.isArray(data?.issues) && data.issues.length > 0) {
+      return data.issues.map((i: { message: string }) => i.message).join(', ');
+    }
+
+    return data?.message ?? 'Something went wrong';
   }
+
   return 'Something went wrong';
 };
