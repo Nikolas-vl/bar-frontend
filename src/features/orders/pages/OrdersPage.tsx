@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { useMyOrders } from '../hooks/useMyOrders';
 import { OrderCard } from '../components/orders/OrderCard';
-import { Skeleton } from '@/components/shared/ui';
-import type { OrderStatus } from '@/types';
+import { Skeleton } from '@/shared/ui';
+import type { OrderStatus } from '@/shared/types';
 
 const STATUS_FILTERS: { label: string; value?: OrderStatus }[] = [
   { label: 'All' },

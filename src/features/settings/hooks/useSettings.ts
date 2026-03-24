@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
-import { settingsApi } from '@/api/settings.api';
-import { queryKeys } from '@/utils/queryKeys';
+import { settingsApi } from '@/shared/lib/api/settings.api';
+import { queryKeys } from '@/shared/lib/utils/queryKeys';
 
 export const useSettings = () =>
   useQuery({

@@ -5,8 +5,8 @@ import { PaymentCard } from '@/features/payments/components/PaymentCard';
 import { AddCardForm } from '@/features/payments/components/AddCardForm';
 import { usePaymentMethods } from '@/features/payments/hooks/usePaymentMethods';
 import { useCreatePaymentMethod } from '@/features/payments/hooks/usePaymentMethodMutations';
-import { getErrorMessage } from '@/api/client';
-import { Skeleton } from '@/components/shared/ui';
+import { getErrorMessage } from '@/shared/lib/api/client';
+import { Skeleton } from '@/shared/ui';
 import type { CardFormData } from '../schemas/paymentCard.schema';
 
 export default function PaymentMethodsPage() {

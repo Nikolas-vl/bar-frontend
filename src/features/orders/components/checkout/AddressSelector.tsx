@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
-import { cn } from '@/utils/cn';
-import type { Address } from '@/types';
+import { cn } from '@/shared/lib/utils/cn';
+import type { Address } from '@/shared/types';
 
 interface AddressSelectorProps {
   addresses: Address[];

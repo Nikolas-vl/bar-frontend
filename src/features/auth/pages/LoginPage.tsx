@@ -1,19 +1,14 @@
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
 import { toast } from 'sonner';
-import { authApi } from '@/api/auth.api';
-import { useAuthStore } from '@/store/auth.store';
-import { getErrorMessage } from '@/api/client';
-import { cn } from '@/utils/cn';
-import { Spinner } from '@/components/shared/ui';
-
-const schema = z.object({
-  email: z.email('Invalid email address'),
-  password: z.string().min(1, 'Password is required'),
-});
-type FormData = z.infer<typeof schema>;
+import { authApi } from '@/shared/lib/api/auth.api';
+import { useAuthStore } from '@/app/store/auth.store';
+import { getErrorMessage } from '@/shared/lib/api/client';
+import { cn } from '@/shared/lib/utils/cn';
+import { Spinner } from '@/shared/ui';
+import { loginSchema, type LoginFormOutput } from '../schemas/auth.schema';
+import { mapLoginFormToDto } from '../mappers/auth.mapper';
 
 export default function LoginPage() {
   const { setAuth } = useAuthStore();
@@ -25,11 +20,11 @@ export default function LoginPage() {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
-  } = useForm<FormData>({ resolver: zodResolver(schema) });
+  } = useForm<LoginFormOutput>({ resolver: zodResolver(loginSchema) });
 
-  const onSubmit = async (data: FormData) => {
+  const onSubmit = async (data: LoginFormOutput) => {
     try {
-      const { accessToken, user } = await authApi.login(data);
+      const { accessToken, user } = await authApi.login(mapLoginFormToDto(data));
       setAuth(user, accessToken);
       toast.success(`Welcome back${user.name ? `, ${user.name}` : ''}!`);
       navigate(user.role === 'ADMIN' ? '/admin' : from, { replace: true });

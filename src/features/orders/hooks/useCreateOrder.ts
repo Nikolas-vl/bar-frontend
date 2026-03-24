@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { orderApi, type CreateOrderPayload } from '@/api/order.api';
-import { queryKeys } from '@/utils/queryKeys';
+import { orderApi, type CreateOrderPayload } from '@/shared/lib/api/order.api';
+import { queryKeys } from '@/shared/lib/utils/queryKeys';
 
 export const useCreateOrder = () => {
   const queryClient = useQueryClient();

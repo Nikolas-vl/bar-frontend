@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import type { DishQuery } from '@/types';
+import type { DishQuery } from '@/shared/types';
 
 export const dishQuerySchema = z.object({
   search: z.string().optional(),

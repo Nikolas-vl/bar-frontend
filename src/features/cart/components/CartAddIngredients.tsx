@@ -1,7 +1,7 @@
 import { useIngredients } from '../hooks/useIngredients';
 import { useAddIngredientToCart } from '../hooks/useAddIngredientToCart';
-import { formatPrice } from '@/utils/cn';
-import { Spinner } from '@/components/shared/ui';
+import { formatPrice } from '@/shared/lib/utils/cn';
+import { Spinner } from '@/shared/ui';
 import { useState } from 'react';
 
 export function CartAddIngredients() {

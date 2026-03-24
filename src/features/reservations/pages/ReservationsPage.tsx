@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { useMyReservations } from '../hooks/useMyReservations';
 import { ReservationCard } from '../components/ReservationCard';
-import { Skeleton } from '@/components/shared/ui';
+import { Skeleton } from '@/shared/ui';
 
 export default function ReservationsPage() {
   const { data: reservations, isLoading } = useMyReservations();

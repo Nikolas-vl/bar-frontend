@@ -1,5 +1,5 @@
-import { cn } from '@/utils/cn';
-import type { OrderStatus, PaymentStatus, PaymentType } from '@/types';
+import { cn } from '@/shared/lib/utils/cn';
+import type { OrderStatus, PaymentStatus, PaymentType } from '@/shared/types';
 
 // ─── Order status ──────────────────────────────────────────────────────────
 

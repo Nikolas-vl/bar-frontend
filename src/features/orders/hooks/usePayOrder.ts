@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { orderApi, type PayOrderPayload } from '@/api/order.api';
-import { queryKeys } from '@/utils/queryKeys';
+import { orderApi, type PayOrderPayload } from '@/shared/lib/api/order.api';
+import { queryKeys } from '@/shared/lib/utils/queryKeys';
 
 interface PayOrderVariables extends PayOrderPayload {
   orderId: number;

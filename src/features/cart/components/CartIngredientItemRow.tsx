@@ -1,11 +1,11 @@
 import { memo } from 'react';
-import type { CartIngredientItem } from '../../../types';
-import { cn, formatPrice } from '../../../utils/cn';
+import type { CartIngredientItem } from '@/shared/types';
+import { cn, formatPrice } from '@/shared/lib/utils/cn';
 import { useUpdateCartIngredientItem } from '../hooks/useUpdateCartIngredientItem';
 import { useRemoveIngredientFromCart } from '../hooks/useRemoveIngredientFromCart';
 import { QuantityStepper } from './QuantityStepper';
 import { NoteEditor } from './NoteEditor';
-import { IconTrash } from '../../../assets/icons';
+import { IconTrash } from '@/shared/assets/icons';
 
 interface CartIngredientItemRowProps {
   item: CartIngredientItem;

@@ -1,8 +1,8 @@
 import { toast } from 'sonner';
-import { cn } from '@/utils/cn';
+import { cn } from '@/shared/lib/utils/cn';
 import { useDeletePaymentMethod, useSetDefaultPaymentMethod } from '../hooks/usePaymentMethodMutations';
-import { getErrorMessage } from '@/api/client';
-import type { PaymentMethod } from '@/types';
+import { getErrorMessage } from '@/shared/lib/api/client';
+import type { PaymentMethod } from '@/shared/types';
 
 const CARD_ICON: Record<string, string> = {
   Visa: '🟦',

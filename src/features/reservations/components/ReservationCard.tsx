@@ -2,10 +2,10 @@ import { format } from 'date-fns';
 import { toast } from 'sonner';
 import { ReservationStatusBadge } from './ReservationStatusBadge';
 import { useCancelReservation } from '../hooks/useCancelReservation';
-import { Spinner } from '@/components/shared/ui';
-import { getErrorMessage } from '@/api/client';
-import { formatPrice } from '@/utils/cn';
-import type { Reservation } from '@/types';
+import { Spinner } from '@/shared/ui';
+import { getErrorMessage } from '@/shared/lib/api/client';
+import { formatPrice } from '@/shared/lib/utils/cn';
+import type { Reservation } from '@/shared/types';
 
 interface ReservationCardProps {
   reservation: Reservation;

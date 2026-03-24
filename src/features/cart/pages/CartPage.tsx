@@ -4,8 +4,8 @@ import { useClearCart } from '../hooks/useClearCart';
 import { calcCartSubtotal, hasUnavailableItems, getUnavailableItems } from '../utils/cartUtils';
 import { CartItemRow } from '../components/CartItemRow';
 import { CartIngredientItemRow } from '../components/CartIngredientItemRow';
-import { Spinner } from '@/components/shared/ui';
-import { formatPrice, cn } from '@/utils/cn';
+import { Spinner } from '@/shared/ui';
+import { formatPrice, cn } from '@/shared/lib/utils/cn';
 
 export default function CartPage() {
   const { data: cart, isLoading } = useCart();

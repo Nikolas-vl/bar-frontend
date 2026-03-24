@@ -1,7 +1,7 @@
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { cn } from '@/utils/cn';
-import { Spinner } from '@/components/shared/ui';
+import { cn } from '@/shared/lib/utils/cn';
+import { Spinner } from '@/shared/ui';
 import { cardSchema, CARD_TYPES, CARD_ICON, type CardFormData } from '../schemas/paymentCard.schema';
 
 interface AddCardFormProps {

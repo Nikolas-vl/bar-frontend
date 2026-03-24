@@ -4,9 +4,9 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 
 import App from './App';
-import './assets/styles/index.css';
-import { AuthInitializer } from './providers/AuthInitializer';
-import { GlobalErrorBoundary } from './components/shared/error';
+import './shared/assets/styles/index.css';
+import { AuthInitializer } from './app/providers/AuthInitializer';
+import { GlobalErrorBoundary } from './shared/error';
 
 const queryClient = new QueryClient({
   defaultOptions: {

@@ -1,4 +1,4 @@
-import { Skeleton } from '@/components/shared/ui';
+import { Skeleton } from '@/shared/ui';
 
 export function DishDetailSkeleton() {
   return (

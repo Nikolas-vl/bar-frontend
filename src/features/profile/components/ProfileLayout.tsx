@@ -1,7 +1,7 @@
 import { type ReactNode } from 'react';
 import { NavLink } from 'react-router-dom';
-import { useAuthStore } from '@/store/auth.store';
-import { cn } from '@/utils/cn';
+import { useAuthStore } from '@/app/store/auth.store';
+import { cn } from '@/shared/lib/utils/cn';
 
 const links = [
   { to: '/profile', end: true, label: 'My Profile', icon: '👤' },

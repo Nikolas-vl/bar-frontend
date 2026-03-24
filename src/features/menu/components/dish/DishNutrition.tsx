@@ -1,5 +1,5 @@
 import { NutritionStat } from '../NutritionStat';
-import type { Dish } from '@/types';
+import type { Dish } from '@/shared/types';
 
 interface DishNutritionProps {
   dish: Dish;

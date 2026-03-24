@@ -8,16 +8,16 @@ import { useCreateOrder } from '../hooks/useCreateOrder';
 import { usePayOrder } from '../hooks/usePayOrder';
 import { useSettings } from '@/features/settings/hooks/useSettings';
 import { hasUnavailableItems, calcCartSubtotal } from '@/features/cart/utils/cartUtils';
-import { calcFinalTotalClient } from '@/utils/pricingClient';
+import { calcFinalTotalClient } from '@/shared/lib/utils/pricingClient';
 import { OrderTypeSelector } from '../components/checkout/OrderTypeSelector';
 import { PaymentMethodSelector } from '../components/checkout/PaymentMethodSelector';
 import { AddressSelector } from '../components/checkout/AddressSelector';
 import { CartSummary } from '../components/checkout/CartSummary';
 import { PriceBreakdown } from '../components/checkout/PriceBreakdown';
-import { Spinner } from '@/components/shared/ui';
-import { formatPrice } from '@/utils/cn';
-import { getErrorMessage } from '@/api/client';
-import type { OrderType, PaymentType } from '@/types';
+import { Spinner } from '@/shared/ui';
+import { formatPrice } from '@/shared/lib/utils/cn';
+import { getErrorMessage } from '@/shared/lib/api/client';
+import type { OrderType, PaymentType } from '@/shared/types';
 
 export default function CheckoutPage() {
   const navigate = useNavigate();

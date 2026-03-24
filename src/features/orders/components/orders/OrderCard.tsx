@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { format } from 'date-fns';
-import type { Order } from '@/types';
-import { formatPrice } from '@/utils/cn';
+import type { Order } from '@/shared/types';
+import { formatPrice } from '@/shared/lib/utils/cn';
 import { OrderStatusBadge, PaymentStatusBadge } from './OrderStatusBadge';
 
 const TYPE_ICON: Record<string, string> = {

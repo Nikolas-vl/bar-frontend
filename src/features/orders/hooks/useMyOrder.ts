@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
-import { orderApi } from '@/api/order.api';
-import { queryKeys } from '@/utils/queryKeys';
+import { orderApi } from '@/shared/lib/api/order.api';
+import { queryKeys } from '@/shared/lib/utils/queryKeys';
 
 export const useMyOrder = (orderId: number) => {
   return useQuery({

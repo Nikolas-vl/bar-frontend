@@ -1,5 +1,5 @@
 import { IngredientChip } from '../IngredientChip';
-import type { DishIngredient } from '@/types';
+import type { DishIngredient } from '@/shared/types';
 
 interface DishIngredientsProps {
   ingredients: DishIngredient[];

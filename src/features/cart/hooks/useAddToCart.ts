@@ -1,9 +1,9 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
-import { cartApi, type AddCartItemPayload } from '../../../api/cart.api';
-import { queryKeys } from '../../../utils/queryKeys';
-import { getErrorMessage } from '../../../api/client';
-import { useUIStore } from '../../../store/ui.store';
+import { cartApi, type AddCartItemPayload } from '@/shared/lib/api/cart.api';
+import { queryKeys } from '@/shared/lib/utils/queryKeys';
+import { getErrorMessage } from '@/shared/lib/api/client';
+import { useUIStore } from '@/app/store/ui.store';
 
 export const useAddToCart = () => {
   const queryClient = useQueryClient();
