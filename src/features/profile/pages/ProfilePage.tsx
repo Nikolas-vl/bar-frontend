@@ -1,4 +1,4 @@
-import { useAuthStore } from '@/store/auth.store';
+import { useAuthStore } from '@/app/store/auth.store';
 import { ProfileLayout } from '../components/ProfileLayout';
 import { EditNameForm, ChangePasswordForm } from '../components/ProfileForms';
 import { Link } from 'react-router-dom';

@@ -1,7 +1,7 @@
-import { AppImage } from '@/components/shared/ui';
-import { formatPrice } from '@/utils/cn';
-import { CATEGORY_LABEL, CATEGORY_EMOJI } from '@/constants/category';
-import type { Dish } from '@/types';
+import { AppImage } from '@/shared/ui';
+import { formatPrice } from '@/shared/lib/utils/cn';
+import { CATEGORY_LABEL, CATEGORY_EMOJI } from '@/shared/config/category.constants';
+import type { Dish } from '@/shared/types';
 
 interface DishHeaderProps {
   dish: Dish;

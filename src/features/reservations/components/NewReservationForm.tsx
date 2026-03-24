@@ -6,11 +6,11 @@ import { toast } from 'sonner';
 import { newReservationSchema, minDateTimeLocal, type NewReservationFormData } from '../schemas/reservation.schema';
 import { PreOrderSelector, type PreOrderEntry } from './PreOrderSelector';
 import { useCreateReservation } from '../hooks/useCreateReservation';
-import { DateTimePicker } from '@/components/shared/ui';
-import { Spinner } from '@/components/shared/ui';
-import { cn, formatPrice } from '@/utils/cn';
-import { getErrorMessage } from '@/api/client';
-import type { Dish } from '@/types';
+import { DateTimePicker } from '@/shared/ui';
+import { Spinner } from '@/shared/ui';
+import { cn, formatPrice } from '@/shared/lib/utils/cn';
+import { getErrorMessage } from '@/shared/lib/api/client';
+import type { Dish } from '@/shared/types';
 
 interface NewReservationFormProps {
   dishes: Dish[];

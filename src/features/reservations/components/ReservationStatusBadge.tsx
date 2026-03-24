@@ -1,5 +1,5 @@
-import { cn } from '@/utils/cn';
-import type { ReservationStatus } from '@/types';
+import { cn } from '@/shared/lib/utils/cn';
+import type { ReservationStatus } from '@/shared/types';
 
 const CLASS: Record<ReservationStatus, string> = {
   PENDING: 'badge-pending',

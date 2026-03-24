@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { addressApi, type CreateAddressPayload, type UpdateAddressPayload } from '@/api/address.api';
-import { queryKeys } from '@/utils/queryKeys';
+import { addressApi, type CreateAddressPayload, type UpdateAddressPayload } from '@/shared/lib/api/address.api';
+import { queryKeys } from '@/shared/lib/utils/queryKeys';
 
 export const useAddresses = () =>
   useQuery({

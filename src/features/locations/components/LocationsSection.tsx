@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useLocations } from '../hooks/Uselocations';
-import { Skeleton } from '@/components/shared/ui';
+import { Skeleton } from '@/shared/ui';
 import { LocationInfoCard } from './LocationInfoCard';
 
 export function LocationsSection() {

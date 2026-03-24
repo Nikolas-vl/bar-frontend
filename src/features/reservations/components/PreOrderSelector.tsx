@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { Select } from '@/components/shared/ui/Select';
-import { formatPrice } from '@/utils/cn';
-import type { Dish } from '@/types';
+import { Select } from '@/shared/ui/Select';
+import { formatPrice } from '@/shared/lib/utils/cn';
+import type { Dish } from '@/shared/types';
 
 export interface PreOrderEntry {
   dishId: number;

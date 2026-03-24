@@ -4,11 +4,11 @@ import { toast } from 'sonner';
 import { useMyOrder } from '../hooks/useMyOrder';
 import { useCancelOrder } from '../hooks/useCancelOrder';
 import { OrderStatusBadge, PaymentStatusBadge } from '../components/orders/OrderStatusBadge';
-import { AppImage, Skeleton, Spinner } from '@/components/shared/ui';
-import { formatPrice } from '@/utils/cn';
-import { getErrorMessage } from '@/api/client';
+import { AppImage, Skeleton, Spinner } from '@/shared/ui';
+import { formatPrice } from '@/shared/lib/utils/cn';
+import { getErrorMessage } from '@/shared/lib/api/client';
 import { calcOrderItemTotal } from '@/features/cart/utils/cartUtils';
-import type { OrderStatus, PaymentType } from '@/types';
+import type { OrderStatus, PaymentType } from '@/shared/types';
 
 const TYPE_LABEL: Record<string, string> = {
   DINE_IN: '🍽️ Dine In',

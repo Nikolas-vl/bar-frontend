@@ -1,5 +1,5 @@
-import { cn } from '@/utils/cn';
-import type { OrderType } from '@/types';
+import { cn } from '@/shared/lib/utils/cn';
+import type { OrderType } from '@/shared/types';
 
 const OPTIONS: { value: OrderType; label: string; icon: string; description: string }[] = [
   { value: 'DINE_IN', label: 'Dine In', icon: '🍽️', description: 'Eat at the restaurant' },

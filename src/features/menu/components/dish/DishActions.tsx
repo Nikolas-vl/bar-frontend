@@ -1,5 +1,5 @@
-import { Spinner } from '@/components/shared/ui';
-import { formatPrice } from '@/utils/cn';
+import { Spinner } from '@/shared/ui';
+import { formatPrice } from '@/shared/lib/utils/cn';
 
 interface DishActionsProps {
   displayPrice: number;

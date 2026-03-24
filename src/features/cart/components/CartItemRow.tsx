@@ -1,13 +1,13 @@
 import { memo } from 'react';
-import type { CartItem } from '../../../types';
-import { AppImage } from '../../../components/shared/ui/AppImage';
-import { cn, formatPrice } from '../../../utils/cn';
+import type { CartItem } from '@/shared/types';
+import { AppImage } from '@/shared/ui/AppImage';
+import { cn, formatPrice } from '@/shared/lib/utils/cn';
 import { calcItemTotal } from '../utils/cartUtils';
 import { useUpdateCartItem } from '../hooks/useUpdateCartItem';
 import { useRemoveFromCart } from '../hooks/useRemoveFromCart';
 import { QuantityStepper } from './QuantityStepper';
 import { NoteEditor } from './NoteEditor';
-import { IconTrash } from '../../../assets/icons';
+import { IconTrash } from '../../../shared/assets/icons';
 
 interface CartItemRowProps {
   item: CartItem;

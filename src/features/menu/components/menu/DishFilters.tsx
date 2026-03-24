@@ -1,7 +1,7 @@
 import { useEffect, useRef, useCallback } from 'react';
-import { cn } from '@/utils/cn';
-import { useDebouncedSearch } from '@/hooks/useDebouncedSearch';
-import type { DishQuery, Category } from '@/types';
+import { cn } from '@/shared/lib/utils/cn';
+import { useDebouncedSearch } from '@/shared/hooks/useDebouncedSearch';
+import type { DishQuery, Category } from '@/shared/types';
 
 interface DishFiltersProps {
   value: DishQuery;

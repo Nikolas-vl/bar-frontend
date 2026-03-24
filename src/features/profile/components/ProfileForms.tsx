@@ -3,10 +3,10 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { toast } from 'sonner';
 import { useUpdateProfile } from '../hooks/useUpdateProfile';
-import { getErrorMessage } from '@/api/client';
-import { cn } from '@/utils/cn';
-import { Spinner } from '@/components/shared/ui';
-import type { User } from '@/types';
+import { getErrorMessage } from '@/shared/lib/api/client';
+import { cn } from '@/shared/lib/utils/cn';
+import { Spinner } from '@/shared/ui';
+import type { User } from '@/shared/types';
 
 const editProfileSchema = z.object({
   name: z.string().min(1, 'Name is required'),

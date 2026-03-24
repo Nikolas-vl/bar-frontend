@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
-import { locationsApi } from '@/api/locations.api';
-import { queryKeys } from '@/utils/queryKeys';
+import { locationsApi } from '@/shared/lib/api/locations.api';
+import { queryKeys } from '@/shared/lib/utils/queryKeys';
 
 export const useLocations = () =>
   useQuery({

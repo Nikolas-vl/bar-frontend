@@ -2,11 +2,11 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from 'sonner';
-import { authApi } from '@/api/auth.api';
-import { useAuthStore } from '@/store/auth.store';
-import { getErrorMessage } from '@/api/client';
-import { cn } from '@/utils/cn';
-import { Spinner } from '@/components/shared/ui';
+import { authApi } from '@/shared/lib/api/auth.api';
+import { useAuthStore } from '@/app/store/auth.store';
+import { getErrorMessage } from '@/shared/lib/api/client';
+import { cn } from '@/shared/lib/utils/cn';
+import { Spinner } from '@/shared/ui';
 import { loginSchema, type LoginFormOutput } from '../schemas/auth.schema';
 import { mapLoginFormToDto } from '../mappers/auth.mapper';
 

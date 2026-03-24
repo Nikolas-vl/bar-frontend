@@ -1,5 +1,5 @@
-import { cn } from '@/utils/cn';
-import type { PaymentMethod, PaymentType } from '@/types';
+import { cn } from '@/shared/lib/utils/cn';
+import type { PaymentMethod, PaymentType } from '@/shared/types';
 
 const METHODS: { value: PaymentType; label: string; icon: string }[] = [
   { value: 'CASH', label: 'Cash', icon: '💵' },

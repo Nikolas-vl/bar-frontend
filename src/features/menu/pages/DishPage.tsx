@@ -3,7 +3,7 @@ import { Navigate, useParams, Link, useLocation } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import { useDish } from '../hooks/useDish';
 import { useAddToCart } from '../../cart/hooks/useAddToCart';
-import { useAuthStore } from '@/store/auth.store';
+import { useAuthStore } from '@/app/store/auth.store';
 import { DishDetailSkeleton } from '../components/dish/DishDetailSkeleton';
 import { DishHeader } from '../components/dish/DishHeader';
 import { DishNutrition } from '../components/dish/DishNutrition';

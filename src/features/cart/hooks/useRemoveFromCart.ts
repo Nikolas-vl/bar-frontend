@@ -1,6 +1,6 @@
+import { cartApi } from '@/shared/lib/api/cart.api';
+import { queryKeys } from '@/shared/lib/utils/queryKeys';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { cartApi } from '../../../api/cart.api';
-import { queryKeys } from '../../../utils/queryKeys';
 
 export const useRemoveFromCart = () => {
   const queryClient = useQueryClient();

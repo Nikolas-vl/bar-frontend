@@ -1,5 +1,5 @@
-import { formatPrice } from '@/utils/cn';
-import type { DishIngredient } from '@/types';
+import { formatPrice } from '@/shared/lib/utils/cn';
+import type { DishIngredient } from '@/shared/types';
 
 interface DishExtrasSelectorProps {
   optionalIngredients: DishIngredient[];

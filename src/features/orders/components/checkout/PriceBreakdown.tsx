@@ -1,6 +1,6 @@
-import { formatPrice } from '@/utils/cn';
-import type { ClientPriceBreakdown } from '@/utils/pricingClient';
-import type { OrderType } from '@/types';
+import { formatPrice } from '@/shared/lib/utils/cn';
+import type { ClientPriceBreakdown } from '@/shared/lib/utils/pricingClient';
+import type { OrderType } from '@/shared/types';
 
 interface PriceBreakdownProps {
   breakdown: ClientPriceBreakdown;

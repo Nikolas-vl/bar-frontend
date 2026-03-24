@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { toast } from 'sonner';
-import { cn } from '@/utils/cn';
+import { cn } from '@/shared/lib/utils/cn';
 import { AddressForm, type AddressFormData } from './AddressForm';
 import { useUpdateAddress, useDeleteAddress, useSetDefaultAddress } from '../hooks/useAddresses';
-import { getErrorMessage } from '@/api/client';
-import type { Address } from '@/types';
+import { getErrorMessage } from '@/shared/lib/api/client';
+import type { Address } from '@/shared/types';
 
 interface AddressCardProps {
   address: Address;

@@ -1,4 +1,4 @@
-import type { Cart, CartItem, OrderItem } from '@/types';
+import type { Cart, CartItem, OrderItem } from '@/shared/types';
 
 /**
  * Shared type for items that have the same pricing structure.

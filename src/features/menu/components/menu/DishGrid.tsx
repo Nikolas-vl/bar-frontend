@@ -1,6 +1,6 @@
-import type { Dish } from '@/types';
+import type { Dish } from '@/shared/types';
 import { DishCard } from './DishCard';
-import { Skeleton } from '@/components/shared/ui';
+import { Skeleton } from '@/shared/ui';
 
 interface DishGridProps {
   dishes: Dish[];

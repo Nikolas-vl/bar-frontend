@@ -4,8 +4,8 @@ import { ProfileLayout } from '../../profile/components/ProfileLayout';
 import { AddressCard } from '@/features/addresses/components/AddressCard';
 import { AddressForm, type AddressFormData } from '@/features/addresses/components/AddressForm';
 import { useAddresses, useCreateAddress } from '@/features/addresses/hooks/useAddresses';
-import { getErrorMessage } from '@/api/client';
-import { Skeleton } from '@/components/shared/ui';
+import { getErrorMessage } from '@/shared/lib/api/client';
+import { Skeleton } from '@/shared/ui';
 
 export default function AddressesPage() {
   const [isAdding, setIsAdding] = useState(false);

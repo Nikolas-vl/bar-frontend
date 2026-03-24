@@ -1,6 +1,6 @@
-import type { Cart } from '@/types';
-import { AppImage } from '@/components/shared/ui';
-import { formatPrice } from '@/utils/cn';
+import type { Cart } from '@/shared/types';
+import { AppImage } from '@/shared/ui';
+import { formatPrice } from '@/shared/lib/utils/cn';
 import { calcItemTotal } from '../../../cart/utils/cartUtils';
 
 interface CartSummaryProps {

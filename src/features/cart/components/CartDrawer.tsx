@@ -1,13 +1,13 @@
 import { Link } from 'react-router-dom';
-import { useUIStore } from '@/store/ui.store';
+import { useUIStore } from '@/app/store/ui.store';
 import { useCart } from '../hooks/useCart';
 import { useClearCart } from '../hooks/useClearCart';
 import { hasUnavailableItems, getUnavailableItems, calcCartSubtotal, getTotalItemCount } from '../utils/cartUtils';
 import { CartItemRow } from './CartItemRow';
 import { CartIngredientItemRow } from './CartIngredientItemRow';
 import { CartAddIngredients } from './CartAddIngredients';
-import { formatPrice, cn } from '@/utils/cn';
-import { Spinner } from '@/components/shared/ui/Spinner';
+import { formatPrice, cn } from '@/shared/lib/utils/cn';
+import { Spinner } from '@/shared/ui/Spinner';
 
 export const CartDrawer = () => {
   const { isCartOpen, closeCart } = useUIStore();

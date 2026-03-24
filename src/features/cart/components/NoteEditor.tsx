@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { cn } from '@/utils/cn';
+import { cn } from '@/shared/lib/utils/cn';
 
 interface NoteEditorProps {
   /** Current saved note value */

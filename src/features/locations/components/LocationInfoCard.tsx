@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
-import type { Location } from '@/types';
-import { IconLocation, IconPhone, IconMail, IconClock } from '@/assets/icons';
-import { cn } from '@/utils/cn';
+import type { Location } from '@/shared/types';
+import { IconLocation, IconPhone, IconMail, IconClock } from '@/shared/assets/icons';
+import { cn } from '@/shared/lib/utils/cn';
 
 interface LocationInfoCardProps {
   location: Location;

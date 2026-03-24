@@ -1,8 +1,8 @@
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { cn } from '@/utils/cn';
-import { Spinner } from '@/components/shared/ui';
+import { cn } from '@/shared/lib/utils/cn';
+import { Spinner } from '@/shared/ui';
 
 const schema = z.object({
   city: z.string().min(1, 'City is required'),
