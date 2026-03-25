@@ -1,13 +1,13 @@
 import axios, { AxiosError } from 'axios';
 import { useAuthStore } from '@/app/store/auth.store';
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 export const apiClient = axios.create({
-  baseURL: '/api',
-  withCredentials: true, // sends refresh token cookie automatically
+  baseURL: API_URL,
+  withCredentials: true,
 });
 
-// ── Request interceptor ───────────────────────────────────
-// Attach the current access token to every outgoing request.
 apiClient.interceptors.request.use(config => {
   const token = useAuthStore.getState().accessToken;
   if (token) {
@@ -16,9 +16,6 @@ apiClient.interceptors.request.use(config => {
   return config;
 });
 
-// ── Token refresh queue ───────────────────────────────────
-// If multiple requests fail with 401 simultaneously, we queue
-// them and replay all after a single refresh succeeds.
 let isRefreshing = false;
 let failedQueue: {
   resolve: (token: string) => void;
@@ -33,7 +30,6 @@ const processQueue = (error: unknown, token: string | null = null) => {
   failedQueue = [];
 };
 
-// ── Response interceptor ──────────────────────────────────
 apiClient.interceptors.response.use(
   res => res,
 
@@ -42,12 +38,10 @@ apiClient.interceptors.response.use(
       _retry?: boolean;
     };
 
-    // Only attempt refresh on 401, and only once per request.
     if (error.response?.status !== 401 || originalRequest._retry) {
       return Promise.reject(error);
     }
 
-    // Queue concurrent 401s while a refresh is already in flight.
     if (isRefreshing) {
       return new Promise((resolve, reject) => {
         failedQueue.push({
@@ -64,9 +58,9 @@ apiClient.interceptors.response.use(
     isRefreshing = true;
 
     try {
-      const { data } = await axios.post('/api/auth/refresh', {}, { withCredentials: true });
-      const newToken: string = data.accessToken;
+      const { data } = await axios.post(`${API_URL}/auth/refresh`, {}, { withCredentials: true });
 
+      const newToken: string = data.accessToken;
       useAuthStore.getState().setAccessToken(newToken);
 
       processQueue(null, newToken);
@@ -83,17 +77,13 @@ apiClient.interceptors.response.use(
   },
 );
 
-// ── Error helper ──────────────────────────────────────────
 export const getErrorMessage = (error: unknown): string => {
   if (axios.isAxiosError(error)) {
     const data = error.response?.data;
-
     if (Array.isArray(data?.issues) && data.issues.length > 0) {
       return data.issues.map((i: { message: string }) => i.message).join(', ');
     }
-
     return data?.message ?? 'Something went wrong';
   }
-
   return 'Something went wrong';
 };
