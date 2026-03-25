@@ -1,5 +1,5 @@
 import { apiClient } from './client';
-import type { Cart, CartItem, CartIngredientItem } from '../types/index';
+import type { Cart, CartItem, CartIngredientItem } from '@/shared/types';
 
 export interface AddCartItemPayload {
   dishId: number;

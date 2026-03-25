@@ -95,8 +95,8 @@ export default function CartPage() {
 
             <div className='flex justify-between items-center text-sm'>
               <span className='text-ob-muted'>
-                Subtotal ({cart!.items.reduce((s, i) => s + i.quantity, 0)} items, {cart!.ingredientItems.reduce((s, i) => s + i.quantity, 0)} extra
-                ingredients)
+                Subtotal ({cart!.items.reduce((s: number, i: { quantity: number }) => s + i.quantity, 0)} items,{' '}
+                {cart!.ingredientItems.reduce((s: number, i: { quantity: number }) => s + i.quantity, 0)} extra ingredients)
               </span>
               <span className='font-semibold text-ob-text'>{formatPrice(subtotal.toFixed(2))}</span>
             </div>
