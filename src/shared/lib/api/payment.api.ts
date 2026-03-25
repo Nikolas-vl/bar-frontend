@@ -1,5 +1,5 @@
 import { apiClient } from './client';
-import type { PaymentMethod } from '../types';
+import type { PaymentMethod } from '../../types';
 
 export interface CreatePaymentMethodPayload {
   cardType: string;

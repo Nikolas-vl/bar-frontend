@@ -1,5 +1,5 @@
 import { apiClient } from './client';
-import type { Order, OrderType, PaymentType, PaginatedOrders } from '../types';
+import type { Order, OrderType, PaymentType, PaginatedOrders } from '../../types';
 
 export interface CreateOrderPayload {
   type: OrderType;
