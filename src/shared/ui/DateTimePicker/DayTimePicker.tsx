@@ -1,15 +1,17 @@
-import { useState, useRef, useEffect } from 'react';
+import { useEffect, useMemo, useRef, useState, type ButtonHTMLAttributes } from 'react';
 import { DayPicker } from 'react-day-picker';
 import { format, isValid } from 'date-fns';
+import { autoUpdate, flip, offset, shift, size, useFloating } from '@floating-ui/react-dom';
 import { cn } from '@/shared/lib/utils/cn';
 import { TimePicker } from './TimePicker';
 import { getHoursForDate, generateTimeSlots, isOpenDay } from '@/shared/config/businessHours';
+import { useDismissableLayer } from '@/shared/hooks/useDismissableLayer';
 import 'react-day-picker/dist/style.css';
 import { createPortal } from 'react-dom';
 
 // ─── Types ─────────────────────────────────────────────────────────────────
 
-interface DateTimePickerProps {
+interface DateTimePickerProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'onChange'> {
   value: string;
   onChange: (isoString: string) => void;
   minDate?: Date;
@@ -41,11 +43,37 @@ function snapToSlot(timeStr: string, slots: string[]): string {
 
 // ─── Component ─────────────────────────────────────────────────────────────
 
-export function DateTimePicker({ value, onChange, minDate, hasError, placeholder = 'Pick a date & time…' }: DateTimePickerProps) {
+export function DateTimePicker({
+  value,
+  onChange,
+  minDate,
+  hasError,
+  placeholder = 'Pick a date & time…',
+  className,
+  ...buttonProps
+}: DateTimePickerProps) {
   const [open, setOpen] = useState(false);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
-  const [anchorRect, setAnchorRect] = useState<DOMRect | null>(null);
+  const dismissRefs = useMemo(() => [buttonRef, panelRef], []);
+
+  const { refs, floatingStyles, update } = useFloating({
+    open,
+    placement: 'bottom-start',
+    strategy: 'fixed',
+    whileElementsMounted: autoUpdate,
+    middleware: [
+      offset(6),
+      flip({ padding: 8 }),
+      shift({ padding: 8 }),
+      size({
+        padding: 8,
+        apply({ availableWidth, elements }) {
+          elements.floating.style.width = `${Math.min(320, availableWidth)}px`;
+        },
+      }),
+    ],
+  });
 
   const currentDate = value && isValid(new Date(value)) ? new Date(value) : undefined;
 
@@ -57,26 +85,18 @@ export function DateTimePicker({ value, onChange, minDate, hasError, placeholder
     return slots[0] ?? '08:00';
   });
 
-  // Outside-click: close panel unless the click landed inside a Radix portal.
-  // Radix Select/Popover content is rendered in a portal on document.body, which means
-  // it is NOT a descendant of containerRef — without this guard every Select click
-  // would immediately close the DateTimePicker.
+  useDismissableLayer({
+    isOpen: open,
+    onDismiss: () => setOpen(false),
+    refs: dismissRefs,
+  });
+
   useEffect(() => {
-    const handler = (e: MouseEvent) => {
-      const target = e.target as Element;
-      if (buttonRef.current?.contains(target)) return;
-      if (panelRef.current?.contains(target)) return;
-      if (target.closest('[data-radix-popper-content-wrapper]')) return;
-      setOpen(false);
-    };
-    document.addEventListener('mousedown', handler);
-    return () => document.removeEventListener('mousedown', handler);
-  }, []);
+    if (!open) return;
+    update();
+  }, [open, update]);
 
   const handleToggle = () => {
-    if (!open && buttonRef.current) {
-      setAnchorRect(buttonRef.current.getBoundingClientRect());
-    }
     setOpen(v => !v);
   };
 
@@ -102,12 +122,25 @@ export function DateTimePicker({ value, onChange, minDate, hasError, placeholder
 
   const hoursHint = currentDate ? `Open reservation hours ${minTime}-${maxTime}` : 'Mon-Fri 08:00-19:00 · Sat-Sun 08:00-09:30';
 
+  const handleReferenceRef = (node: HTMLButtonElement | null) => {
+    buttonRef.current = node;
+    refs.setReference(node);
+  };
+
+  const handleFloatingRef = (node: HTMLDivElement | null) => {
+    panelRef.current = node;
+    refs.setFloating(node);
+  };
+
   return (
     <div>
       <button
-        ref={buttonRef}
+        {...buttonProps}
+        ref={handleReferenceRef}
         type='button'
         onClick={handleToggle}
+        aria-expanded={open}
+        aria-haspopup='dialog'
         className={cn(
           'flex items-center justify-between w-full px-4 py-3 rounded-xl text-sm text-left',
           'transition-all duration-200 focus:outline-none cursor-pointer',
@@ -115,6 +148,7 @@ export function DateTimePicker({ value, onChange, minDate, hasError, placeholder
           'hover:border-ob-border-h',
           'focus:border-ob-caramel focus:shadow-[0_0_0_3px_rgba(197,139,90,0.12)]',
           hasError && 'border-ob-error shadow-[0_0_0_3px_rgba(192,57,43,0.10)]',
+          className,
         )}
       >
         <span className={displayValue ? 'text-ob-text' : 'text-ob-light'}>{displayValue || placeholder}</span>
@@ -122,21 +156,18 @@ export function DateTimePicker({ value, onChange, minDate, hasError, placeholder
       </button>
 
       {open &&
-        anchorRect &&
         createPortal(
           <div
-            ref={panelRef}
+            ref={handleFloatingRef}
+            data-dismissable-layer-ignore
             className={cn(
-              'fixed z-200',
-              'w-[320px]',
+              'z-200',
+              'w-[320px] max-w-[calc(100vw-1rem)]',
               'bg-ob-surface border border-ob-border rounded-2xl',
               'shadow-[0_8px_32px_rgba(47,47,47,0.14)]',
               'p-4 flex flex-col gap-4',
             )}
-            style={{
-              top: anchorRect.bottom + 6,
-              left: Math.min(anchorRect.left, window.innerWidth - 332),
-            }}
+            style={floatingStyles}
           >
             {/* Calendar */}
             <DayPicker

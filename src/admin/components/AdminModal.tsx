@@ -1,7 +1,8 @@
-import { useEffect, type ReactNode } from 'react';
+import { useEffect, useMemo, useRef, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import { cn } from '@/shared/lib/utils/cn';
 import { IconClose } from '@/shared/assets/icons';
+import { useDismissableLayer } from '@/shared/hooks/useDismissableLayer';
 
 type ModalSize = 'sm' | 'md' | 'lg';
 
@@ -21,15 +22,14 @@ const SIZE_CLASS: Record<ModalSize, string> = {
 };
 
 export function AdminModal({ isOpen, onClose, title, children, size = 'md', footer }: AdminModalProps) {
-  // ESC to close
-  useEffect(() => {
-    if (!isOpen) return;
-    const handler = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
-    };
-    document.addEventListener('keydown', handler);
-    return () => document.removeEventListener('keydown', handler);
-  }, [isOpen, onClose]);
+  const modalRef = useRef<HTMLDivElement>(null);
+  const dismissRefs = useMemo(() => [modalRef], []);
+
+  useDismissableLayer({
+    isOpen,
+    onDismiss: onClose,
+    refs: dismissRefs,
+  });
 
   // Prevent body scroll
   useEffect(() => {
@@ -43,17 +43,10 @@ export function AdminModal({ isOpen, onClose, title, children, size = 'md', foot
   if (!isOpen) return null;
 
   return createPortal(
-    <div
-      role='dialog'
-      aria-modal='true'
-      className='fixed inset-0 z-100 flex items-center justify-center p-4'
-      onMouseDown={e => {
-        if (e.target === e.currentTarget) onClose();
-      }}
-    >
+    <div role='dialog' aria-modal='true' className='fixed inset-0 z-100 flex items-center justify-center p-4'>
       <div className='absolute inset-0 bg-black/40 backdrop-blur-sm' />
 
-      <div className={cn('relative card p-0 overflow-hidden w-full', SIZE_CLASS[size])}>
+      <div ref={modalRef} className={cn('relative card p-0 overflow-hidden w-full', SIZE_CLASS[size])}>
         <div className='flex items-center justify-between px-6 py-4 border-b border-ob-border'>
           <h2 className='text-lg font-display font-semibold text-ob-text'>{title}</h2>
           <button type='button' onClick={onClose} className='btn-icon-ghost' aria-label='Close modal'>
