@@ -1,18 +1,8 @@
 import { cn } from '@/shared/lib/utils/cn';
+import { RESERVATION_STATUS_CONFIG } from '@/shared/constants/reservation';
 import type { ReservationStatus } from '@/shared/types';
 
-const CLASS: Record<ReservationStatus, string> = {
-  PENDING: 'badge-pending',
-  CONFIRMED: 'badge-confirmed',
-  CANCELED: 'badge-canceled',
-};
-
-const LABEL: Record<ReservationStatus, string> = {
-  PENDING: 'Pending',
-  CONFIRMED: 'Confirmed',
-  CANCELED: 'Canceled',
-};
-
 export function ReservationStatusBadge({ status }: { status: ReservationStatus }) {
-  return <span className={cn('badge', CLASS[status])}>{LABEL[status]}</span>;
+  const config = RESERVATION_STATUS_CONFIG[status];
+  return <span className={cn('badge', config.badgeClass)}>{config.label}</span>;
 }

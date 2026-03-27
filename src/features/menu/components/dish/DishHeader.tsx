@@ -1,6 +1,6 @@
 import { AppImage } from '@/shared/ui';
 import { formatPrice } from '@/shared/lib/utils/cn';
-import { CATEGORY_LABEL, CATEGORY_EMOJI } from '@/shared/config/category.constants';
+import { CATEGORY_CONFIG } from '@/shared/constants/category';
 import type { Dish } from '@/shared/types';
 
 interface DishHeaderProps {
@@ -24,7 +24,7 @@ export function DishHeader({ dish }: DishHeaderProps) {
         <div>
           <div className='flex items-center gap-2 mb-2'>
             <span className='text-sm font-medium text-ob-muted'>
-              {CATEGORY_EMOJI[dish.category]} {CATEGORY_LABEL[dish.category]}
+              {CATEGORY_CONFIG[dish.category].emoji} {CATEGORY_CONFIG[dish.category].label}
             </span>
             {!dish.isAvailable && <span className='px-2 py-0.5 rounded-full text-xs font-semibold bg-ob-error/10 text-ob-error'>Unavailable</span>}
           </div>

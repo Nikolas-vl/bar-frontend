@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { CATEGORY_VALUES } from '@/shared/constants/category';
 
 const optionalNumber = (min = 0) =>
   z.preprocess(val => {
@@ -16,7 +17,7 @@ export const dishSchema = z.object({
   protein: optionalNumber(0),
   fat: optionalNumber(0),
   carbs: optionalNumber(0),
-  category: z.enum(['BREAKFAST', 'LUNCH']),
+  category: z.enum(CATEGORY_VALUES),
   isAvailable: z.boolean(),
 });
 

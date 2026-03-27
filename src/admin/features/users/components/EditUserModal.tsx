@@ -4,6 +4,7 @@ import { useEffect } from 'react';
 import { AdminModal } from '@/admin/components/AdminModal';
 import { Spinner } from '@/shared/ui';
 import { Select } from '@/shared/ui/Select';
+import { ROLE_CONFIG, ROLE_VALUES } from '@/shared/constants/user';
 import type { AdminUserWithDate } from '@/shared/types';
 import { editUserSchema, type EditUserFormInput, type EditUserFormOutput } from '../schemas/user.schema';
 import { mapUserToForm, mapUserFormToDto } from '../mappers/user.mapper';
@@ -48,10 +49,7 @@ export function EditUserModal({ isOpen, onClose, user, onSubmit, isPending }: Ed
     onSubmit(mapUserFormToDto(data, user));
   };
 
-  const roleOptions = [
-    { value: 'USER', label: 'User' },
-    { value: 'ADMIN', label: 'Admin' },
-  ];
+  const roleOptions = ROLE_VALUES.map(value => ({ value, label: ROLE_CONFIG[value].label }));
 
   return (
     <AdminModal

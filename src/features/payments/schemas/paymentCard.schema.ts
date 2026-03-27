@@ -1,15 +1,7 @@
 import { z } from 'zod';
+import { CARD_TYPES } from '@/shared/constants/payment';
 
 const currentYear = new Date().getFullYear();
-
-export const CARD_TYPES = ['Visa', 'Mastercard', 'Amex'] as const;
-export type CardType = (typeof CARD_TYPES)[number];
-
-export const CARD_ICON: Record<CardType, string> = {
-  Visa: '🟦',
-  Mastercard: '🔴',
-  Amex: '🟩',
-};
 
 export const cardSchema = z.object({
   cardType: z.enum(CARD_TYPES, { error: 'Select a card type' }),

@@ -1,6 +1,7 @@
 import { AppImage } from '@/shared/ui';
 import { formatPrice, cn } from '@/shared/lib/utils/cn';
 import { IconEdit, IconTrash } from '@/shared/assets/icons';
+import { CATEGORY_CONFIG } from '@/shared/constants/category';
 import { DishIngredientEditor } from './DishIngredientEditor';
 import type { Dish } from '@/shared/types';
 
@@ -20,7 +21,7 @@ export function DishAdminCard({ dish, onEdit, onDelete, onToggleAvailability }: 
         <div className='flex items-start justify-between'>
           <div>
             <h3 className='font-display font-semibold text-ob-text text-sm leading-tight'>{dish.name}</h3>
-            <span className='badge mt-1 text-[10px]'>{dish.category}</span>
+            <span className={cn('badge mt-1 text-[10px]', CATEGORY_CONFIG[dish.category].badgeClass)}>{CATEGORY_CONFIG[dish.category].label}</span>
           </div>
           <span className='text-sm font-display font-semibold text-ob-caramel'>{formatPrice(dish.price)}</span>
         </div>
