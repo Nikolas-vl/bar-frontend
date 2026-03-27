@@ -15,9 +15,13 @@ import { ReservationStatusBadge } from '@/features/reservations/components/Reser
 import { IconPlus, IconEdit, IconTrash, IconClose } from '@/shared/assets/icons';
 import { formatDate } from '@/shared/lib/utils/cn';
 import { getErrorMessage } from '@/shared/lib/api/client';
+import {
+  RESERVATION_STATUS_FILTER_LABEL,
+  RESERVATION_STATUS_FILTER_OPTIONS,
+  type ReservationStatusFilterValue,
+} from '@/shared/constants/reservation';
 import type { Reservation } from '@/shared/types';
 
-const STATUS_OPTIONS = ['ALL', 'PENDING', 'CONFIRMED', 'CANCELED'] as const;
 const LIMIT = 20;
 
 export default function AdminReservationsPage() {
@@ -157,10 +161,10 @@ export default function AdminReservationsPage() {
 
       <div className='flex flex-wrap items-center gap-4'>
         <FilterPills
-          options={STATUS_OPTIONS}
-          value={filters.status as (typeof STATUS_OPTIONS)[number]}
+          options={RESERVATION_STATUS_FILTER_OPTIONS}
+          value={filters.status as ReservationStatusFilterValue}
           onChange={v => updateFilter('status', v)}
-          labelMap={{ ALL: 'All' }}
+          labelMap={RESERVATION_STATUS_FILTER_LABEL}
         />
 
         <DateTimePicker value={filters.date} onChange={val => updateFilter('date', val)} aria-label='Filter by date' />

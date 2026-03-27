@@ -8,13 +8,7 @@ import { ReservationStatusBadge } from '@/features/reservations/components/Reser
 import { LoadingState } from '@/shared/ui';
 import { IconOrders, IconReservation, IconUsers, IconClock, IconPlus, IconArrowRight } from '@/shared/assets/icons';
 import { formatPrice, formatDate, cn } from '@/shared/lib/utils/cn';
-import type { OrderType } from '@/shared/types';
-
-const ORDER_TYPE_ICON: Record<OrderType, string> = {
-  DINE_IN: '🍽️',
-  DELIVERY: '🛵',
-  TAKE_OUT: '🥡',
-};
+import { ORDER_TYPE_CONFIG } from '@/shared/constants/order';
 
 function formatElapsed(minutes: number): string {
   if (minutes < 60) return `${minutes}m ago`;
@@ -161,7 +155,7 @@ export default function DashboardPage() {
                     <tr key={o.id} className='cursor-pointer hover:bg-ob-blue/30 transition-colors' onClick={() => navigate('/admin/orders')}>
                       <td className='font-mono text-xs'>#{o.id}</td>
                       <td>
-                        <span>{ORDER_TYPE_ICON[o.type]}</span>
+                        <span>{ORDER_TYPE_CONFIG[o.type].icon}</span>
                       </td>
                       <td className='text-xs text-ob-muted truncate max-w-120px'>{o.items.map(i => i.dish.name).join(', ') || '—'}</td>
                       <td className='font-mono text-xs font-semibold text-ob-caramel'>{formatPrice(o.total)}</td>

@@ -10,32 +10,17 @@ import { ErrorState } from '@/shared/ui';
 import { OrderStatusBadge, PaymentStatusBadge } from '@/features/orders/components/orders/OrderStatusBadge';
 import { IconTrash, IconClose } from '@/shared/assets/icons';
 import { formatPrice, formatDate } from '@/shared/lib/utils/cn';
-import { ORDER_STATUS_TRANSITIONS } from '@/shared/config/order.constants';
-import type { Order, OrderStatus, OrderType } from '@/shared/types';
+import {
+  ORDER_STATUS_CONFIG,
+  ORDER_STATUS_FILTER_LABEL,
+  ORDER_STATUS_FILTER_OPTIONS,
+  ORDER_STATUS_TRANSITIONS,
+  ORDER_TYPE_CONFIG,
+  type OrderStatusFilterValue,
+} from '@/shared/constants/order';
+import type { Order, OrderStatus } from '@/shared/types';
 
-const STATUS_OPTIONS = ['ALL', 'NEW', 'PAID', 'PREPARING', 'COMPLETED', 'CANCELED'] as const;
 const LIMIT = 20;
-
-const ORDER_TYPE_ICON: Record<OrderType, string> = {
-  DINE_IN: '🍽️',
-  DELIVERY: '🛵',
-  TAKE_OUT: '🥡',
-};
-
-const ORDER_TYPE_LABEL: Record<OrderType, string> = {
-  DINE_IN: 'Dine In',
-  DELIVERY: 'Delivery',
-  TAKE_OUT: 'Take Out',
-};
-
-const STATUS_LABELS: Record<string, string> = {
-  ALL: 'All',
-  NEW: 'New',
-  PAID: 'Paid',
-  PREPARING: 'Preparing',
-  COMPLETED: 'Completed',
-  CANCELED: 'Canceled',
-};
 
 export default function AdminOrdersPage() {
   const { filters, page, setPage, updateFilter, resetFilters } = useFilteredPage({
@@ -66,8 +51,8 @@ export default function AdminOrdersPage() {
       header: 'Type',
       render: (o: Order) => (
         <span className='inline-flex items-center gap-1.5'>
-          <span>{ORDER_TYPE_ICON[o.type]}</span>
-          <span className='text-xs'>{ORDER_TYPE_LABEL[o.type]}</span>
+          <span>{ORDER_TYPE_CONFIG[o.type].icon}</span>
+          <span className='text-xs'>{ORDER_TYPE_CONFIG[o.type].label}</span>
         </span>
       ),
     },
@@ -75,7 +60,7 @@ export default function AdminOrdersPage() {
       key: 'items',
       header: 'Items',
       render: (o: Order) => (
-        <span className='text-xs text-ob-muted truncate max-w-[200px] block'>
+        <span className='text-xs text-ob-muted truncate max-w-200px block'>
           {o.items.map(i => `${i.dish.name} x${i.quantity}`).join(', ') || '—'}
         </span>
       ),
@@ -120,7 +105,7 @@ export default function AdminOrdersPage() {
     const transitions = ORDER_STATUS_TRANSITIONS[o.status];
     const transitionOptions = transitions.map((s: OrderStatus) => ({
       value: s,
-      label: STATUS_LABELS[s] ?? s,
+      label: ORDER_STATUS_CONFIG[s].label,
     }));
 
     return (
@@ -219,10 +204,10 @@ export default function AdminOrdersPage() {
       {/* Status filter */}
       <div className='flex items-center gap-4'>
         <FilterPills
-          options={STATUS_OPTIONS}
-          value={filters.status as (typeof STATUS_OPTIONS)[number]}
+          options={ORDER_STATUS_FILTER_OPTIONS}
+          value={filters.status as OrderStatusFilterValue}
           onChange={v => updateFilter('status', v)}
-          labelMap={STATUS_LABELS as Record<(typeof STATUS_OPTIONS)[number], string>}
+          labelMap={ORDER_STATUS_FILTER_LABEL}
         />
 
         {isFiltered && (

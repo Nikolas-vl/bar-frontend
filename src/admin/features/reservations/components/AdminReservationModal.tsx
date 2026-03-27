@@ -6,6 +6,7 @@ import { Spinner } from '@/shared/ui/Spinner';
 import { Select } from '@/shared/ui/Select';
 import { DateTimePicker } from '@/shared/ui/DateTimePicker/DayTimePicker';
 import { useAdminTables } from '@/admin/features/tables/hooks/useAdminTables';
+import { RESERVATION_STATUS_SELECT_OPTIONS } from '@/shared/constants/reservation';
 import type { Reservation } from '@/shared/types/reservation.types';
 import { adminReservationSchema, type AdminReservationFormInput, type AdminReservationFormOutput } from '../schemas/reservation.schema';
 import { mapAdminReservationToForm, mapAdminReservationFormToDto, mapAdminReservationFormToUpdateDto } from '../mappers/reservation.mapper';
@@ -72,12 +73,6 @@ export function AdminReservationModal({
   }, [isOpen, reservation, reset]);
 
   const isEdit = !!reservation;
-
-  const statusOptions = [
-    { value: 'PENDING', label: 'Pending' },
-    { value: 'CONFIRMED', label: 'Confirmed' },
-    { value: 'CANCELED', label: 'Canceled' },
-  ];
 
   const tableOptions = [
     { value: '0', label: 'No table assigned' },
@@ -172,7 +167,7 @@ export function AdminReservationModal({
           <Select
             value={currentStatus}
             onChange={v => setValue('status', v as AdminReservationFormOutput['status'], { shouldValidate: true })}
-            options={statusOptions}
+            options={RESERVATION_STATUS_SELECT_OPTIONS}
           />
         </div>
 

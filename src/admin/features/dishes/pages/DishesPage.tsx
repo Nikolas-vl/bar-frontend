@@ -12,16 +12,11 @@ import { FilterPills } from '@/admin/components/FilterPills';
 import { ErrorState, EmptyState, LoadingState } from '@/shared/ui';
 import { IconPlus, IconClose } from '@/shared/assets/icons';
 import { cn } from '@/shared/lib/utils/cn';
-import type { Category, Dish, Ingredient } from '@/shared/types';
+import { CATEGORY_FILTER_LABEL, CATEGORY_FILTER_OPTIONS, type CategoryFilterValue } from '@/shared/constants/category';
+import type { Dish, Ingredient } from '@/shared/types';
 import { useDebouncedSearch } from '@/shared/hooks/useDebouncedSearch';
 
 type Tab = 'dishes' | 'ingredients';
-
-const CATEGORIES: { value: Category | 'ALL'; label: string }[] = [
-  { value: 'ALL', label: 'All' },
-  { value: 'BREAKFAST', label: 'Breakfast' },
-  { value: 'LUNCH', label: 'Lunch' },
-];
 
 export default function DishesPage() {
   const [searchParams] = useSearchParams();
@@ -29,7 +24,7 @@ export default function DishesPage() {
 
   // ── Dishes state ──────────────────────────────
   const [searchInput, setSearchInput, debouncedSearch] = useDebouncedSearch();
-  const [categoryFilter, setCategoryFilter] = useState<Category | 'ALL'>('ALL');
+  const [categoryFilter, setCategoryFilter] = useState<CategoryFilterValue>('ALL');
 
   const dishFilters = {
     search: debouncedSearch || undefined,
@@ -94,12 +89,7 @@ export default function DishesPage() {
           <div className='flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4'>
             <div className='flex flex-wrap items-center gap-3'>
               <SearchInput value={searchInput} onChange={setSearchInput} placeholder='Search dishes…' className='w-64' />
-              <FilterPills
-                options={CATEGORIES.map(c => c.value)}
-                value={categoryFilter}
-                onChange={v => setCategoryFilter(v as Category | 'ALL')}
-                labelMap={Object.fromEntries(CATEGORIES.map(c => [c.value, c.label])) as Record<Category | 'ALL', string>}
-              />
+              <FilterPills options={CATEGORY_FILTER_OPTIONS} value={categoryFilter} onChange={setCategoryFilter} labelMap={CATEGORY_FILTER_LABEL} />
 
               {isDishFiltered && (
                 <button type='button' onClick={clearDishFilters} className='btn-ghost gap-2 text-ob-muted hover:text-ob-text'>
@@ -116,7 +106,7 @@ export default function DishesPage() {
           {dishesError ? (
             <ErrorState title='Failed to load dishes' onRetry={refetchDishes} layout='inline' />
           ) : dishesLoading ? (
-            <LoadingState layout='inline' message='Fetching dishes...' className='min-h-[400px]' />
+            <LoadingState layout='inline' message='Fetching dishes...' className='min-h-400px' />
           ) : dishes && dishes.length === 0 ? (
             <EmptyState
               layout='inline'

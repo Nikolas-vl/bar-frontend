@@ -1,11 +1,6 @@
 import { cn } from '@/shared/lib/utils/cn';
+import { ORDER_TYPE_OPTIONS } from '@/shared/constants/order';
 import type { OrderType } from '@/shared/types';
-
-const OPTIONS: { value: OrderType; label: string; icon: string; description: string }[] = [
-  { value: 'DINE_IN', label: 'Dine In', icon: '🍽️', description: 'Eat at the restaurant' },
-  { value: 'TAKE_OUT', label: 'Take Out', icon: '🥡', description: 'Pick up your order' },
-  { value: 'DELIVERY', label: 'Delivery', icon: '🛵', description: 'Delivered to your door' },
-];
 
 interface OrderTypeSelectorProps {
   value: OrderType;
@@ -15,7 +10,7 @@ interface OrderTypeSelectorProps {
 export function OrderTypeSelector({ value, onChange }: OrderTypeSelectorProps) {
   return (
     <div className='grid grid-cols-3 gap-3'>
-      {OPTIONS.map(opt => (
+      {ORDER_TYPE_OPTIONS.map(opt => (
         <button
           key={opt.value}
           type='button'

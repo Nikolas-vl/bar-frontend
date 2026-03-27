@@ -2,13 +2,8 @@ import { toast } from 'sonner';
 import { cn } from '@/shared/lib/utils/cn';
 import { useDeletePaymentMethod, useSetDefaultPaymentMethod } from '../hooks/usePaymentMethodMutations';
 import { getErrorMessage } from '@/shared/lib/api/client';
+import { getCardTypeIcon } from '@/shared/constants/payment';
 import type { PaymentMethod } from '@/shared/types';
-
-const CARD_ICON: Record<string, string> = {
-  Visa: '🟦',
-  Mastercard: '🔴',
-  Amex: '🟩',
-};
 
 function isExpired(expMonth: number, expYear: number): boolean {
   return new Date(expYear, expMonth - 1) < new Date();
@@ -49,7 +44,7 @@ export function PaymentCard({ card }: PaymentCardProps) {
 
   return (
     <div className={cn('card p-5 flex items-center gap-4 transition-all', card.isDefault && 'border-ob-caramel/40 bg-ob-caramel/3')}>
-      <div className='w-12 h-12 rounded-xl bg-ob-blue flex items-center justify-center text-2xl shrink-0'>{CARD_ICON[card.cardType] ?? '💳'}</div>
+      <div className='w-12 h-12 rounded-xl bg-ob-blue flex items-center justify-center text-2xl shrink-0'>{getCardTypeIcon(card.cardType)}</div>
 
       <div className='flex-1 min-w-0'>
         <div className='flex items-center gap-2 flex-wrap'>

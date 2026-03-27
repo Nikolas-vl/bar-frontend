@@ -8,27 +8,8 @@ import { AppImage, Skeleton, Spinner } from '@/shared/ui';
 import { formatPrice } from '@/shared/lib/utils/cn';
 import { getErrorMessage } from '@/shared/lib/api/client';
 import { calcOrderItemTotal } from '@/features/cart/utils/cartUtils';
-import type { OrderStatus, PaymentType } from '@/shared/types';
-
-const TYPE_LABEL: Record<string, string> = {
-  DINE_IN: '🍽️ Dine In',
-  DELIVERY: '🛵 Delivery',
-  TAKE_OUT: '🥡 Take Out',
-};
-
-const PAYMENT_TYPE_LABEL: Record<PaymentType, string> = {
-  CASH: '💵 Cash',
-  BLIK: '📱 BLIK',
-  CARD: '💳 Card',
-};
-
-const CARD_ICON: Record<string, string> = {
-  Visa: '🟦',
-  Mastercard: '🔴',
-  Amex: '🟩',
-};
-
-const CANCELABLE_STATUSES: OrderStatus[] = ['NEW', 'PAID'];
+import { ORDER_TYPE_CONFIG, isOrderCancelableStatus } from '@/shared/constants/order';
+import { PAYMENT_TYPE_CONFIG, getCardTypeIcon } from '@/shared/constants/payment';
 
 export default function OrderDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -67,7 +48,7 @@ export default function OrderDetailPage() {
 
   const latestPayment = order.payments[0];
   const wasPaid = order.paymentStatus === 'SUCCESS';
-  const isCancelable = CANCELABLE_STATUSES.includes(order.status);
+  const isCancelable = isOrderCancelableStatus(order.status);
   const isDelivery = order.type === 'DELIVERY';
 
   return (
@@ -101,7 +82,7 @@ export default function OrderDetailPage() {
 
           <div className='grid grid-cols-2 sm:grid-cols-4 gap-3'>
             {[
-              { label: 'Type', value: TYPE_LABEL[order.type] },
+              { label: 'Type', value: `${ORDER_TYPE_CONFIG[order.type].icon} ${ORDER_TYPE_CONFIG[order.type].label}` },
               { label: 'Subtotal', value: formatPrice(order.subtotal) },
               { label: 'Tax', value: formatPrice(order.tax) },
               { label: 'Total', value: formatPrice(order.total), highlight: true },
@@ -164,10 +145,8 @@ export default function OrderDetailPage() {
                 <div className='flex items-center gap-3'>
                   <div className='w-10 h-10 rounded-xl bg-ob-blue flex items-center justify-center text-xl shrink-0'>
                     {latestPayment.type === 'CARD' && latestPayment.paymentMethod
-                      ? (CARD_ICON[latestPayment.paymentMethod.cardType] ?? '💳')
-                      : latestPayment.type === 'BLIK'
-                        ? '📱'
-                        : '💵'}
+                      ? getCardTypeIcon(latestPayment.paymentMethod.cardType)
+                      : PAYMENT_TYPE_CONFIG[latestPayment.type].icon}
                   </div>
 
                   <div className='flex flex-col gap-0.5'>
@@ -181,7 +160,9 @@ export default function OrderDetailPage() {
                         </span>
                       </>
                     ) : (
-                      <span className='text-sm font-medium text-ob-text'>{PAYMENT_TYPE_LABEL[latestPayment.type]}</span>
+                      <span className='text-sm font-medium text-ob-text'>
+                        {PAYMENT_TYPE_CONFIG[latestPayment.type].icon} {PAYMENT_TYPE_CONFIG[latestPayment.type].label}
+                      </span>
                     )}
                     <span className='text-xs text-ob-muted'>{format(new Date(latestPayment.createdAt), 'MMM d, yyyy · HH:mm')}</span>
                   </div>

@@ -3,15 +3,7 @@ import { useMyOrders } from '../hooks/useMyOrders';
 import { OrderCard } from '../components/orders/OrderCard';
 import { Skeleton } from '@/shared/ui';
 import type { OrderStatus } from '@/shared/types';
-
-const STATUS_FILTERS: { label: string; value?: OrderStatus }[] = [
-  { label: 'All' },
-  { label: 'New', value: 'NEW' },
-  { label: 'Paid', value: 'PAID' },
-  { label: 'Preparing', value: 'PREPARING' },
-  { label: 'Completed', value: 'COMPLETED' },
-  { label: 'Canceled', value: 'CANCELED' },
-];
+import { ORDER_STATUS_FILTER_ITEMS } from '@/shared/constants/order';
 
 export default function OrdersPage() {
   const [status, setStatus] = useState<OrderStatus | undefined>();
@@ -24,15 +16,17 @@ export default function OrdersPage() {
 
       {/* Status filter */}
       <div className='flex gap-2 flex-wrap mb-6'>
-        {STATUS_FILTERS.map(f => (
+        {ORDER_STATUS_FILTER_ITEMS.map(filter => (
           <button
-            key={f.label}
-            onClick={() => setStatus(f.value)}
+            key={filter.option}
+            onClick={() => setStatus(filter.value)}
             className={`px-3.5 py-1.5 rounded-full text-xs font-semibold border transition-all ${
-              status === f.value ? 'bg-ob-caramel border-ob-caramel text-white' : 'bg-ob-surface border-ob-border text-ob-muted hover:opacity-80'
+              status === filter.value
+                ? 'bg-ob-caramel border-ob-caramel text-white'
+                : 'bg-ob-surface border-ob-border text-ob-muted hover:opacity-80'
             }`}
           >
-            {f.label}
+            {filter.label}
           </button>
         ))}
       </div>

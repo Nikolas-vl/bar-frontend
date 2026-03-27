@@ -2,7 +2,7 @@ import { memo } from 'react';
 import { Link } from 'react-router-dom';
 import type { Dish } from '@/shared/types';
 import { formatPrice, cn } from '@/shared/lib/utils/cn';
-import { CATEGORY_LABEL, CATEGORY_BADGE_CLASS } from '@/shared/config/category.constants';
+import { CATEGORY_CONFIG } from '@/shared/constants/category';
 import { AppImage } from '@/shared/ui';
 
 interface DishCardProps {
@@ -23,8 +23,8 @@ export const DishCard = memo(function DishCard({ dish, className }: DishCardProp
       <div className='relative shrink-0'>
         <AppImage src={dish.imageUrl} alt={dish.name} aspectRatio='4/3' hoverScale showLabel />
 
-        <span className={cn('absolute top-2.5 left-2.5 px-2 py-0.5 rounded-full text-[11px] font-semibold', CATEGORY_BADGE_CLASS[dish.category])}>
-          {CATEGORY_LABEL[dish.category]}
+        <span className={cn('absolute top-2.5 left-2.5 px-2 py-0.5 rounded-full text-[11px] font-semibold', CATEGORY_CONFIG[dish.category].badgeClass)}>
+          {CATEGORY_CONFIG[dish.category].label}
         </span>
 
         {!dish.isAvailable && (
