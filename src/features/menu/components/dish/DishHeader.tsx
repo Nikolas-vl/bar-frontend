@@ -10,7 +10,15 @@ interface DishHeaderProps {
 export function DishHeader({ dish }: DishHeaderProps) {
   return (
     <>
-      <AppImage src={dish.imageUrl} alt={dish.name} aspectRatio='video' showLabel className='rounded-2xl mb-8' />
+      <AppImage
+        src={dish.imageUrl}
+        alt={dish.name}
+        aspectRatio='video'
+        showLabel
+        loading='eager'
+        fetchPriority='high'
+        className='rounded-2xl mb-8'
+      />
 
       <div className='flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-6'>
         <div>

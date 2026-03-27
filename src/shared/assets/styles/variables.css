@@ -21,9 +21,9 @@
   --color-ob-blue-deep: #A8C8E0;
   /* deeper blue      — hover / borders */
 
-  --color-ob-caramel: #C58B5A;
+  --color-ob-caramel: #9A6239;
   /* warm caramel     — primary CTA     */
-  --color-ob-caramel-h: #A87449;
+  --color-ob-caramel-h: #7F4E2D;
   /* caramel hover                      */
 
   --color-ob-wood: #8B5E3C;
@@ -35,7 +35,7 @@
   /* charcoal         — primary text    */
   --color-ob-muted: #6B6B6B;
   /* secondary text                     */
-  --color-ob-light: #9A9A9A;
+  --color-ob-light: #757575;
   /* placeholder / disabled             */
 
   --color-ob-border: #E5E5E5;

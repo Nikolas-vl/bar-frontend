@@ -1,15 +1,85 @@
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { DishCard, useDishes } from '@/features/menu';
+import { DishCard } from '@/features/menu/components/menu/DishCard';
+import { useDishes } from '@/features/menu/hooks/useDishes';
 import { LocationsSection } from '@/features/locations/components/LocationsSection';
+import { Skeleton } from '@/shared/ui/Skeleton';
+
+function FeaturedSkeleton() {
+  return (
+    <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5'>
+      {Array.from({ length: 4 }).map((_, index) => (
+        <div key={index} className='card overflow-hidden'>
+          <Skeleton className='w-full aspect-4/3 rounded-none' />
+          <div className='p-4 flex flex-col gap-2'>
+            <Skeleton className='h-4 w-3/4' />
+            <Skeleton className='h-3 w-full' />
+            <Skeleton className='h-3 w-2/3' />
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function LocationsSkeleton() {
+  return (
+    <section className='bg-ob-surface border-t border-ob-border'>
+      <div className='page-container py-16'>
+        <div className='mb-8'>
+          <Skeleton className='h-3 w-20 mb-2' />
+          <Skeleton className='h-8 w-56' />
+        </div>
+        <div className='grid grid-cols-1 sm:grid-cols-2 gap-5'>
+          <Skeleton className='h-56 rounded-2xl' />
+          <Skeleton className='h-56 rounded-2xl' />
+        </div>
+      </div>
+    </section>
+  );
+}
 
 export default function HomePage() {
-  const { data: featured } = useDishes({ isAvailable: true, sortBy: 'name', sortOrder: 'asc' });
+  const [enableDeferredSections, setEnableDeferredSections] = useState(false);
+
+  useEffect(() => {
+    const browserWindow = window as Window & {
+      requestIdleCallback?: (callback: () => void, options?: { timeout: number }) => number;
+      cancelIdleCallback?: (handle: number) => void;
+    };
+
+    let timeoutHandle: number | undefined;
+    let idleHandle: number | undefined;
+
+    if (browserWindow.requestIdleCallback) {
+      idleHandle = browserWindow.requestIdleCallback(() => setEnableDeferredSections(true), { timeout: 1200 });
+    } else {
+      timeoutHandle = window.setTimeout(() => setEnableDeferredSections(true), 280);
+    }
+
+    return () => {
+      if (idleHandle !== undefined && browserWindow.cancelIdleCallback) {
+        browserWindow.cancelIdleCallback(idleHandle);
+      }
+
+      if (timeoutHandle !== undefined) {
+        window.clearTimeout(timeoutHandle);
+      }
+    };
+  }, []);
+
+  const { data: featured, isLoading: isFeaturedLoading } = useDishes(
+    { isAvailable: true, sortBy: 'name', sortOrder: 'asc' },
+    { enabled: enableDeferredSections },
+  );
+
   const featuredSlice = featured?.slice(0, 4) ?? [];
+  const showFeaturedSection = enableDeferredSections && (isFeaturedLoading || featuredSlice.length > 0);
 
   return (
     <div>
       <section
-        className='relative overflow-hidden min-h-[520px]'
+        className='relative overflow-hidden min-h-520px'
         style={{ background: 'linear-gradient(135deg, var(--color-ob-bg) 0%, var(--color-ob-surface) 50%, var(--color-ob-blue) 100%)' }}
       >
         <div
@@ -44,41 +114,49 @@ export default function HomePage() {
               { value: '10+', label: 'Dishes' },
               { value: '2', label: 'Locations' },
               { value: '★ 4.9', label: 'Rating' },
-            ].map(s => (
-              <div key={s.label} className='flex flex-col'>
-                <span className='font-display font-bold text-2xl text-ob-text'>{s.value}</span>
-                <span className='text-xs text-ob-muted'>{s.label}</span>
+            ].map(stat => (
+              <div key={stat.label} className='flex flex-col'>
+                <span className='font-display font-bold text-2xl text-ob-text'>{stat.value}</span>
+                <span className='text-xs text-ob-muted'>{stat.label}</span>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {featuredSlice.length > 0 && (
+      {showFeaturedSection && (
         <section className='page-container py-16'>
           <div className='flex items-end justify-between mb-8'>
             <div>
-              <p className='text-xs font-semibold uppercase tracking-widest mb-1 text-ob-caramel'>Today's picks</p>
+              <p className='text-xs font-semibold uppercase tracking-widest mb-1 text-ob-caramel'>Today&apos;s picks</p>
               <h2 className='font-display text-3xl font-semibold text-ob-text'>Featured Dishes</h2>
             </div>
             <Link to='/menu' className='text-sm font-medium transition-opacity hover:opacity-70 hidden sm:block text-ob-caramel'>
-              View all →
+              View all
             </Link>
           </div>
-          <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5'>
-            {featuredSlice.map(dish => (
-              <DishCard key={dish.id} dish={dish} />
-            ))}
-          </div>
-          <div className='mt-6 sm:hidden text-center'>
-            <Link to='/menu' className='btn-ghost text-sm'>
-              View all dishes →
-            </Link>
-          </div>
+
+          {isFeaturedLoading ? (
+            <FeaturedSkeleton />
+          ) : (
+            <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5'>
+              {featuredSlice.map(dish => (
+                <DishCard key={dish.id} dish={dish} />
+              ))}
+            </div>
+          )}
+
+          {!isFeaturedLoading && (
+            <div className='mt-6 sm:hidden text-center'>
+              <Link to='/menu' className='btn-ghost text-sm'>
+                View all dishes
+              </Link>
+            </div>
+          )}
         </section>
       )}
 
-      <LocationsSection />
+      {enableDeferredSections ? <LocationsSection /> : <LocationsSkeleton />}
 
       <section className='bg-ob-surface border-t border-ob-border'>
         <div className='page-container py-12 flex flex-col sm:flex-row items-center justify-between gap-6'>

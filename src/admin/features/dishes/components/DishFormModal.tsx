@@ -2,7 +2,8 @@ import { useEffect } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { AdminModal } from '@/admin/components/AdminModal';
-import { Select, Spinner } from '@/shared/ui';
+import { Spinner } from '@/shared/ui/Spinner';
+import { Select } from '@/shared/ui/Select';
 import type { Dish } from '@/shared/types';
 
 import { mapDishToForm, mapDishFormToDto } from '../mappers/dish.mapper';

@@ -68,7 +68,7 @@ export const CartDrawer = () => {
             <div className='flex flex-col items-center justify-center py-16 gap-3 text-center'>
               <span className='text-5xl select-none'>🛒</span>
               <p className='font-display font-semibold text-ob-text'>Your cart is empty</p>
-              <p className='text-sm text-ob-muted max-w-[200px]'>Browse our menu and add something delicious</p>
+              <p className='text-sm text-ob-muted max-w-200px'>Browse our menu and add something delicious</p>
               <Link to='/menu' onClick={closeCart} className='btn-secondary text-sm mt-2'>
                 Explore Menu
               </Link>

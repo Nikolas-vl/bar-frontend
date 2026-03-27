@@ -163,7 +163,7 @@ export default function DashboardPage() {
                       <td>
                         <span>{ORDER_TYPE_ICON[o.type]}</span>
                       </td>
-                      <td className='text-xs text-ob-muted truncate max-w-[120px]'>{o.items.map(i => i.dish.name).join(', ') || '—'}</td>
+                      <td className='text-xs text-ob-muted truncate max-w-120px'>{o.items.map(i => i.dish.name).join(', ') || '—'}</td>
                       <td className='font-mono text-xs font-semibold text-ob-caramel'>{formatPrice(o.total)}</td>
                       <td>
                         <OrderStatusBadge status={o.status} />

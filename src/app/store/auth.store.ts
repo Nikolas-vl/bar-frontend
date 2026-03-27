@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import type { User } from '@/shared/types';
+import { clearAuthSessionHint, hasAuthSessionHint, setAuthSessionHint } from '@/shared/lib/auth/sessionHint';
 
 interface AuthState {
   user: User | null;
@@ -18,13 +19,19 @@ export const useAuthStore = create<AuthState>(set => ({
   user: null,
   accessToken: null,
   isAuthenticated: false,
-  isInitialized: false,
+  isInitialized: !hasAuthSessionHint(),
 
-  setAuth: (user, token) => set({ user, accessToken: token, isAuthenticated: true }),
+  setAuth: (user, token) => {
+    setAuthSessionHint();
+    set({ user, accessToken: token, isAuthenticated: true });
+  },
 
   setAccessToken: token => set({ accessToken: token }),
 
-  clearAuth: () => set({ user: null, accessToken: null, isAuthenticated: false }),
+  clearAuth: () => {
+    clearAuthSessionHint();
+    set({ user: null, accessToken: null, isAuthenticated: false });
+  },
 
   setInitialized: () => set({ isInitialized: true }),
 

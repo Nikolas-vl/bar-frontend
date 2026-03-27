@@ -1,5 +1,6 @@
 import axios, { AxiosError } from 'axios';
 import { useAuthStore } from '@/app/store/auth.store';
+import { hasAuthSessionHint } from '@/shared/lib/auth/sessionHint';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -37,8 +38,15 @@ apiClient.interceptors.response.use(
     const originalRequest = error.config as typeof error.config & {
       _retry?: boolean;
     };
+    const requestUrl = originalRequest?.url ?? '';
+    const isRefreshRequest = requestUrl.includes('/auth/refresh');
+    const isAuthRequest = requestUrl.startsWith('/auth/');
 
-    if (error.response?.status !== 401 || originalRequest._retry) {
+    if (error.response?.status !== 401 || originalRequest._retry || isRefreshRequest) {
+      return Promise.reject(error);
+    }
+
+    if (!hasAuthSessionHint() || isAuthRequest) {
       return Promise.reject(error);
     }
 

@@ -8,6 +8,14 @@ export default defineConfig({
   resolve: {
     alias: { '@': path.resolve(__dirname, './src') },
   },
+  build: {
+    target: 'es2020',
+    cssCodeSplit: true,
+    modulePreload: true,
+    rollupOptions: {
+      treeshake: true,
+    },
+  },
   server: {
     port: 3000,
   },

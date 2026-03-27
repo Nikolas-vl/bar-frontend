@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { Select } from '@/shared/ui';
-import { Spinner } from '@/shared/ui';
+import { Select } from '@/shared/ui/Select';
+import { Spinner } from '@/shared/ui/Spinner';
 import { IconPlus, IconClose } from '@/shared/assets/icons';
 import { useAddIngredientToDish, useRemoveIngredientFromDish } from '../hooks/useAdminDishes';
 import { useAdminIngredients } from '../hooks/useAdminIngredients';
