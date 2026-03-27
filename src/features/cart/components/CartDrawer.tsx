@@ -1,3 +1,4 @@
+import { useMemo, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { useUIStore } from '@/app/store/ui.store';
 import { useCart } from '../hooks/useCart';
@@ -8,11 +9,14 @@ import { CartIngredientItemRow } from './CartIngredientItemRow';
 import { CartAddIngredients } from './CartAddIngredients';
 import { formatPrice, cn } from '@/shared/lib/utils/cn';
 import { Spinner } from '@/shared/ui/Spinner';
+import { useDismissableLayer } from '@/shared/hooks/useDismissableLayer';
 
 export const CartDrawer = () => {
   const { isCartOpen, closeCart } = useUIStore();
   const { data: cart, isLoading } = useCart();
   const { mutate: clearCart, isPending: isClearing } = useClearCart();
+  const drawerRef = useRef<HTMLDivElement>(null);
+  const dismissRefs = useMemo(() => [drawerRef], []);
 
   const blocked = hasUnavailableItems(cart);
   const unavailableNames = getUnavailableItems(cart).map(i => i.dish.name);
@@ -22,13 +26,19 @@ export const CartDrawer = () => {
   // ✅ Must check BOTH arrays — ingredient-only cart is still a valid cart
   const isEmpty = !cart || (cart.items.length === 0 && (cart.ingredientItems ?? []).length === 0);
 
+  useDismissableLayer({
+    isOpen: isCartOpen,
+    onDismiss: closeCart,
+    refs: dismissRefs,
+  });
+
   if (!isCartOpen) return null;
 
   return (
     <>
-      <div className='backdrop' onClick={closeCart} />
+      <div className='backdrop' />
 
-      <div className='fixed top-0 right-0 h-full w-full max-w-sm z-50 flex flex-col animate-slide-in-right bg-ob-surface shadow-xl'>
+      <div ref={drawerRef} className='fixed top-0 right-0 h-full w-full max-w-sm z-50 flex flex-col animate-slide-in-right bg-ob-surface shadow-xl'>
         {/* ── Header ── */}
         <div className='flex items-center justify-between px-5 h-16 shrink-0 border-b border-ob-border'>
           <div>
