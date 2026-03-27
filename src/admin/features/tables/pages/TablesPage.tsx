@@ -5,7 +5,7 @@ import { TableFormModal } from '../components/TableFormModal';
 import { ConfirmDialog } from '@/admin/components/ConfirmDialog';
 import { AdminTable } from '@/admin/components/AdminTable';
 import { ErrorState } from '@/shared/ui';
-import { Select } from '@/shared/ui';
+import { Select } from '@/shared/ui/Select';
 import { IconPlus, IconEdit, IconTrash } from '@/shared/assets/icons';
 import type { Table } from '@/shared/types';
 

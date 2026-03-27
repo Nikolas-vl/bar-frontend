@@ -6,7 +6,13 @@ import { ErrorState, LoadingState, Spinner } from '@/shared/ui';
 import { formatPrice } from '@/shared/lib/utils/cn';
 import { calcFinalTotalClient } from '@/shared/lib/utils/pricingClient';
 import { useEffect } from 'react';
-import { restaurantInfoSchema, pricingSchema, type RestaurantInfoFormOutput, type PricingFormInput, type PricingFormOutput } from '../schemas/settings.schema';
+import {
+  restaurantInfoSchema,
+  pricingSchema,
+  type RestaurantInfoFormOutput,
+  type PricingFormInput,
+  type PricingFormOutput,
+} from '../schemas/settings.schema';
 import { mapSettingsToInfoForm, mapSettingsToPricingForm, mapInfoFormToDto, mapPricingFormToDto } from '../mappers/settings.mapper';
 
 // ── Component ──────────────────────────────────────────────

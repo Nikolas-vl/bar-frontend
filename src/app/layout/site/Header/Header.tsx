@@ -16,7 +16,7 @@ export function Header() {
       <div className='page-container'>
         <div className='flex items-center justify-between h-16'>
           <Link to='/'>
-            <Logo size='sm' />
+            <Logo size='sm' priority={true} />
           </Link>
 
           <DesktopNav />

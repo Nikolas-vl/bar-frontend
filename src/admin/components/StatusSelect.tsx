@@ -1,4 +1,4 @@
-import { Select, type SelectOption } from '@/shared/ui';
+import { Select, type SelectOption } from '@/shared/ui/Select';
 import { Spinner } from '@/shared/ui';
 
 interface StatusSelectProps {

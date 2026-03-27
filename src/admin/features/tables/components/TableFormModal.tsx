@@ -3,7 +3,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect } from 'react';
 import { AdminModal } from '@/admin/components/AdminModal';
 import { Spinner } from '@/shared/ui';
-import { Select } from '@/shared/ui';
+import { Select } from '@/shared/ui/Select';
 import type { Table, Location } from '@/shared/types';
 import { tableSchema, type TableFormInput, type TableFormOutput } from '../schemas/table.schema';
 import { mapTableToForm, mapTableFormToDto } from '../mappers/table.mapper';

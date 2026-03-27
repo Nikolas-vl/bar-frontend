@@ -1,9 +1,10 @@
-import logoMainImg from '@/shared/assets/icons/Jolie-Brasserie-Cafe-main-logo.jpg';
+import logoMainImg from '@/shared/assets/images/main-logo.jpg';
 
 interface LogoProps {
   size?: 'sm' | 'md' | 'lg';
   showText?: boolean;
   className?: string;
+  priority?: boolean;
 }
 
 const sizes = {
@@ -12,18 +13,30 @@ const sizes = {
   lg: 'w-14 h-14',
 } as const;
 
+const imageSize = {
+  sm: 32,
+  md: 40,
+  lg: 56,
+} as const;
+
 const textSizes = {
   sm: { name: 'text-base', sub: 'text-[8px]' },
   md: { name: 'text-xl', sub: 'text-[10px]' },
   lg: { name: 'text-2xl', sub: 'text-[11px]' },
 } as const;
 
-export const Logo = ({ size = 'md', showText = true, className = '' }: LogoProps) => {
+export const Logo = ({ size = 'md', showText = true, className = '', priority = false }: LogoProps) => {
   return (
     <div className={`flex items-center gap-2.5 ${className}`}>
       <img
         src={logoMainImg}
         alt='Jolie Brasserie Café logo'
+        width={imageSize[size]}
+        height={imageSize[size]}
+        loading={priority ? 'eager' : 'lazy'}
+        fetchPriority={priority ? 'high' : 'auto'}
+        decoding={priority ? 'sync' : 'async'}
+        referrerPolicy='no-referrer'
         className={`${sizes[size]} rounded-full object-cover shrink-0 border-[1.5px] border-ob-blue-deep`}
       />
 

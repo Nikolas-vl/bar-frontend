@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://bar-frontend-eight.vercel.app/sitemap.xml

@@ -6,7 +6,7 @@ import { toast } from 'sonner';
 import { newReservationSchema, minDateTimeLocal, type NewReservationFormData } from '../schemas/reservation.schema';
 import { PreOrderSelector, type PreOrderEntry } from './PreOrderSelector';
 import { useCreateReservation } from '../hooks/useCreateReservation';
-import { DateTimePicker } from '@/shared/ui';
+import { DateTimePicker } from '@/shared/ui/DateTimePicker/DayTimePicker';
 import { Spinner } from '@/shared/ui';
 import { cn, formatPrice } from '@/shared/lib/utils/cn';
 import { getErrorMessage } from '@/shared/lib/api/client';

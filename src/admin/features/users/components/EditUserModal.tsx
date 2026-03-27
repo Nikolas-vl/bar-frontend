@@ -3,7 +3,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect } from 'react';
 import { AdminModal } from '@/admin/components/AdminModal';
 import { Spinner } from '@/shared/ui';
-import { Select } from '@/shared/ui';
+import { Select } from '@/shared/ui/Select';
 import type { AdminUserWithDate } from '@/shared/types';
 import { editUserSchema, type EditUserFormInput, type EditUserFormOutput } from '../schemas/user.schema';
 import { mapUserToForm, mapUserFormToDto } from '../mappers/user.mapper';
