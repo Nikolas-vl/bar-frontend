@@ -1,7 +1,8 @@
-import { AppImage } from '@/shared/ui';
 import { formatPrice, cn } from '@/shared/lib/utils/cn';
 import { IconEdit, IconTrash } from '@/shared/assets/icons';
+import { CATEGORY_CONFIG } from '@/shared/constants/category';
 import { DishIngredientEditor } from './DishIngredientEditor';
+import { DishImageManager } from './DishImageManager';
 import type { Dish } from '@/shared/types';
 
 interface DishAdminCardProps {
@@ -13,14 +14,16 @@ interface DishAdminCardProps {
 
 export function DishAdminCard({ dish, onEdit, onDelete, onToggleAvailability }: DishAdminCardProps) {
   return (
-    <div className='card overflow-hidden group flex flex-col h-full'>
-      <AppImage src={dish.imageUrl} alt={dish.name} aspectRatio='4/3' className='rounded-b-none' hoverScale />
+    <div className='card flex flex-col h-full'>
+      <div className='overflow-hidden group p-3 pb-0'>
+        <DishImageManager dishId={dish.id} imageUrl={dish.imageUrl} imageId={dish.imageId} dishName={dish.name} />
+      </div>
 
       <div className='p-4 space-y-3 flex flex-col flex-1'>
         <div className='flex items-start justify-between'>
           <div>
             <h3 className='font-display font-semibold text-ob-text text-sm leading-tight'>{dish.name}</h3>
-            <span className='badge mt-1 text-[10px]'>{dish.category}</span>
+            <span className={cn('badge mt-1 text-[10px]', CATEGORY_CONFIG[dish.category].badgeClass)}>{CATEGORY_CONFIG[dish.category].label}</span>
           </div>
           <span className='text-sm font-display font-semibold text-ob-caramel'>{formatPrice(dish.price)}</span>
         </div>

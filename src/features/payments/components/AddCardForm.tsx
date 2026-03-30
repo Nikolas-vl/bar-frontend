@@ -2,7 +2,8 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { cn } from '@/shared/lib/utils/cn';
 import { Spinner } from '@/shared/ui';
-import { cardSchema, CARD_TYPES, CARD_ICON, type CardFormData } from '../schemas/paymentCard.schema';
+import { CARD_TYPES, CARD_TYPE_ICON } from '@/shared/constants/payment';
+import { cardSchema, type CardFormData } from '../schemas/paymentCard.schema';
 
 interface AddCardFormProps {
   onSubmit: (data: CardFormData) => Promise<void>;
@@ -29,7 +30,7 @@ export function AddCardForm({ onSubmit, onCancel, isPending }: AddCardFormProps)
             <label key={type} className='flex-1 cursor-pointer'>
               <input {...register('cardType')} type='radio' value={type} className='sr-only peer' />
               <div className='flex flex-col items-center gap-1 p-3 rounded-xl border-2 border-ob-border text-sm font-medium transition-all peer-checked:border-ob-caramel peer-checked:bg-ob-caramel/5 text-ob-muted peer-checked:text-ob-caramel'>
-                <span className='text-xl'>{CARD_ICON[type]}</span>
+                <span className='text-xl'>{CARD_TYPE_ICON[type]}</span>
                 {type}
               </div>
             </label>

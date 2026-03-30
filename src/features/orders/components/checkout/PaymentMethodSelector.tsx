@@ -1,17 +1,6 @@
 import { cn } from '@/shared/lib/utils/cn';
+import { getCardTypeIcon, PAYMENT_TYPE_OPTIONS } from '@/shared/constants/payment';
 import type { PaymentMethod, PaymentType } from '@/shared/types';
-
-const METHODS: { value: PaymentType; label: string; icon: string }[] = [
-  { value: 'CASH', label: 'Cash', icon: '💵' },
-  { value: 'BLIK', label: 'BLIK', icon: '📱' },
-  { value: 'CARD', label: 'Card', icon: '💳' },
-];
-
-const CARD_ICON: Record<string, string> = {
-  Visa: '🟦',
-  Mastercard: '🔴',
-  Amex: '🟩',
-};
 
 function isExpired(expMonth: number, expYear: number): boolean {
   return new Date(expYear, expMonth - 1) < new Date();
@@ -30,20 +19,20 @@ export function PaymentMethodSelector({ paymentType, paymentMethodId, savedCards
     <div className='flex flex-col gap-4'>
       {/* Payment type pills */}
       <div className='flex gap-2'>
-        {METHODS.map(m => (
+        {PAYMENT_TYPE_OPTIONS.map(option => (
           <button
-            key={m.value}
+            key={option.value}
             type='button'
-            onClick={() => onTypeChange(m.value)}
+            onClick={() => onTypeChange(option.value)}
             className={cn(
               'flex items-center gap-2 px-4 py-2 rounded-xl border text-sm font-medium transition-all',
-              paymentType === m.value
+              paymentType === option.value
                 ? 'border-ob-caramel bg-ob-caramel/5 text-ob-caramel'
                 : 'border-ob-border text-ob-muted hover:border-ob-caramel/40',
             )}
           >
-            <span>{m.icon}</span>
-            {m.label}
+            <span>{option.icon}</span>
+            {option.label}
           </button>
         ))}
       </div>
@@ -71,7 +60,7 @@ export function PaymentMethodSelector({ paymentType, paymentMethodId, savedCards
                 >
                   {/* Left — icon + card info */}
                   <div className='flex items-center gap-2.5'>
-                    <span className='text-base leading-none'>{CARD_ICON[card.cardType] ?? '💳'}</span>
+                    <span className='text-base leading-none'>{getCardTypeIcon(card.cardType)}</span>
                     <div className='flex flex-col gap-0.5'>
                       <div className='flex items-center gap-1.5'>
                         <span className='font-medium text-ob-text'>

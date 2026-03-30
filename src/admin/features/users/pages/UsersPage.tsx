@@ -11,9 +11,9 @@ import { ErrorState } from '@/shared/ui';
 import { useDebounce } from '@/shared/hooks/useDebounce';
 import { IconEdit, IconTrash, IconClose } from '@/shared/assets/icons';
 import { formatDateShort, cn } from '@/shared/lib/utils/cn';
+import { ROLE_CONFIG, ROLE_FILTER_LABEL, ROLE_FILTER_OPTIONS, type RoleFilterValue } from '@/shared/constants/user';
 import type { AdminUserWithDate } from '@/shared/types';
 
-const ROLES = ['ALL', 'USER', 'ADMIN'] as const;
 const LIMIT = 20;
 
 export default function UsersPage() {
@@ -50,7 +50,7 @@ export default function UsersPage() {
       key: 'role',
       header: 'Role',
       render: (u: AdminUserWithDate) => (
-        <span className={cn('badge', u.role === 'ADMIN' ? 'bg-ob-caramel/15 text-ob-caramel' : 'bg-ob-blue text-ob-text')}>{u.role}</span>
+        <span className={cn('badge', ROLE_CONFIG[u.role].badgeClass)}>{ROLE_CONFIG[u.role].label}</span>
       ),
     },
     {
@@ -88,10 +88,10 @@ export default function UsersPage() {
         <div className='flex flex-wrap items-center gap-3'>
           <SearchInput value={filters.search} onChange={v => updateFilter('search', v)} placeholder='Search users…' className='w-64' />
           <FilterPills
-            options={ROLES}
-            value={filters.role as (typeof ROLES)[number]}
+            options={ROLE_FILTER_OPTIONS}
+            value={filters.role as RoleFilterValue}
             onChange={v => updateFilter('role', v)}
-            labelMap={{ ALL: 'All' }}
+            labelMap={ROLE_FILTER_LABEL}
           />
 
           {isFiltered && (

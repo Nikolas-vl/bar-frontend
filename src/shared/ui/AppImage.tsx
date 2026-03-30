@@ -165,7 +165,7 @@ export function AppImage({
   src,
   alt,
   aspectRatio = '4/3',
-  fallbackIcon = 'IMG',
+  fallbackIcon = '🍽️',
   showLabel = false,
   className,
   imgClassName,

@@ -2,11 +2,7 @@ import { useAuthStore } from '@/app/store/auth.store';
 import { ProfileLayout } from '../components/ProfileLayout';
 import { EditNameForm, ChangePasswordForm } from '../components/ProfileForms';
 import { Link } from 'react-router-dom';
-
-const ROLE_LABEL: Record<string, string> = {
-  USER: 'Customer',
-  ADMIN: 'Administrator',
-};
+import { ROLE_CONFIG } from '@/shared/constants/user';
 
 export default function ProfilePage() {
   const user = useAuthStore(s => s.user);
@@ -25,7 +21,7 @@ export default function ProfilePage() {
             <p className='text-sm text-ob-muted truncate'>{user.email}</p>
             {user.phone && <p className='text-xs text-ob-muted'>{user.phone}</p>}
             <span className='inline-block mt-1 px-2 py-0.5 rounded-full text-[10px] font-semibold uppercase tracking-wide bg-ob-caramel/10 text-ob-caramel'>
-              {ROLE_LABEL[user.role] ?? user.role}
+              {ROLE_CONFIG[user.role].label}
             </span>
           </div>
         </div>

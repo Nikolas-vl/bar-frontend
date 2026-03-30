@@ -4,6 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { AdminModal } from '@/admin/components/AdminModal';
 import { Spinner } from '@/shared/ui/Spinner';
 import { Select } from '@/shared/ui/Select';
+import { CATEGORY_SELECT_OPTIONS } from '@/shared/constants/category';
 import type { Dish } from '@/shared/types';
 
 import { mapDishToForm, mapDishFormToDto } from '../mappers/dish.mapper';
@@ -34,11 +35,6 @@ const EMPTY_DEFAULTS: DishFormInput = {
   category: 'LUNCH',
   isAvailable: true,
 };
-
-const CATEGORY_OPTIONS = [
-  { value: 'BREAKFAST', label: 'Breakfast' },
-  { value: 'LUNCH', label: 'Lunch' },
-];
 
 export function DishFormModal({ isOpen, onClose, dish, onSubmit, isPending }: DishFormModalProps) {
   const {
@@ -128,7 +124,7 @@ export function DishFormModal({ isOpen, onClose, dish, onSubmit, isPending }: Di
             <Select
               value={category}
               onChange={v => setValue('category', v as 'BREAKFAST' | 'LUNCH', { shouldValidate: true })}
-              options={CATEGORY_OPTIONS}
+              options={CATEGORY_SELECT_OPTIONS}
             />
           </div>
         </div>
