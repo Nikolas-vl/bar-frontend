@@ -1,8 +1,8 @@
-import { AppImage } from '@/shared/ui';
 import { formatPrice, cn } from '@/shared/lib/utils/cn';
 import { IconEdit, IconTrash } from '@/shared/assets/icons';
 import { CATEGORY_CONFIG } from '@/shared/constants/category';
 import { DishIngredientEditor } from './DishIngredientEditor';
+import { DishImageManager } from './DishImageManager';
 import type { Dish } from '@/shared/types';
 
 interface DishAdminCardProps {
@@ -14,8 +14,10 @@ interface DishAdminCardProps {
 
 export function DishAdminCard({ dish, onEdit, onDelete, onToggleAvailability }: DishAdminCardProps) {
   return (
-    <div className='card overflow-hidden group flex flex-col h-full'>
-      <AppImage src={dish.imageUrl} alt={dish.name} aspectRatio='4/3' className='rounded-b-none' hoverScale />
+    <div className='card flex flex-col h-full'>
+      <div className='overflow-hidden group p-3 pb-0'>
+        <DishImageManager dishId={dish.id} imageUrl={dish.imageUrl} imageId={dish.imageId} dishName={dish.name} />
+      </div>
 
       <div className='p-4 space-y-3 flex flex-col flex-1'>
         <div className='flex items-start justify-between'>

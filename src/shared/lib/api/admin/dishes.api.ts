@@ -48,6 +48,18 @@ export const adminDishesApi = {
 
   removeIngredient: (dishId: number, ingredientId: number): Promise<void> =>
     apiClient.delete(`/dishes/${dishId}/ingredients/${ingredientId}`).then(r => r.data),
+
+  uploadImage: (dishId: number, file: File): Promise<Dish> => {
+    const form = new FormData();
+    form.append('image', file);
+    return apiClient
+      .patch(`/dishes/${dishId}/image`, form, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      })
+      .then(r => r.data);
+  },
+
+  deleteImage: (dishId: number): Promise<Dish> => apiClient.patch(`/dishes/${dishId}/image?action=delete`).then(r => r.data),
 };
 
 // Ingredients management

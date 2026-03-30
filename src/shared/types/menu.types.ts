@@ -19,6 +19,7 @@ export interface Dish {
   description: string | null;
   price: string;
   imageUrl: string | null;
+  imageId: string | null;
   calories: number | null;
   protein: number | null;
   fat: number | null;
