@@ -2,7 +2,8 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { cn } from '@/shared/lib/utils/cn';
 import { Spinner } from '@/shared/ui';
-import { AddressFormSchema, type AddressFormData } from '../schemas/addresse.schema';
+import { AddressFormSchema } from '../schemas/addresses.schema';
+import type { AddressFormData } from '../schemas/addresses.schema';
 
 interface AddressFormProps {
   defaultValues?: Partial<AddressFormData>;
