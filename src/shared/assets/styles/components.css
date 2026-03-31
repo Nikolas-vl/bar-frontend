@@ -509,4 +509,43 @@
   /* select — remove default OS arrow, add caramel focus ring (already in .select)
      The .select class in components.css handles the styled dropdown arrow.
      No extra CSS needed — just ensure PreOrderSelector uses className='select'. */
+
+  /* ─────────────────────────────────────────────
+     GOOGLE AUTH BUTTON
+  ───────────────────────────────────────────── */
+  .google-auth-btn {
+    @apply inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 focus-visible:outline-none disabled:opacity-50 disabled:pointer-events-none select-none w-full;
+    background-color: var(--color-ob-surface);
+    border: 1.5px solid var(--color-ob-border);
+    color: var(--color-ob-text);
+  }
+
+  .google-auth-btn:hover:not(:disabled) {
+    border-color: var(--color-ob-border-h);
+    box-shadow: 0 2px 8px rgba(47, 47, 47, 0.08);
+    transform: translateY(-1px);
+  }
+
+  .google-auth-btn:active:not(:disabled) {
+    transform: translateY(0);
+  }
+
+  /* ─────────────────────────────────────────────
+     AUTH DIVIDER ("or" separator)
+  ───────────────────────────────────────────── */
+  .auth-divider {
+    @apply flex items-center gap-4 my-6;
+  }
+
+  .auth-divider span {
+    @apply text-xs font-medium uppercase tracking-widest;
+    color: var(--color-ob-light);
+  }
+
+  .auth-divider::before,
+  .auth-divider::after {
+    content: '';
+    @apply flex-1 h-px;
+    background-color: var(--color-ob-border);
+  }
 }

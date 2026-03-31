@@ -4,6 +4,7 @@ import { GuestRoute } from '@/app/router/guards';
 
 const LoginPage = lazy(() => import('@/features/auth'));
 const RegisterPage = lazy(() => import('@/features/auth/pages/RegisterPage'));
+const GoogleCallbackPage = lazy(() => import('@/features/auth/pages/GoogleCallbackPage'));
 
 export const authRoutes: RouteObject[] = [
   {
@@ -13,4 +14,5 @@ export const authRoutes: RouteObject[] = [
       { path: '/register', element: <RegisterPage /> },
     ],
   },
+  { path: '/auth/google/success', element: <GoogleCallbackPage /> },
 ];
