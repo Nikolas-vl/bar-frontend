@@ -43,7 +43,7 @@ export function NewReservationForm({ dishes }: NewReservationFormProps) {
         comment: data.comment?.trim() || undefined,
         preOrders: preOrders.map(e => ({ dishId: e.dishId, quantity: e.quantity })),
       });
-      toast.success('Reservation confirmed! See you soon ☕');
+      toast.success('Reservation confirmed! We will send you an email with the details');
       navigate('/reservations');
     } catch (err) {
       toast.error(getErrorMessage(err));

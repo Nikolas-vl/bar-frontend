@@ -1,4 +1,5 @@
-import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { useEffect } from 'react';
+import { Link, useNavigate, useLocation, useSearchParams } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from 'sonner';
@@ -9,12 +10,21 @@ import { cn } from '@/shared/lib/utils/cn';
 import { Spinner } from '@/shared/ui';
 import { loginSchema, type LoginFormOutput } from '../schemas/auth.schema';
 import { mapLoginFormToDto } from '../mappers/auth.mapper';
+import { GoogleAuthButton } from '../components/GoogleAuthButton';
 
 export default function LoginPage() {
   const { setAuth } = useAuthStore();
   const navigate = useNavigate();
   const location = useLocation();
+  const [searchParams] = useSearchParams();
   const from = (location.state as { from?: Location })?.from?.pathname ?? '/';
+
+  useEffect(() => {
+    const error = searchParams.get('error');
+    if (error === 'google_auth_failed') {
+      toast.error('Google authentication failed. Please try again.');
+    }
+  }, [searchParams]);
 
   const {
     register,
@@ -45,6 +55,12 @@ export default function LoginPage() {
         </div>
 
         <div className='card p-7'>
+          <GoogleAuthButton />
+
+          <div className='auth-divider'>
+            <span>or</span>
+          </div>
+
           <form onSubmit={handleSubmit(onSubmit)} className='flex flex-col gap-5'>
             <div>
               <label className='label'>Email address</label>

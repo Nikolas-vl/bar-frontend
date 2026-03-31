@@ -9,6 +9,7 @@ import { Spinner } from '@/shared/ui';
 import { registerSchema, type RegisterFormOutput } from '../schemas/auth.schema';
 import { mapRegisterFormToDto } from '../mappers/auth.mapper';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { GoogleAuthButton } from '../components/GoogleAuthButton';
 
 export default function RegisterPage() {
   const { setAuth } = useAuthStore();
@@ -43,6 +44,12 @@ export default function RegisterPage() {
         </div>
 
         <div className='card p-7'>
+          <GoogleAuthButton label='Sign up with Google' />
+
+          <div className='auth-divider'>
+            <span>or</span>
+          </div>
+
           <form onSubmit={handleSubmit(onSubmit)} className='flex flex-col gap-5'>
             <div>
               <label className='label'>Full name</label>
