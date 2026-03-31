@@ -41,17 +41,35 @@ export default function UsersPage() {
 
   const totalPages = data ? Math.ceil(data.total / LIMIT) : 1;
 
+  // Message in the confirm dialog explains why deletion may be blocked.
+  const deleteMessage =
+    'This action cannot be undone. ' + 'Users with existing orders or payments cannot be deleted — ' + 'the request will fail if that is the case.';
+
   const columns = [
-    { key: 'id', header: '#', render: (u: AdminUserWithDate) => <span className='font-mono text-xs text-ob-muted'>{u.id}</span> },
-    { key: 'name', header: 'Name', render: (u: AdminUserWithDate) => <span className='font-semibold'>{u.name ?? '—'}</span> },
-    { key: 'email', header: 'Email', render: (u: AdminUserWithDate) => <span className='text-ob-muted text-sm'>{u.email}</span> },
-    { key: 'phone', header: 'Phone', render: (u: AdminUserWithDate) => <span className='text-sm'>{u.phone ?? '—'}</span> },
+    {
+      key: 'id',
+      header: '#',
+      render: (u: AdminUserWithDate) => <span className='font-mono text-xs text-ob-muted'>{u.id}</span>,
+    },
+    {
+      key: 'name',
+      header: 'Name',
+      render: (u: AdminUserWithDate) => <span className='font-semibold'>{u.name ?? '—'}</span>,
+    },
+    {
+      key: 'email',
+      header: 'Email',
+      render: (u: AdminUserWithDate) => <span className='text-ob-muted text-sm'>{u.email}</span>,
+    },
+    {
+      key: 'phone',
+      header: 'Phone',
+      render: (u: AdminUserWithDate) => <span className='text-sm'>{u.phone ?? '—'}</span>,
+    },
     {
       key: 'role',
       header: 'Role',
-      render: (u: AdminUserWithDate) => (
-        <span className={cn('badge', ROLE_CONFIG[u.role].badgeClass)}>{ROLE_CONFIG[u.role].label}</span>
-      ),
+      render: (u: AdminUserWithDate) => <span className={cn('badge', ROLE_CONFIG[u.role].badgeClass)}>{ROLE_CONFIG[u.role].label}</span>,
     },
     {
       key: 'joined',
@@ -66,7 +84,15 @@ export default function UsersPage() {
           <button type='button' onClick={() => setEditTarget(u)} className='btn-icon-ghost' aria-label='Edit user'>
             <IconEdit className='w-4 h-4' />
           </button>
-          <button type='button' onClick={() => setDeleteTarget(u.id)} className='btn-icon-ghost text-ob-error' aria-label='Delete user'>
+          {/* Admins cannot be deleted — disable the button with a tooltip hint. */}
+          <button
+            type='button'
+            onClick={() => setDeleteTarget(u.id)}
+            disabled={u.role === 'ADMIN'}
+            title={u.role === 'ADMIN' ? 'Admin accounts cannot be deleted' : 'Delete user'}
+            className='btn-icon-ghost text-ob-error disabled:opacity-30 disabled:cursor-not-allowed'
+            aria-label='Delete user'
+          >
             <IconTrash className='w-4 h-4' />
           </button>
         </div>
@@ -93,7 +119,6 @@ export default function UsersPage() {
             onChange={v => updateFilter('role', v)}
             labelMap={ROLE_FILTER_LABEL}
           />
-
           {isFiltered && (
             <button type='button' onClick={resetFilters} className='btn-ghost gap-2 text-ob-muted hover:text-ob-text'>
               <IconClose className='w-4 h-4' /> Clear Filters
@@ -120,13 +145,16 @@ export default function UsersPage() {
         }}
       />
 
-      {/* Delete Confirm */}
       <ConfirmDialog
         isOpen={deleteTarget !== null}
         title='Delete user'
-        message='This action cannot be undone. Admins and users with existing orders or payments cannot be deleted.'
+        message={deleteMessage}
         isPending={deleteMutation.isPending}
-        onConfirm={() => deleteMutation.mutate(deleteTarget!, { onSettled: () => setDeleteTarget(null) })}
+        onConfirm={() =>
+          deleteMutation.mutate(deleteTarget!, {
+            onSuccess: () => setDeleteTarget(null),
+          })
+        }
         onCancel={() => setDeleteTarget(null)}
       />
     </div>

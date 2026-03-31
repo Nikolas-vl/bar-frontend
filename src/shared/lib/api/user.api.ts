@@ -10,12 +10,12 @@ export interface UpdateProfilePayload {
 
 export const userApi = {
   getMe: async (): Promise<User> => {
-    const res = await apiClient.get('/users/me');
+    const res = await apiClient.get('/users/profile');
     return res.data;
   },
 
   updateMe: async (payload: UpdateProfilePayload): Promise<User> => {
-    const res = await apiClient.patch('/users/me', payload);
+    const res = await apiClient.patch('/users/profile', payload);
     return res.data;
   },
 };

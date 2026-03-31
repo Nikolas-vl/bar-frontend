@@ -4,10 +4,12 @@ import { z } from 'zod';
 import { cn } from '@/shared/lib/utils/cn';
 import { Spinner } from '@/shared/ui';
 
+const POLISH_ZIP_REGEX = /^\d{2}-\d{3}$/;
+
 const schema = z.object({
   city: z.string().min(1, 'City is required'),
   street: z.string().min(1, 'Street is required'),
-  zip: z.string().min(1, 'ZIP code is required'),
+  zip: z.string().min(1, 'ZIP code is required').regex(POLISH_ZIP_REGEX, 'ZIP must be in XX-XXX format (e.g. 00-001)'),
 });
 
 export type AddressFormData = z.infer<typeof schema>;
@@ -16,7 +18,6 @@ interface AddressFormProps {
   defaultValues?: Partial<AddressFormData>;
   onSubmit: (data: AddressFormData) => Promise<void>;
   onCancel?: () => void;
-  /** Show a loading spinner on the submit button */
   isPending?: boolean;
   submitLabel?: string;
 }
@@ -25,15 +26,15 @@ export function AddressForm({ defaultValues, onSubmit, onCancel, isPending = fal
   const {
     register,
     handleSubmit,
-    formState: { errors, isSubmitting },
+    formState: { errors, isSubmitting, isValid },
   } = useForm<AddressFormData>({
     resolver: zodResolver(schema),
+    mode: 'onTouched',
     defaultValues,
   });
 
-  // Combine RHF's own isSubmitting with the external isPending flag so the
-  // button is always disabled while any async work is running.
   const busy = isSubmitting || isPending;
+  const submitDisabled = busy || !isValid;
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className='flex flex-col gap-4'>
@@ -51,8 +52,9 @@ export function AddressForm({ defaultValues, onSubmit, onCancel, isPending = fal
 
       <div>
         <label className='label'>ZIP / Postal code</label>
-        <input {...register('zip')} placeholder='e.g. 00-001' className={cn('input', errors.zip && 'input-error')} />
+        <input {...register('zip')} placeholder='e.g. 00-001' maxLength={6} className={cn('input', errors.zip && 'input-error')} />
         {errors.zip && <p className='field-error'>{errors.zip.message}</p>}
+        {!errors.zip && <p className='mt-1 text-xs text-ob-muted'>Polish format: XX-XXX (e.g. 00-001)</p>}
       </div>
 
       <div className='flex gap-3 justify-end pt-2'>
@@ -61,7 +63,7 @@ export function AddressForm({ defaultValues, onSubmit, onCancel, isPending = fal
             Cancel
           </button>
         )}
-        <button type='submit' disabled={busy} className='btn-primary'>
+        <button type='submit' disabled={submitDisabled} className='btn-primary'>
           {busy ? (
             <span className='flex items-center gap-2'>
               <Spinner variant='white' />
