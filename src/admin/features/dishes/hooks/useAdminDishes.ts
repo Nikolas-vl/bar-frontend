@@ -55,24 +55,28 @@ export const useDeleteDish = () => {
 
 export const useToggleDishAvailability = () => {
   const queryClient = useQueryClient();
+
   return useMutation({
-    mutationFn: ({ id, isAvailable }: { id: number; isAvailable: boolean }) =>
-      adminDishesApi.update(id, { isAvailable }),
+    mutationFn: ({ id, isAvailable }: { id: number; isAvailable: boolean }) => adminDishesApi.update(id, { isAvailable }),
+
     onMutate: async ({ id, isAvailable }) => {
-      // Optimistic update
+      // Cancel any in-flight refetches to avoid overwriting our optimistic data.
       await queryClient.cancelQueries({ queryKey: queryKeys.dishes.all });
-      const previousQueries = queryClient.getQueriesData<Dish[]>({ queryKey: queryKeys.dishes.all });
-      queryClient.setQueriesData<Dish[]>({ queryKey: queryKeys.dishes.all }, old =>
-        old?.map(d => (d.id === id ? { ...d, isAvailable } : d)),
-      );
+
+      const previousQueries = queryClient.getQueriesData<Dish[]>({
+        queryKey: queryKeys.dishes.all,
+      });
+
+      queryClient.setQueriesData<Dish[]>({ queryKey: queryKeys.dishes.all }, old => old?.map(d => (d.id === id ? { ...d, isAvailable } : d)));
+
       return { previousQueries };
     },
     onError: (err, _vars, context) => {
-      // Rollback
       context?.previousQueries.forEach(([key, data]) => {
         queryClient.setQueryData(key, data);
       });
-      toast.error(getErrorMessage(err));
+
+      toast.error(`Could not update dish availability: ${getErrorMessage(err)}`, { duration: 6000 });
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.dishes.all });
@@ -83,8 +87,7 @@ export const useToggleDishAvailability = () => {
 export const useAddIngredientToDish = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ dishId, body }: { dishId: number; body: AddDishIngredientBody }) =>
-      adminDishesApi.addIngredient(dishId, body),
+    mutationFn: ({ dishId, body }: { dishId: number; body: AddDishIngredientBody }) => adminDishesApi.addIngredient(dishId, body),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.dishes.all });
       toast.success('Ingredient added to dish');
@@ -108,8 +111,7 @@ export const useUpdateDishIngredient = () => {
 export const useRemoveIngredientFromDish = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ dishId, ingredientId }: { dishId: number; ingredientId: number }) =>
-      adminDishesApi.removeIngredient(dishId, ingredientId),
+    mutationFn: ({ dishId, ingredientId }: { dishId: number; ingredientId: number }) => adminDishesApi.removeIngredient(dishId, ingredientId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.dishes.all });
       toast.success('Ingredient removed');

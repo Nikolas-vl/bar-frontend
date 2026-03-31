@@ -1,4 +1,4 @@
-import type { AdminUserWithDate } from '@/shared/types/auth.types';
+import type { AdminUserWithDate } from '@/shared/types/user.types';
 import type { UpdateUserDto } from '../dto/user.dto';
 import type { EditUserFormOutput } from '../schemas/user.schema';
 

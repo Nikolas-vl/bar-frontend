@@ -9,7 +9,7 @@ interface Props {
 }
 
 export function AuthInitializer({ children }: Props) {
-  const { setAuth, clearAuth, setInitialized, isInitialized } = useAuthStore();
+  const { setAuth, clearAuth, setInitialized, isInitialized, setAccessToken } = useAuthStore();
 
   useEffect(() => {
     const init = async () => {
@@ -20,8 +20,10 @@ export function AuthInitializer({ children }: Props) {
 
       try {
         const { accessToken } = await authApi.refresh();
-        const user = await authApi.me();
 
+        setAccessToken(accessToken);
+
+        const user = await authApi.me();
         setAuth(user, accessToken);
       } catch {
         clearAuth();
@@ -31,9 +33,8 @@ export function AuthInitializer({ children }: Props) {
     };
 
     init();
-  }, [setAuth, clearAuth, setInitialized]);
+  }, [setAuth, clearAuth, setInitialized, setAccessToken]);
 
   if (!isInitialized) return <PageLoader />;
-
   return <>{children}</>;
 }

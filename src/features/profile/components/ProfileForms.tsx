@@ -1,26 +1,11 @@
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
 import { toast } from 'sonner';
 import { useUpdateProfile } from '../hooks/useUpdateProfile';
 import { getErrorMessage } from '@/shared/lib/api/client';
 import { cn } from '@/shared/lib/utils/cn';
 import { Spinner } from '@/shared/ui';
-import type { User } from '@/shared/types';
-
-const editProfileSchema = z.object({
-  name: z.string().min(1, 'Name is required'),
-  phone: z
-    .string()
-    .min(1, 'Phone number is required')
-    .regex(/^\+?[0-9\s\-().]{7,20}$/, 'Invalid phone number'),
-});
-
-type EditProfileData = z.infer<typeof editProfileSchema>;
-
-interface EditNameFormProps {
-  user: User;
-}
+import { editProfileSchema, passwordSchema, type EditNameFormProps, type EditProfileData, type PasswordFormData } from '../schemas/profile.schema';
 
 export function EditNameForm({ user }: EditNameFormProps) {
   const { mutateAsync, isPending } = useUpdateProfile();
@@ -28,19 +13,25 @@ export function EditNameForm({ user }: EditNameFormProps) {
   const {
     register,
     handleSubmit,
-    formState: { errors, isDirty },
+    reset,
+    formState: { errors, isDirty, isValid, isSubmitting },
   } = useForm<EditProfileData>({
     resolver: zodResolver(editProfileSchema),
+    mode: 'onTouched',
     defaultValues: {
       name: user.name ?? '',
       phone: user.phone ?? '',
     },
   });
 
+  const busy = isSubmitting || isPending;
+  const submitDisabled = busy || !isDirty || !isValid;
+
   const onSubmit = async (data: EditProfileData) => {
     try {
       await mutateAsync({ name: data.name, phone: data.phone });
       toast.success('Profile updated');
+      reset(data);
     } catch (err) {
       toast.error(getErrorMessage(err));
     }
@@ -70,12 +61,12 @@ export function EditNameForm({ user }: EditNameFormProps) {
           autoComplete='tel'
         />
         {errors.phone && <p className='field-error'>{errors.phone.message}</p>}
-        <p className='mt-1 text-xs text-ob-muted'>Used for order and reservation contact.</p>
+        {!errors.phone && <p className='mt-1 text-xs text-ob-muted'>Used for order and reservation contact. Format: +48 XXX XXX XXX</p>}
       </div>
 
       <div className='flex justify-end'>
-        <button type='submit' disabled={isPending || !isDirty} className='btn-primary disabled:opacity-50'>
-          {isPending ? (
+        <button type='submit' disabled={submitDisabled} className='btn-primary disabled:opacity-50'>
+          {busy ? (
             <span className='flex items-center gap-2'>
               <Spinner variant='white' />
               Saving…
@@ -89,19 +80,6 @@ export function EditNameForm({ user }: EditNameFormProps) {
   );
 }
 
-const passwordSchema = z
-  .object({
-    currentPassword: z.string().min(6, 'Required'),
-    password: z.string().min(6, 'At least 6 characters'),
-    confirmPassword: z.string(),
-  })
-  .refine(d => d.password === d.confirmPassword, {
-    message: 'Passwords do not match',
-    path: ['confirmPassword'],
-  });
-
-type PasswordFormData = z.infer<typeof passwordSchema>;
-
 export function ChangePasswordForm() {
   const { mutateAsync, isPending } = useUpdateProfile();
 
@@ -109,8 +87,14 @@ export function ChangePasswordForm() {
     register,
     handleSubmit,
     reset,
-    formState: { errors },
-  } = useForm<PasswordFormData>({ resolver: zodResolver(passwordSchema) });
+    formState: { errors, isValid, isSubmitting },
+  } = useForm<PasswordFormData>({
+    resolver: zodResolver(passwordSchema),
+    mode: 'onTouched',
+  });
+
+  const busy = isSubmitting || isPending;
+  const submitDisabled = busy || !isValid;
 
   const onSubmit = async (data: PasswordFormData) => {
     try {
@@ -141,11 +125,12 @@ export function ChangePasswordForm() {
         <input
           {...register('password')}
           type='password'
-          placeholder='At least 6 characters'
+          placeholder='At least 6 characters + one special char'
           className={cn('input', errors.password && 'input-error')}
           autoComplete='new-password'
         />
         {errors.password && <p className='field-error'>{errors.password.message}</p>}
+        {!errors.password && <p className='mt-1 text-xs text-ob-muted'>Min 6 characters, must include a special character (e.g. !@#$)</p>}
       </div>
 
       <div>
@@ -161,8 +146,8 @@ export function ChangePasswordForm() {
       </div>
 
       <div className='flex justify-end'>
-        <button type='submit' disabled={isPending} className='btn-primary'>
-          {isPending ? (
+        <button type='submit' disabled={submitDisabled} className='btn-primary disabled:opacity-50'>
+          {busy ? (
             <span className='flex items-center gap-2'>
               <Spinner variant='white' />
               Updating…

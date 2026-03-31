@@ -1,18 +1,22 @@
-import type { PaymentStatus, PaymentType } from '@/shared/types';
-
-export const PAYMENT_STATUS_CONFIG: Record<PaymentStatus, { label: string; color: string; badgeClass: string }> = {
+export const PAYMENT_STATUS_CONFIG = {
   PENDING: { label: 'Awaiting payment', color: 'gray', badgeClass: 'badge-pending' },
   SUCCESS: { label: 'Paid', color: 'green', badgeClass: 'badge-paid' },
   FAILED: { label: 'Failed', color: 'red', badgeClass: 'badge-canceled' },
-};
+} as const;
 
-export const PAYMENT_TYPE_CONFIG: Record<PaymentType, { label: string; icon: string; description: string }> = {
+export const PAYMENT_STATUS_VALUES = ['PENDING', 'SUCCESS', 'FAILED'] as const;
+
+export type PaymentStatus = (typeof PAYMENT_STATUS_VALUES)[number];
+
+export const PAYMENT_TYPE_CONFIG = {
   CASH: { label: 'Cash', icon: '💵', description: 'Pay at the counter' },
   BLIK: { label: 'BLIK', icon: '📱', description: 'Use your BLIK code' },
   CARD: { label: 'Card', icon: '💳', description: 'Pay with a saved card' },
-};
+} as const;
 
 export const PAYMENT_TYPE_VALUES = ['CASH', 'BLIK', 'CARD'] as const;
+
+export type PaymentType = (typeof PAYMENT_TYPE_VALUES)[number];
 
 export const PAYMENT_TYPE_OPTIONS = PAYMENT_TYPE_VALUES.map(value => ({
   value,

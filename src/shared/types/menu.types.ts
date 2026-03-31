@@ -1,4 +1,6 @@
-export type Category = 'BREAKFAST' | 'LUNCH';
+import { CATEGORY_CONFIG } from '@/shared/constants/category';
+
+export type Category = keyof typeof CATEGORY_CONFIG;
 
 export interface Ingredient {
   id: number;

@@ -8,6 +8,7 @@ interface ConfirmDialogProps {
   onConfirm: () => void;
   onCancel: () => void;
   isPending?: boolean;
+  isConfirmDisabled?: boolean;
   confirmLabel?: string;
 }
 
@@ -18,8 +19,11 @@ export function ConfirmDialog({
   onConfirm,
   onCancel,
   isPending = false,
+  isConfirmDisabled = false,
   confirmLabel = 'Delete',
 }: ConfirmDialogProps) {
+  const isConfirmButtonDisabled = isPending || isConfirmDisabled;
+
   return (
     <AdminModal
       isOpen={isOpen}
@@ -31,12 +35,7 @@ export function ConfirmDialog({
           <button type='button' className='btn-ghost' onClick={onCancel} disabled={isPending}>
             Cancel
           </button>
-          <button
-            type='button'
-            className='btn-danger inline-flex items-center gap-2'
-            onClick={onConfirm}
-            disabled={isPending}
-          >
+          <button type='button' className='btn-danger inline-flex items-center gap-2' onClick={onConfirm} disabled={isConfirmButtonDisabled}>
             {isPending && <Spinner variant='white' size='sm' />}
             {confirmLabel}
           </button>

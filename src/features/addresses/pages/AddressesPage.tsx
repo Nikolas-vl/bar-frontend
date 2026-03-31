@@ -1,11 +1,12 @@
 import { useState } from 'react';
 import { toast } from 'sonner';
 import { ProfileLayout } from '../../profile/components/ProfileLayout';
-import { AddressCard } from '@/features/addresses/components/AddressCard';
-import { AddressForm, type AddressFormData } from '@/features/addresses/components/AddressForm';
-import { useAddresses, useCreateAddress } from '@/features/addresses/hooks/useAddresses';
+import { AddressCard } from '../components/AddressCard';
+import { AddressForm } from '../components/AddressForm';
+import { useAddresses, useCreateAddress } from '../hooks/useAddresses';
 import { getErrorMessage } from '@/shared/lib/api/client';
 import { Skeleton } from '@/shared/ui';
+import type { AddressFormData } from '../schemas/addresses.schema';
 
 export default function AddressesPage() {
   const [isAdding, setIsAdding] = useState(false);
