@@ -1,18 +1,8 @@
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
 import { cn } from '@/shared/lib/utils/cn';
 import { Spinner } from '@/shared/ui';
-
-const POLISH_ZIP_REGEX = /^\d{2}-\d{3}$/;
-
-const schema = z.object({
-  city: z.string().min(1, 'City is required'),
-  street: z.string().min(1, 'Street is required'),
-  zip: z.string().min(1, 'ZIP code is required').regex(POLISH_ZIP_REGEX, 'ZIP must be in XX-XXX format (e.g. 00-001)'),
-});
-
-export type AddressFormData = z.infer<typeof schema>;
+import { AddressFormSchema, type AddressFormData } from '../schemas/addresse.schema';
 
 interface AddressFormProps {
   defaultValues?: Partial<AddressFormData>;
@@ -28,7 +18,7 @@ export function AddressForm({ defaultValues, onSubmit, onCancel, isPending = fal
     handleSubmit,
     formState: { errors, isSubmitting, isValid },
   } = useForm<AddressFormData>({
-    resolver: zodResolver(schema),
+    resolver: zodResolver(AddressFormSchema),
     mode: 'onTouched',
     defaultValues,
   });

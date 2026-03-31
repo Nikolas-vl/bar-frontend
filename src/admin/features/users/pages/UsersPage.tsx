@@ -37,13 +37,11 @@ export default function UsersPage() {
   const deleteMutation = useAdminDeleteUser();
 
   const [editTarget, setEditTarget] = useState<AdminUserWithDate | null>(null);
-  const [deleteTarget, setDeleteTarget] = useState<number | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<AdminUserWithDate | null>(null);
 
   const totalPages = data ? Math.ceil(data.total / LIMIT) : 1;
-
-  // Message in the confirm dialog explains why deletion may be blocked.
-  const deleteMessage =
-    'This action cannot be undone. ' + 'Users with existing orders or payments cannot be deleted — ' + 'the request will fail if that is the case.';
+  const hasActiveOrders = (deleteTarget?.activeOrdersCount ?? 0) > 0;
+  const deleteMessage = hasActiveOrders ? 'User has active orders and cannot be deleted.' : 'This action cannot be undone. Are you sure?';
 
   const columns = [
     {
@@ -87,7 +85,7 @@ export default function UsersPage() {
           {/* Admins cannot be deleted — disable the button with a tooltip hint. */}
           <button
             type='button'
-            onClick={() => setDeleteTarget(u.id)}
+            onClick={() => setDeleteTarget(u)}
             disabled={u.role === 'ADMIN'}
             title={u.role === 'ADMIN' ? 'Admin accounts cannot be deleted' : 'Delete user'}
             className='btn-icon-ghost text-ob-error disabled:opacity-30 disabled:cursor-not-allowed'
@@ -138,9 +136,9 @@ export default function UsersPage() {
         onClose={() => setEditTarget(null)}
         user={editTarget}
         isPending={updateMutation.isPending}
-        onSubmit={data => {
+        onSubmit={formData => {
           if (editTarget) {
-            updateMutation.mutate({ id: editTarget.id, body: data }, { onSuccess: () => setEditTarget(null) });
+            updateMutation.mutate({ id: editTarget.id, body: formData }, { onSuccess: () => setEditTarget(null) });
           }
         }}
       />
@@ -150,11 +148,13 @@ export default function UsersPage() {
         title='Delete user'
         message={deleteMessage}
         isPending={deleteMutation.isPending}
-        onConfirm={() =>
-          deleteMutation.mutate(deleteTarget!, {
+        isConfirmDisabled={hasActiveOrders}
+        onConfirm={() => {
+          if (!deleteTarget || hasActiveOrders) return;
+          deleteMutation.mutate(deleteTarget.id, {
             onSuccess: () => setDeleteTarget(null),
-          })
-        }
+          });
+        }}
         onCancel={() => setDeleteTarget(null)}
       />
     </div>

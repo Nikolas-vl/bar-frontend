@@ -1,10 +1,8 @@
-import type { ReservationStatus } from '@/shared/types';
-
-export const RESERVATION_STATUS_CONFIG: Record<ReservationStatus, { label: string; color: string; badgeClass: string }> = {
+export const RESERVATION_STATUS_CONFIG = {
   PENDING: { label: 'Pending', color: 'gray', badgeClass: 'badge-pending' },
   CONFIRMED: { label: 'Confirmed', color: 'blue', badgeClass: 'badge-confirmed' },
   CANCELED: { label: 'Canceled', color: 'red', badgeClass: 'badge-canceled' },
-};
+} as const;
 
 export const RESERVATION_STATUS_VALUES = ['PENDING', 'CONFIRMED', 'CANCELED'] as const;
 

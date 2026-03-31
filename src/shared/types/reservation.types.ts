@@ -1,6 +1,7 @@
+import { RESERVATION_STATUS_VALUES } from '@/shared/constants/reservation';
 import type { Dish } from './menu.types';
 
-export type ReservationStatus = 'PENDING' | 'CONFIRMED' | 'CANCELED';
+export type ReservationStatus = (typeof RESERVATION_STATUS_VALUES)[number];
 
 export interface Location {
   id: number;

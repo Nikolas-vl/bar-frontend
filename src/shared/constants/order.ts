@@ -1,14 +1,14 @@
-import type { OrderStatus, OrderType } from '@/shared/types';
-
-export const ORDER_STATUS_CONFIG: Record<OrderStatus, { label: string; color: string; badgeClass: string }> = {
+export const ORDER_STATUS_CONFIG = {
   NEW: { label: 'New', color: 'gray', badgeClass: 'badge-new' },
   PAID: { label: 'Paid', color: 'blue', badgeClass: 'badge-paid' },
   PREPARING: { label: 'Preparing', color: 'orange', badgeClass: 'badge-preparing' },
   COMPLETED: { label: 'Completed', color: 'green', badgeClass: 'badge-completed' },
   CANCELED: { label: 'Canceled', color: 'red', badgeClass: 'badge-canceled' },
-};
+} as const;
 
 export const ORDER_STATUS_VALUES = ['NEW', 'PAID', 'PREPARING', 'COMPLETED', 'CANCELED'] as const;
+
+export type OrderStatus = (typeof ORDER_STATUS_VALUES)[number];
 
 export const ORDER_STATUS_TRANSITIONS: Record<OrderStatus, OrderStatus[]> = {
   NEW: ['PAID', 'CANCELED'],
@@ -46,13 +46,15 @@ export const ORDER_STATUS_FILTER_ITEMS: ReadonlyArray<{
   value: option === 'ALL' ? undefined : option,
 }));
 
-export const ORDER_TYPE_CONFIG: Record<OrderType, { label: string; icon: string; description: string }> = {
+export const ORDER_TYPE_CONFIG = {
   DINE_IN: { label: 'Dine In', icon: '🍽️', description: 'Eat at the restaurant' },
   DELIVERY: { label: 'Delivery', icon: '🛵', description: 'Delivered to your door' },
   TAKE_OUT: { label: 'Take Out', icon: '🥡', description: 'Pick up your order' },
-};
+} as const;
 
 export const ORDER_TYPE_VALUES = ['DINE_IN', 'TAKE_OUT', 'DELIVERY'] as const;
+
+export type OrderType = (typeof ORDER_TYPE_VALUES)[number];
 
 export const ORDER_TYPE_OPTIONS = ORDER_TYPE_VALUES.map(value => ({
   value,
