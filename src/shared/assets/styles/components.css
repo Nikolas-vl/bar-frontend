@@ -321,8 +321,8 @@
 
   .badge-success {
     @apply inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium uppercase tracking-wide;
-    background: var(--color-status-paid);
-    color: var(--color-status-paid-text);
+    background: var(--color-status-success);
+    color: var(--color-status-success-text);
   }
 
   /* ─────────────────────────────────────────────

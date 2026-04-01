@@ -10,6 +10,7 @@ interface DishFiltersProps {
 }
 
 import { categories, sortOptions, caloriePresets } from '../../config/filterConfig';
+import { Select } from '@/shared/ui/Select';
 
 function omitKeys<T extends object, K extends keyof T>(obj: T, ...keys: K[]): Omit<T, K> {
   const result = { ...obj };
@@ -44,11 +45,13 @@ export function DishFilters({ value, onChange, totalCount }: DishFiltersProps) {
 
   const handleSort = useCallback(
     (raw: string) => {
-      if (!raw) {
+      if (raw === DEFAULT_SORT) {
         onChange(omitKeys(value, 'sortBy', 'sortOrder'));
         return;
       }
+
       const [sortBy, sortOrder] = raw.split(':') as [DishQuery['sortBy'], DishQuery['sortOrder']];
+
       onChange({ ...value, sortBy, sortOrder });
     },
     [value, onChange],
@@ -73,6 +76,7 @@ export function DishFilters({ value, onChange, totalCount }: DishFiltersProps) {
   }, [value.isAvailable, onChange, setSearchInput]);
 
   const currentSort = value.sortBy ? `${value.sortBy}:${value.sortOrder ?? 'asc'}` : '';
+  const DEFAULT_SORT = 'default';
 
   const activeFiltersCount = [
     value.search,
@@ -103,17 +107,7 @@ export function DishFilters({ value, onChange, totalCount }: DishFiltersProps) {
           )}
         </div>
 
-        <select
-          value={currentSort}
-          onChange={e => handleSort(e.target.value)}
-          className='input w-full sm:w-44 appearance-none cursor-pointer bg-none'
-        >
-          {sortOptions.map(o => (
-            <option key={o.value} value={o.value}>
-              {o.label}
-            </option>
-          ))}
-        </select>
+        <Select value={currentSort} onChange={handleSort} options={sortOptions} className='w-full sm:w-44' />
       </div>
 
       <div className='flex items-center justify-between gap-3 flex-wrap'>

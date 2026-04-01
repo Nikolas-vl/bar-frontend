@@ -47,7 +47,7 @@ export default function GoogleCallbackPage() {
       try {
         useAuthStore.getState().setAccessToken(accessToken);
 
-        const user = await authApi.me();
+        const user = await authApi.profile();
 
         setAuth(user, accessToken);
         toast.success(`Welcome${user.name ? `, ${user.name}` : ''}! ☕`);

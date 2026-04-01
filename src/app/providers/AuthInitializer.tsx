@@ -23,7 +23,7 @@ export function AuthInitializer({ children }: Props) {
 
         setAccessToken(accessToken);
 
-        const user = await authApi.me();
+        const user = await authApi.profile();
         setAuth(user, accessToken);
       } catch {
         clearAuth();
