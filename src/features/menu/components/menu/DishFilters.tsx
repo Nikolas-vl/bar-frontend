@@ -27,6 +27,10 @@ export function DishFilters({ value, onChange, totalCount }: DishFiltersProps) {
   });
 
   useEffect(() => {
+    setSearchInput(value.search ?? '');
+  }, [value.search, setSearchInput]);
+
+  useEffect(() => {
     const { value: currentValue, onChange: currentOnChange } = latestRef.current;
     if (debouncedSearch !== (currentValue.search ?? '')) {
       currentOnChange({

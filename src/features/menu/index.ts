@@ -5,5 +5,7 @@ export { IngredientChip } from './components/IngredientChip';
 export { NutritionStat } from './components/NutritionStat';
 export { useDish } from './hooks/useDish';
 export { useDishes } from './hooks/useDishes';
+export { useMenuFilters } from './hooks/useMenuFilters';
+export { parseFiltersFromSearchParams, buildSearchParamsFromFilters } from './utils/filterSearchParams';
 export { default } from './pages/MenuPage';
 export { default as DishPage } from './pages/DishPage';

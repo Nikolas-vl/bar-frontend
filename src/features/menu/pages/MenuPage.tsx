@@ -1,12 +1,11 @@
-import { useState } from 'react';
 import { useDishes } from '../hooks/useDishes';
+import { useMenuFilters } from '../hooks/useMenuFilters';
 import { DishFilters } from '../components/menu/DishFilters';
 import { DishGrid } from '../components/menu/DishGrid';
-import type { DishQuery } from '@/shared/types';
 
 export default function MenuPage() {
-  const [query, setQuery] = useState<DishQuery>({});
-  const { data: dishes, isLoading, error } = useDishes(query);
+  const { filters, setFilters } = useMenuFilters();
+  const { data: dishes, isLoading, error } = useDishes(filters);
 
   return (
     <div className='page-container py-10'>
@@ -16,7 +15,7 @@ export default function MenuPage() {
       </div>
 
       <div className='mb-7'>
-        <DishFilters value={query} onChange={setQuery} totalCount={dishes?.length} />
+        <DishFilters value={filters} onChange={setFilters} totalCount={dishes?.length} />
       </div>
 
       {error && (

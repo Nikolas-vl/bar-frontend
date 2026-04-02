@@ -1,4 +1,4 @@
-import { useParams, Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { format } from 'date-fns';
 import { toast } from 'sonner';
 import { useMyOrder } from '../hooks/useMyOrder';
@@ -10,6 +10,7 @@ import { getErrorMessage } from '@/shared/lib/api/client';
 import { calcOrderItemTotal } from '@/features/cart/utils/cartUtils';
 import { ORDER_TYPE_CONFIG, isOrderCancelableStatus } from '@/shared/constants/order';
 import { PAYMENT_TYPE_CONFIG, getCardTypeIcon } from '@/shared/constants/payment';
+import { useBackNavigation } from '@/shared/hooks/useBackNavigation';
 
 export default function OrderDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -17,6 +18,7 @@ export default function OrderDetailPage() {
 
   const { data: order, isLoading, error } = useMyOrder(orderId);
   const { mutate: cancelOrder, isPending: isCancelling } = useCancelOrder();
+  const goBack = useBackNavigation({ fallback: '/orders' });
 
   if (isLoading) {
     return (
@@ -32,9 +34,9 @@ export default function OrderDetailPage() {
     return (
       <div className='page-container py-10 text-center'>
         <p className='text-ob-muted mb-4'>Order not found.</p>
-        <Link to='/orders' className='btn-primary'>
+        <button type='button' onClick={goBack} className='btn-primary'>
           ← My Orders
-        </Link>
+        </button>
       </div>
     );
   }
@@ -53,9 +55,9 @@ export default function OrderDetailPage() {
 
   return (
     <div className='page-container py-10'>
-      <Link to='/orders' className='inline-flex items-center gap-1.5 text-sm mb-6 hover:opacity-80 transition-opacity text-ob-muted'>
+      <button type='button' onClick={goBack} className='inline-flex items-center gap-1.5 text-sm mb-6 hover:opacity-80 transition-opacity text-ob-muted'>
         ← My Orders
-      </Link>
+      </button>
 
       <div className='max-w-2xl mx-auto flex flex-col gap-5'>
         {order.status === 'CANCELED' && (
