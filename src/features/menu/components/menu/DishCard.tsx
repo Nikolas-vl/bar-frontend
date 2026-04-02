@@ -1,5 +1,5 @@
 import { memo } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import type { Dish } from '@/shared/types';
 import { formatPrice, cn } from '@/shared/lib/utils/cn';
 import { CATEGORY_CONFIG } from '@/shared/constants/category';
@@ -11,9 +11,12 @@ interface DishCardProps {
 }
 
 export const DishCard = memo(function DishCard({ dish, className }: DishCardProps) {
+  const location = useLocation();
+
   return (
     <Link
       to={`/menu/${dish.id}`}
+      state={{ from: { pathname: location.pathname, search: location.search, hash: location.hash } }}
       className={cn(
         'group card flex flex-col overflow-hidden transition-all duration-200',
         'hover:shadow-[0_8px_32px_rgba(47,47,47,0.12)] hover:-translate-y-0.5',
@@ -23,7 +26,9 @@ export const DishCard = memo(function DishCard({ dish, className }: DishCardProp
       <div className='relative shrink-0'>
         <AppImage src={dish.imageUrl} alt={dish.name} aspectRatio='4/3' hoverScale showLabel />
 
-        <span className={cn('absolute top-2.5 left-2.5 px-2 py-0.5 rounded-full text-[11px] font-semibold', CATEGORY_CONFIG[dish.category].badgeClass)}>
+        <span
+          className={cn('absolute top-2.5 left-2.5 px-2 py-0.5 rounded-full text-[11px] font-semibold', CATEGORY_CONFIG[dish.category].badgeClass)}
+        >
           {CATEGORY_CONFIG[dish.category].label}
         </span>
 

@@ -21,7 +21,7 @@ export const authApi = {
     await apiClient.post('/auth/logout');
   },
 
-  me: async (): Promise<User> => {
+  profile: async (): Promise<User> => {
     const res = await apiClient.get('/users/profile');
     return res.data;
   },

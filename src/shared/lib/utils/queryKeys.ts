@@ -2,7 +2,7 @@ import type { DishQuery } from '@/shared/types';
 
 export const queryKeys = {
   // Auth
-  me: ['me'] as const,
+  profile: ['profile'] as const,
 
   // Menu
   dishes: {

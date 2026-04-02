@@ -7,9 +7,15 @@ export type CategoryValue = keyof typeof CATEGORY_CONFIG;
 
 export const CATEGORY_VALUES = ['BREAKFAST', 'LUNCH'] as const satisfies readonly CategoryValue[];
 
-export const CATEGORY_LABEL = Object.fromEntries(CATEGORY_VALUES.map(value => [value, CATEGORY_CONFIG[value].label])) as Record<CategoryValue, string>;
+export const CATEGORY_LABEL = Object.fromEntries(CATEGORY_VALUES.map(value => [value, CATEGORY_CONFIG[value].label])) as Record<
+  CategoryValue,
+  string
+>;
 
-export const CATEGORY_EMOJI = Object.fromEntries(CATEGORY_VALUES.map(value => [value, CATEGORY_CONFIG[value].emoji])) as Record<CategoryValue, string>;
+export const CATEGORY_EMOJI = Object.fromEntries(CATEGORY_VALUES.map(value => [value, CATEGORY_CONFIG[value].emoji])) as Record<
+  CategoryValue,
+  string
+>;
 
 export const CATEGORY_BADGE_CLASS = Object.fromEntries(CATEGORY_VALUES.map(value => [value, CATEGORY_CONFIG[value].badgeClass])) as Record<
   CategoryValue,
@@ -38,7 +44,7 @@ export const CATEGORY_FILTER_SELECT_OPTIONS = CATEGORY_FILTER_OPTIONS.map(value 
 export const CATEGORY_OPTIONS = [{ value: undefined, label: 'All' }, ...CATEGORY_SELECT_OPTIONS];
 
 export const MENU_SORT_OPTIONS = [
-  { value: '', label: 'Default' },
+  { value: 'default', label: 'Default' },
   { value: 'name:asc', label: 'Name A-Z' },
   { value: 'name:desc', label: 'Name Z-A' },
   { value: 'price:asc', label: 'Price ↑' },

@@ -2,6 +2,7 @@ import { Logo } from '@/shared/ui';
 import { IconClose } from '@/shared/assets/icons';
 import { AdminNavList } from './AdminNavList';
 import { AdminUserFooter } from './AdminUserFooter';
+import { Link } from 'react-router-dom';
 
 interface AdminMobileMenuProps {
   onClose: () => void;
@@ -15,7 +16,10 @@ export function AdminMobileMenu({ onClose, onLogout }: AdminMobileMenuProps) {
 
       <div className='relative w-72 max-w-[80vw] h-full flex flex-col bg-ob-surface border-r border-ob-border animate-slide-in-right'>
         <div className='h-16 flex items-center justify-between px-4 shrink-0 border-b border-ob-border'>
-          <Logo size='sm' />
+          <Link to='/'>
+            <Logo size='sm' />
+          </Link>
+
           <button onClick={onClose} className='btn-icon-ghost' aria-label='Close menu'>
             <IconClose width={20} height={20} />
           </button>

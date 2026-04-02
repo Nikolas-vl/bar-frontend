@@ -20,6 +20,8 @@ This client serves both **customers** (ordering, reservations) and **admins** (o
 ### Customer Experience
 
 - Menu browsing with **search, filters, sorting**
+  - URL-synced filters & pagination (shareable state)
+  - Clean URLs (default values omitted)
 - Advanced **cart system**:
   - Dish extras (ingredients)
   - Standalone ingredient ordering
@@ -31,7 +33,7 @@ This client serves both **customers** (ordering, reservations) and **admins** (o
 - **Reservations**:
   - Business-hours-aware date picker
   - Guest count & pre-orders
-- Profile management:
+- **Profile management**:
   - Addresses
   - Payment methods
   - Credentials
@@ -44,6 +46,8 @@ This client serves both **customers** (ordering, reservations) and **admins** (o
 - Menu & ingredient management
 - User management (roles, safe delete)
 - Dynamic pricing configuration (tax, delivery fee, etc.)
+- **Menu & ingredient management**:
+- Image upload via Cloudinary (optimized delivery, CDN)
 
 ---
 
@@ -101,7 +105,7 @@ sequenceDiagram
 
     UI->>API: Request (with Access Token)
     API->>Backend: Request
-    
+
     alt Token valid (2xx)
         Backend-->>UI: Response Data
     else Token expired (401)
@@ -123,26 +127,54 @@ sequenceDiagram
 
 - **✔ Robust Interceptors**: Implemented via Axios interceptors with request queueing.
 - **✔ Atomic Refresh**: Prevents race conditions on concurrent 401 responses.
+- **✔ OAuth Support**: Social login integration (e.g. Google) alongside JWT authentication
+- **✔ Hybrid Auth Flow**: Supports both credential-based and OAuth-based authentication
 
 ---
 
 ## 🧠 State Management
 
 ### Zustand (Client State)
+
 Used for lightweight, global UI or session state:
+
 - **Auth state** (user, tokens, isAuthenticated)
 - **UI state** (modals, drawer states, temporary filters)
 
 ### TanStack Query (Server State)
+
 Handles all asynchronous data fetching and synchronization:
+
 - **Domains**: Cart, Orders, Menu, Reservations, Admin analytics.
 - **Key characteristics**: Structured query keys, targeted cache invalidation, custom stale-time tuning, and optimistic updates for critical feedback.
+
+---
+
+## 🔗 URL State Management
+
+The application uses URL query parameters as a source of truth for filters and pagination.
+
+### Key Principles
+
+- **Single Source of Truth**: Filters and pagination are derived from the URL
+- **Clean URLs**: Default values (e.g. `page=1`) are omitted
+- **Shareability**: State can be shared via link
+- **Resilience**: Invalid values are safely parsed and normalized
+
+### Example
+
+Frontend URL: /admin/orders?status=PREPARING
+
+API Request: /orders/admin/all?page=1&limit=7&status=PREPARING
+
+Default values are applied internally while keeping the URL minimal.
 
 ---
 
 ## 💰 Pricing Strategy
 
 The client implements a `calcFinalTotalClient` utility that mirrors the backend's pricing logic.
+
 - **Why**: Provides instant UX feedback without waiting for a server round-trip.
 - **Guarantee**: The backend remains the **single source of truth**; it recalculates and enforces all totals upon submission.
 
@@ -155,6 +187,8 @@ The client implements a `calcFinalTotalClient` utility that mirrors the backend'
 3.  **Zod for Forms**: Bridges the gap between runtime validation and TypeScript type inference.
 4.  **Feature Module Pattern**: Localizes complexity and ensures the codebase scales linearly as new business domains are added.
 5.  **Axios Interceptor (Refresh-on-401)**: A critical piece that transparently handles token rotation and replays failed requests.
+6.  **Cloudinary for Media**: Offloads image storage and optimization to a dedicated CDN-backed service.
+7.  **Hybrid Authentication (JWT + OAuth)**: Supports flexible authentication strategies while maintaining a unified session model.
 
 ---
 
@@ -168,48 +202,57 @@ The client implements a `calcFinalTotalClient` utility that mirrors the backend'
 
 ## 📦 Tech Stack
 
-| Layer | Technology |
-|-------|------------|
-| Framework | React 19 |
-| Language | TypeScript |
-| Build Tool | Vite |
-| Routing | React Router v7 |
-| Data Loading | TanStack Query v5 |
-| State | Zustand |
-| Forms | React Hook Form + Zod |
-| UI | Radix UI |
-| Styling | Tailwind CSS v4 |
-| HTTP | Axios |
+| Layer        | Technology            |
+| ------------ | --------------------- |
+| Framework    | React 19              |
+| Language     | TypeScript            |
+| Build Tool   | Vite                  |
+| Routing      | React Router v7       |
+| Data Loading | TanStack Query v5     |
+| State        | Zustand               |
+| Forms        | React Hook Form + Zod |
+| UI           | Radix UI              |
+| Styling      | Tailwind CSS v4       |
+| HTTP         | Axios                 |
+| Media        | Cloudinary            |
+| Auth         | JWT + OAuth           |
 
 ---
 
 ## 🛠 Setup
 
 ### Prerequisites
+
 - Node.js 20+
 
 ### Installation
+
 ```bash
 npm install
 ```
 
 ### Environment
+
 Copy `.env.example` to `.env`:
+
 ```bash
 cp .env.example .env
 ```
-*Required variable:* `VITE_API_URL` (pointing to your running backend).
+
+_Required variable:_ `VITE_API_URL` (pointing to your running backend).
 
 ---
 
 ## ▶️ Running the App
 
 ### Development
+
 ```bash
 npm run dev
 ```
 
 ### Build & Production Preview
+
 ```bash
 npm run build
 npm run preview
@@ -227,12 +270,10 @@ npm run preview
 
 ## 🛣 Roadmap
 
-- [ ] OAuth (Google/Facebook integration)
 - [ ] i18n (Multi-language support)
 - [ ] Theme System (Dark/Light mode auto-switching)
 - [ ] WebSocket/SSE for live order tracking
 - [ ] Shared schema package (Monorepo transition)
-- [ ] Cloudinary integration for dish images
 
 ---
 

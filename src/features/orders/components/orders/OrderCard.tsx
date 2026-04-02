@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { format } from 'date-fns';
 import type { Order } from '@/shared/types';
 import { formatPrice } from '@/shared/lib/utils/cn';
@@ -10,18 +10,23 @@ interface OrderCardProps {
 }
 
 export function OrderCard({ order }: OrderCardProps) {
+  const location = useLocation();
+
   return (
     <Link
       to={`/orders/${order.id}`}
-        className='card p-5 flex flex-col sm:flex-row sm:items-center gap-4 hover:shadow-[0_8px_32px_rgba(47,47,47,0.10)] hover:-translate-y-0.5 transition-all duration-200'
-      >
-        <div className='flex-1 min-w-0 flex flex-col gap-1.5'>
-          <div className='flex items-center gap-2 flex-wrap'>
-            <span className='text-lg leading-none'>{ORDER_TYPE_CONFIG[order.type].icon}</span>
-            <span className='font-display font-semibold text-ob-text'>Order #{order.id}</span>
-            <span className='text-xs text-ob-muted font-medium'>{ORDER_TYPE_CONFIG[order.type].label}</span>
-            <OrderStatusBadge status={order.status} />
-          </div>
+      state={{ from: { pathname: location.pathname, search: location.search, hash: location.hash } }}
+      className='card p-5 flex flex-col sm:flex-row sm:items-center gap-4 hover:shadow-[0_8px_32px_rgba(47,47,47,0.10)] hover:-translate-y-0.5 transition-all duration-200'
+    >
+      <div className='flex-1 min-w-0 flex flex-col gap-1.5'>
+        <div className='flex items-center gap-2 flex-wrap'>
+          <span className='text-lg leading-none'>{ORDER_TYPE_CONFIG[order.type].icon}</span>
+
+          <span className='font-display font-semibold text-ob-text'>Order #{order.id}</span>
+
+          <span className='text-xs text-ob-muted font-medium'>{ORDER_TYPE_CONFIG[order.type].label}</span>
+          <OrderStatusBadge status={order.status} />
+        </div>
 
         <p className='text-xs text-ob-muted'>{format(new Date(order.createdAt), 'MMM d, yyyy · HH:mm')}</p>
 

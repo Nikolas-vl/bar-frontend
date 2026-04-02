@@ -1,6 +1,6 @@
 export const PAYMENT_STATUS_CONFIG = {
   PENDING: { label: 'Awaiting payment', color: 'gray', badgeClass: 'badge-pending' },
-  SUCCESS: { label: 'Paid', color: 'green', badgeClass: 'badge-paid' },
+  SUCCESS: { label: 'Paid', color: 'green', badgeClass: 'badge-success' },
   FAILED: { label: 'Failed', color: 'red', badgeClass: 'badge-canceled' },
 } as const;
 

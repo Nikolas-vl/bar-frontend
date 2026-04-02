@@ -19,8 +19,7 @@ import {
   type OrderStatusFilterValue,
 } from '@/shared/constants/order';
 import type { Order, OrderStatus } from '@/shared/types';
-
-const LIMIT = 20;
+import { DEFAULT_PAGE_SIZE } from '@/shared/config/pagination';
 
 export default function AdminOrdersPage() {
   const { filters, page, setPage, updateFilter, resetFilters } = useFilteredPage({
@@ -31,7 +30,7 @@ export default function AdminOrdersPage() {
 
   const params = {
     page,
-    limit: LIMIT,
+    limit: DEFAULT_PAGE_SIZE,
     status: filters.status === 'ALL' ? undefined : filters.status,
   };
 
@@ -42,7 +41,7 @@ export default function AdminOrdersPage() {
   const [expandedId, setExpandedId] = useState<number | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<number | null>(null);
 
-  const totalPages = data ? Math.ceil(data.total / LIMIT) : 1;
+  const totalPages = data ? Math.ceil(data.total / DEFAULT_PAGE_SIZE) : 1;
 
   const columns = [
     { key: 'id', header: '#', render: (o: Order) => <span className='font-mono text-xs'>#{o.id}</span> },

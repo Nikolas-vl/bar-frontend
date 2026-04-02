@@ -1,9 +1,9 @@
 import { useState } from 'react';
-import { Navigate, useParams, Link, useLocation } from 'react-router-dom';
-import { useNavigate } from 'react-router-dom';
+import { Navigate, useParams, useLocation, useNavigate } from 'react-router-dom';
 import { useDish } from '../hooks/useDish';
 import { useAddToCart } from '../../cart/hooks/useAddToCart';
 import { useAuthStore } from '@/app/store/auth.store';
+import { useBackNavigation } from '@/shared/hooks/useBackNavigation';
 import { DishDetailSkeleton } from '../components/dish/DishDetailSkeleton';
 import { DishHeader } from '../components/dish/DishHeader';
 import { DishNutrition } from '../components/dish/DishNutrition';
@@ -28,15 +28,16 @@ function DishDetail({ id }: { id: number }) {
   const { mutate: addToCart, isPending: isAdding } = useAddToCart();
   const isAuthenticated = useAuthStore(s => s.isAuthenticated);
   const navigate = useNavigate();
+  const goBack = useBackNavigation({ fallback: '/menu' });
 
   if (isLoading) return <DishDetailSkeleton />;
   if (error || !dish) {
     return (
       <div className='page-container py-10 text-center'>
         <p className='text-lg text-ob-muted'>Dish not found.</p>
-        <Link to='/menu' className='btn-primary mt-6 inline-flex'>
+        <button type='button' onClick={goBack} className='btn-primary mt-6 inline-flex'>
           ← Back to Menu
-        </Link>
+        </button>
       </div>
     );
   }
@@ -75,9 +76,9 @@ function DishDetail({ id }: { id: number }) {
 
   return (
     <div className='page-container py-10'>
-      <Link to='/menu' className='inline-flex items-center gap-1.5 text-sm mb-6 hover:opacity-80 transition-opacity text-ob-muted'>
+      <button type='button' onClick={goBack} className='inline-flex items-center gap-1.5 text-sm mb-6 hover:opacity-80 transition-opacity text-ob-muted'>
         ← Back to Menu
-      </Link>
+      </button>
       <div className='max-w-3xl mx-auto'>
         <DishHeader dish={dish} />
         <DishNutrition dish={dish} />

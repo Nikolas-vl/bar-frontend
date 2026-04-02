@@ -50,8 +50,8 @@
 
   --color-status-new: #D8E7F2;
   --color-status-new-text: #2F6A8B;
-  --color-status-paid: #D5EDD8;
-  --color-status-paid-text: #1E7A34;
+--color-status-paid: #D6E4FF;
+  --color-status-paid-text: #1D4ED8;
   --color-status-prep: #FDE9CE;
   --color-status-prep-text: #9A5A0A;
   --color-status-done: #D5EDD8;
@@ -62,6 +62,8 @@
   --color-status-pend-text: #856404;
   --color-status-conf: #D5EDD8;
   --color-status-conf-text: #1E7A34;
+  --color-status-success: #D5EDD8;
+  --color-status-success-text: #1E7A34;
 
   /* ── Typography ─────────────────────────────────────── */
 

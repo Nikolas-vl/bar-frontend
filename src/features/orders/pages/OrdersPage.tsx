@@ -1,13 +1,20 @@
-import { useState } from 'react';
 import { useMyOrders } from '../hooks/useMyOrders';
+import { useOrderFilters } from '../hooks/useOrderFilters';
 import { OrderCard } from '../components/orders/OrderCard';
 import { Skeleton } from '@/shared/ui';
-import type { OrderStatus } from '@/shared/types';
 import { ORDER_STATUS_FILTER_ITEMS } from '@/shared/constants/order';
 
 export default function OrdersPage() {
-  const [status, setStatus] = useState<OrderStatus | undefined>();
-  const { data, isLoading } = useMyOrders({ status, limit: 20 });
+  const { filters, setFilters } = useOrderFilters();
+  const { data, isLoading } = useMyOrders(filters);
+
+  const handleStatusChange = (status: (typeof ORDER_STATUS_FILTER_ITEMS)[number]['value']) => {
+    setFilters(current => ({
+      ...current,
+      status,
+      page: undefined,
+    }));
+  };
 
   return (
     <div className='page-container py-10'>
@@ -19,9 +26,9 @@ export default function OrdersPage() {
         {ORDER_STATUS_FILTER_ITEMS.map(filter => (
           <button
             key={filter.option}
-            onClick={() => setStatus(filter.value)}
+            onClick={() => handleStatusChange(filter.value)}
             className={`px-3.5 py-1.5 rounded-full text-xs font-semibold border transition-all ${
-              status === filter.value
+              filters.status === filter.value
                 ? 'bg-ob-caramel border-ob-caramel text-white'
                 : 'bg-ob-surface border-ob-border text-ob-muted hover:opacity-80'
             }`}
