@@ -11,7 +11,7 @@ export const useUpdateProfile = () => {
     mutationFn: (payload: UpdateProfilePayload) => userApi.updateMe(payload),
     onSuccess: user => {
       updateUser(user);
-      queryClient.invalidateQueries({ queryKey: queryKeys.me });
+      queryClient.invalidateQueries({ queryKey: queryKeys.profile });
     },
   });
 };
