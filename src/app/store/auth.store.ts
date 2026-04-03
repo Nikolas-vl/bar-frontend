@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import type { User } from '@/shared/types';
 import { clearAuthSessionHint, hasAuthSessionHint, setAuthSessionHint } from '@/shared/lib/auth/sessionHint';
+import { connectSocket, disconnectSocket } from '@/shared/lib/socket';
 
 interface AuthState {
   user: User | null;
@@ -23,6 +24,7 @@ export const useAuthStore = create<AuthState>(set => ({
 
   setAuth: (user, token) => {
     setAuthSessionHint();
+    connectSocket(token);
     set({ user, accessToken: token, isAuthenticated: true });
   },
 
@@ -30,6 +32,7 @@ export const useAuthStore = create<AuthState>(set => ({
 
   clearAuth: () => {
     clearAuthSessionHint();
+    disconnectSocket();
     set({ user: null, accessToken: null, isAuthenticated: false });
   },
 
