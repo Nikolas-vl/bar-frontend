@@ -25,4 +25,11 @@ export const authApi = {
     const res = await apiClient.get('/users/profile');
     return res.data;
   },
+
+  exchangeGoogleCode: async (code: string): Promise<{ accessToken: string }> => {
+    const { data } = await apiClient.get('/auth/google/exchange', {
+      params: { code },
+    });
+    return data;
+  },
 };
