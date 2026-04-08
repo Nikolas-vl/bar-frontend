@@ -14,9 +14,9 @@ interface CallbackResult {
 
 function parseCallbackParams(params: URLSearchParams): CallbackResult {
   const error = params.get('error');
-  const accessToken = params.get('accessToken');
+  const code = params.get('code');
 
-  if (error || !accessToken) {
+  if (error || !code) {
     return {
       status: 'error',
       errorMessage:
@@ -41,10 +41,12 @@ export default function GoogleCallbackPage() {
     if (didRun.current || status !== 'processing') return;
     didRun.current = true;
 
-    const accessToken = searchParams.get('accessToken')!;
+    const code = searchParams.get('code')!;
 
     const completeAuth = async () => {
       try {
+        const { accessToken } = await authApi.exchangeGoogleCode(code);
+
         useAuthStore.getState().setAccessToken(accessToken);
 
         const user = await authApi.profile();

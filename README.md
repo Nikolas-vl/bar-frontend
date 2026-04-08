@@ -1,282 +1,432 @@
 # Jolie Brasserie Café — Frontend
 
-A production-grade React application for a full-stack restaurant platform.  
-This client serves both **customers** (ordering, reservations) and **admins** (operations management) with a unified, high-performance UI.
+Production-grade React application for a restaurant ordering and management platform.
 
 ---
 
-## ✨ Overview
+## Table of Contents
 
-- Built with **React 19 + TypeScript**
-- Powered by **TanStack Query** for server-state management
-- Uses **Zustand** for lightweight client state
-- Fully integrated with a **JWT-based backend API**
-- Designed with a **feature-based architecture** for scalability
-
----
-
-## 🚀 Core Features
-
-### Customer Experience
-
-- Menu browsing with **search, filters, sorting**
-  - URL-synced filters & pagination (shareable state)
-  - Clean URLs (default values omitted)
-- Advanced **cart system**:
-  - Dish extras (ingredients)
-  - Standalone ingredient ordering
-  - Notes & quantity control
-- **Checkout flow**:
-  - Order types: Dine-in / Takeout / Delivery
-  - Live pricing preview (tax, delivery, service fee)
-  - Payment methods (Card, BLIK, Cash)
-- **Reservations**:
-  - Business-hours-aware date picker
-  - Guest count & pre-orders
-- **Profile management**:
-  - Addresses
-  - Payment methods
-  - Credentials
-
-### Admin Panel
-
-- **Dashboard with KPIs**
-- Orders management (status transitions, breakdown)
-- Reservations CRUD with conflict handling
-- Menu & ingredient management
-- User management (roles, safe delete)
-- Dynamic pricing configuration (tax, delivery fee, etc.)
-- **Menu & ingredient management**:
-- Image upload via Cloudinary (optimized delivery, CDN)
+1. [Overview](#overview)
+2. [Tech Stack](#tech-stack)
+3. [Project Structure](#project-structure)
+4. [Quick Start](#quick-start)
+5. [Environment Variables](#environment-variables)
+6. [Architecture](#architecture)
+7. [State Management](#state-management)
+8. [Authentication Flow](#authentication-flow)
+9. [WebSockets (Real-time)](#websockets-real-time)
+10. [Content Security Policy](#content-security-policy)
+11. [Styling System](#styling-system)
+12. [Build and Deploy](#build-and-deploy)
+13. [Known Limitations](#known-limitations)
+14. [Roadmap](#roadmap)
 
 ---
 
-## 🧱 Architecture
+## Overview
 
-### Feature-Based Structure
+The frontend serves two distinct applications in one codebase:
 
-```text
+- **Customer app** (`/`) — menu browsing, cart, checkout, reservations, profile management.
+- **Admin panel** (`/admin`) — dashboard, orders, reservations, dishes, users, tables, locations, settings.
+
+---
+
+## Tech Stack
+
+| Layer          | Technology             | Version |
+| -------------- | ---------------------- | ------- |
+| Framework      | React                  | 19      |
+| Language       | TypeScript             | 5.9     |
+| Build tool     | Vite                   | 7       |
+| Routing        | React Router           | 7       |
+| Server state   | TanStack Query         | 5       |
+| Client state   | Zustand                | 5       |
+| Forms          | React Hook Form + Zod  | 7 + 4   |
+| HTTP           | Axios                  | 1       |
+| Styling        | Tailwind CSS           | v4      |
+| UI primitives  | Radix UI Select        | 2       |
+| Date picker    | react-day-picker       | 9       |
+| Date utilities | date-fns               | 4       |
+| Notifications  | Sonner                 | 2       |
+| Real-time      | Socket.IO client       | 4       |
+| Floating UI    | @floating-ui/react-dom | —       |
+
+---
+
+## Project Structure
+
+```
 src/
-├── app/      # Providers, router, global setup
-├── features/ # Customer domains (cart, menu, orders)
-├── admin/    # Admin domains
-├── pages/    # Route-level pages
-└── shared/   # API, UI, hooks, types
+├── app/
+│   ├── layout/          # RootLayout, AdminLayout, Header, Footer, CartDrawer
+│   ├── providers/       # AuthInitializer
+│   ├── router/          # createBrowserRouter, route files, guards
+│   └── store/           # Zustand stores (auth.store, ui.store)
+│
+├── features/            # Customer-facing feature modules
+│   ├── auth/            # Login, Register, Google OAuth callback
+│   ├── menu/            # Menu page, dish detail, filters
+│   ├── cart/            # Cart drawer, cart page, hooks
+│   ├── orders/          # Orders list, order detail, checkout
+│   ├── reservations/    # Reservations list, new reservation form
+│   ├── addresses/       # Address management
+│   ├── payments/        # Payment method management
+│   ├── profile/         # Profile page, password change
+│   ├── locations/       # Locations section (homepage)
+│   └── settings/        # Settings page (customer — placeholder)
+│
+├── admin/
+│   ├── components/      # AdminTable, AdminModal, ConfirmDialog, etc.
+│   └── features/        # Admin feature modules (same pattern as /features)
+│       ├── dashboard/
+│       ├── dishes/      # Dish CRUD, ingredient editor, image manager
+│       ├── orders/
+│       ├── reservations/
+│       ├── tables/
+│       ├── locations/
+│       ├── users/
+│       └── settings/
+│
+├── pages/               # Route-level page components (HomePage, NotFoundPage)
+│
+└── shared/
+    ├── assets/          # styles/ (Tailwind CSS), icons/, images/
+    ├── config/          # businessHours, category constants
+    ├── constants/       # order, payment, reservation, category, user
+    ├── error/           # GlobalErrorBoundary, RouteErrorBoundary, SectionErrorBoundary
+    ├── hooks/           # useDebounce, useDebouncedSearch, useLogout, useBackNavigation,
+    │                    # useDismissableLayer
+    ├── lib/
+    │   ├── api/         # Axios client + all API modules (auth, menu, cart, order, …)
+    │   ├── auth/        # sessionHint (localStorage flag)
+    │   ├── socket.ts    # Socket.IO singleton (connect, disconnect, getSocket)
+    │   └── utils/       # cn, formatPrice, formatDate, queryKeys, pricingClient
+    ├── types/           # Shared TypeScript interfaces (menu, cart, order, reservation, …)
+    └── ui/              # Reusable components (Spinner, Skeleton, Select, AppImage, …)
 ```
 
-Each feature follows a consistent module pattern:
+Each feature module follows a consistent internal layout:
 
-```text
+```
 feature/
-├── components/
-├── hooks/
-├── pages/
-├── schemas/ # Zod validation
-├── mappers/ # Form ↔ DTO transformation
-├── dto/     # Data Transfer Objects
-└── types.ts # Local types
+├── components/   # Presentational components
+├── hooks/        # React Query hooks (useQuery / useMutation wrappers)
+├── pages/        # Route-level components
+├── schemas/      # Zod validation schemas
+├── mappers/      # Form ↔ DTO transformation
+├── dto/          # Data Transfer Object interfaces
+└── types.ts      # Local type declarations (if needed)
 ```
 
 ---
 
-## 🔄 Data Flow
-
-```mermaid
-graph TD
-    UI[User Interaction] --> Form[React Hook Form + Zod]
-    Form --> Hook[Feature Hook / useMutation]
-    Hook --> Query[TanStack Query]
-    Query --> API[Axios API Client]
-    API --> Backend[REST API]
-    Backend -- JSON Response --> API
-    API -- Extracted Data --> Query
-    Query -- Automatic Re-render --> UI
-```
-
----
-
-## 🔐 Authentication Flow
-
-```mermaid
-sequenceDiagram
-    participant UI as Component
-    participant API as Axios Interceptor
-    participant Backend
-
-    UI->>API: Request (with Access Token)
-    API->>Backend: Request
-
-    alt Token valid (2xx)
-        Backend-->>UI: Response Data
-    else Token expired (401)
-        Backend-->>API: 401 Unauthorized
-        Note over API: Start token refresh process
-        API->>Backend: POST /auth/refresh
-        alt Refresh successful (2xx)
-            Backend-->>API: New Access Token
-            Note over API: Replay original request
-            API->>Backend: Request (with NEW Token)
-            Backend-->>UI: Response Data
-        else Refresh failed (4xx)
-            Backend-->>API: 403 Forbidden
-            Note over API: Clear store & Redirect
-            API-->>UI: Authentication Error
-        end
-    end
-```
-
-- **✔ Robust Interceptors**: Implemented via Axios interceptors with request queueing.
-- **✔ Atomic Refresh**: Prevents race conditions on concurrent 401 responses.
-- **✔ OAuth Support**: Social login integration (e.g. Google) alongside JWT authentication
-- **✔ Hybrid Auth Flow**: Supports both credential-based and OAuth-based authentication
-
----
-
-## 🧠 State Management
-
-### Zustand (Client State)
-
-Used for lightweight, global UI or session state:
-
-- **Auth state** (user, tokens, isAuthenticated)
-- **UI state** (modals, drawer states, temporary filters)
-
-### TanStack Query (Server State)
-
-Handles all asynchronous data fetching and synchronization:
-
-- **Domains**: Cart, Orders, Menu, Reservations, Admin analytics.
-- **Key characteristics**: Structured query keys, targeted cache invalidation, custom stale-time tuning, and optimistic updates for critical feedback.
-
----
-
-## 🔗 URL State Management
-
-The application uses URL query parameters as a source of truth for filters and pagination.
-
-### Key Principles
-
-- **Single Source of Truth**: Filters and pagination are derived from the URL
-- **Clean URLs**: Default values (e.g. `page=1`) are omitted
-- **Shareability**: State can be shared via link
-- **Resilience**: Invalid values are safely parsed and normalized
-
-### Example
-
-Frontend URL: /admin/orders?status=PREPARING
-
-API Request: /orders/admin/all?page=1&limit=7&status=PREPARING
-
-Default values are applied internally while keeping the URL minimal.
-
----
-
-## 💰 Pricing Strategy
-
-The client implements a `calcFinalTotalClient` utility that mirrors the backend's pricing logic.
-
-- **Why**: Provides instant UX feedback without waiting for a server round-trip.
-- **Guarantee**: The backend remains the **single source of truth**; it recalculates and enforces all totals upon submission.
-
----
-
-## ⚙️ Key Engineering Decisions
-
-1.  **TanStack Query over Redux**: Server state is inherently cacheable and synchronized; Query handles this out-of-the-box better than a manual Redux store.
-2.  **Zustand for minimal state**: Avoids React Context re-renders and provides a simpler, faster API than Redux for client-only state.
-3.  **Zod for Forms**: Bridges the gap between runtime validation and TypeScript type inference.
-4.  **Feature Module Pattern**: Localizes complexity and ensures the codebase scales linearly as new business domains are added.
-5.  **Axios Interceptor (Refresh-on-401)**: A critical piece that transparently handles token rotation and replays failed requests.
-6.  **Cloudinary for Media**: Offloads image storage and optimization to a dedicated CDN-backed service.
-7.  **Hybrid Authentication (JWT + OAuth)**: Supports flexible authentication strategies while maintaining a unified session model.
-
----
-
-## 🎨 UI & Styling
-
-- **Tailwind CSS v4**: Modern utility-first styling with native CSS variable support.
-- **Radix UI**: Unstyled, accessible primitives used for complex components (Modals, Selects, Tabs).
-- **Sonner**: High-performance toast notifications.
-
----
-
-## 📦 Tech Stack
-
-| Layer        | Technology            |
-| ------------ | --------------------- |
-| Framework    | React 19              |
-| Language     | TypeScript            |
-| Build Tool   | Vite                  |
-| Routing      | React Router v7       |
-| Data Loading | TanStack Query v5     |
-| State        | Zustand               |
-| Forms        | React Hook Form + Zod |
-| UI           | Radix UI              |
-| Styling      | Tailwind CSS v4       |
-| HTTP         | Axios                 |
-| Media        | Cloudinary            |
-| Auth         | JWT + OAuth           |
-
----
-
-## 🛠 Setup
+## Quick Start
 
 ### Prerequisites
 
 - Node.js 20+
+- The backend API running (see backend README)
 
-### Installation
+### Steps
 
 ```bash
+# 1. Install dependencies
 npm install
-```
 
-### Environment
-
-Copy `.env.example` to `.env`:
-
-```bash
+# 2. Create environment file
 cp .env.example .env
-```
+# Set VITE_API_URL to your backend URL
 
-_Required variable:_ `VITE_API_URL` (pointing to your running backend).
-
----
-
-## ▶️ Running the App
-
-### Development
-
-```bash
+# 3. Start development server
 npm run dev
 ```
 
-### Build & Production Preview
+The app will be available at `http://localhost:3000`.
 
-```bash
-npm run build
-npm run preview
+---
+
+## Environment Variables
+
+| Variable       | Required | Example                 | Description                              |
+| -------------- | -------- | ----------------------- | ---------------------------------------- |
+| `VITE_API_URL` | ✅       | `http://localhost:4000` | Backend API base URL (no trailing slash) |
+
+> All `VITE_` prefixed variables are inlined at build time. Do not put secrets here.
+
+`.env.example`:
+
+```dotenv
+VITE_API_URL=http://localhost:4000
 ```
 
 ---
 
-## ⚠️ Known Limitations
+## Architecture
 
-- **No real-time updates**: Significant status changes currently require manual refresh or polling.
-- **Shared Schemas**: Zod schemas are currently duplicated between frontend and backend.
-- **Pricing Logic**: Manually mirrored from backend to frontend (intentional duplication for UX).
+### Data Flow
+
+```
+User Interaction
+    ↓
+React Component
+    ↓
+React Hook Form (forms) / Direct handler (buttons)
+    ↓
+Feature Hook (useMutation / useQuery)
+    ↓
+TanStack Query
+    ↓
+Axios API Client (with interceptors)
+    ↓
+Backend REST API
+    ↓
+JSON response → TanStack Query cache → Re-render
+```
+
+### Routing
+
+Routes are split into four groups in `src/app/router/`:
+
+| File                  | Routes                                                          | Guard                                                      |
+| --------------------- | --------------------------------------------------------------- | ---------------------------------------------------------- |
+| `public.routes.tsx`   | `/`, `/menu`, `/menu/:id`                                       | None                                                       |
+| `auth.routes.tsx`     | `/login`, `/register`, `/auth/google/success`                   | `GuestRoute` (redirect if already authenticated)           |
+| `customer.routes.tsx` | `/cart`, `/checkout`, `/orders`, `/reservations`, `/profile`, … | `ProtectedRoute` (redirect to `/login` if unauthenticated) |
+| `admin.routes.tsx`    | `/admin/**`                                                     | `AdminRoute` (must be authenticated + `ADMIN` role)        |
+
+### URL State Management
+
+Filters and pagination are persisted in URL query parameters (shareable, bookmarkable):
+
+- Menu filters: `category`, `minCalories`, `maxCalories`, `search`, `sorting`
+- Order filters: `status`, `page`, `limit`
+- Admin filters: `status`, `page`, `date`, `location` (per feature)
+
+Default values are **omitted** from the URL to keep links clean.
 
 ---
 
-## 🛣 Roadmap
+## State Management
 
-- [ ] i18n (Multi-language support)
-- [ ] Theme System (Dark/Light mode auto-switching)
-- [ ] WebSocket/SSE for live order tracking
-- [ ] Shared schema package (Monorepo transition)
+### TanStack Query — Server State
+
+Handles all asynchronous server data. Key behaviours:
+
+- `staleTime: 2 min` globally (configurable per query)
+- `retry: 1` on failure
+- `refetchOnWindowFocus: false`
+- Structured query keys in `src/shared/lib/utils/queryKeys.ts`
+
+### Zustand — Client State
+
+Two stores:
+
+**`auth.store.ts`**
+
+```typescript
+{
+  user: User | null
+  accessToken: string | null
+  isAuthenticated: boolean
+  isInitialized: boolean   // true once the silent refresh attempt resolves
+
+  setAuth(user, token): void
+  clearAuth(): void
+  setAccessToken(token): void
+  setInitialized(): void
+  updateUser(user): void
+}
+```
+
+On `setAuth`, the Socket.IO connection is established. On `clearAuth`, it is torn down.
+
+**`ui.store.ts`**
+
+```typescript
+{
+  isCartOpen: boolean
+  isMobileMenuOpen: boolean
+
+  openCart / closeCart / toggleCart: () => void
+  openMobileMenu / closeMobileMenu: () => void
+}
+```
 
 ---
 
-## 📄 License
+## Authentication Flow
 
-MIT
+### Credentials (Email + Password)
+
+```
+1. POST /auth/login → { accessToken, user } + httpOnly refresh cookie
+2. accessToken stored in Zustand (memory only — never localStorage)
+3. Axios interceptor attaches Bearer token to every request
+4. On 401, interceptor calls POST /auth/refresh to get a new access token
+   → queues concurrent failed requests, replays them after refresh
+   → on refresh failure, clears auth and redirects to /login
+```
+
+### Session Persistence (page refresh)
+
+`AuthInitializer` runs once on app mount:
+
+```
+hasAuthSessionHint() (localStorage flag)?
+  YES → POST /auth/refresh → GET /users/profile → setAuth()
+  NO  → setInitialized() immediately (no network request)
+```
+
+The `sessionHint` flag is set on login and cleared on logout, preventing unnecessary refresh calls for unauthenticated visitors.
+
+### Google OAuth
+
+```
+1. User clicks "Continue with Google"
+2. window.location.href = `${API_URL}/auth/google`
+3. Backend redirects through Google, then back to:
+   /auth/google/success?code=<one-time-code>
+4. GoogleCallbackPage calls GET /auth/google/exchange?code=<code>
+5. Receives { accessToken } + refresh cookie
+6. Fetches profile → setAuth() → navigate to home or /admin
+```
+
+### Axios Interceptors
+
+The interceptor in `src/shared/lib/api/client.ts`:
+
+- Attaches `Authorization: Bearer <token>` to every request
+- On `401`: attempts silent token refresh (once per request, queue-safe)
+- Guards against infinite loops on `/auth/refresh` and `/auth/*` routes
+- Uses `hasAuthSessionHint()` to skip refresh for unauthenticated users
+
+---
+
+## WebSockets (Real-time)
+
+See the backend [`WEBSOCKETS.md`](../backend/WEBSOCKETS.md) for the full event reference.
+
+### Frontend Integration
+
+The Socket.IO singleton lives in `src/shared/lib/socket.ts`:
+
+```typescript
+connectSocket(accessToken); // called from auth.store setAuth()
+disconnectSocket(); // called from auth.store clearAuth()
+getSocket(); // returns existing socket or throws
+```
+
+### Hooks
+
+| Hook                   | Location                                              | Events handled                                  |
+| ---------------------- | ----------------------------------------------------- | ----------------------------------------------- |
+| `useOrderSocket`       | `features/orders/hooks/useOrderSocket.ts`             | `order:status_updated`                          |
+| `useAdminOrderSocket`  | `admin/features/orders/hooks/useAdminOrderSocket.ts`  | `order:new`, `order:status_updated`             |
+| `useReservationSocket` | `features/reservations/hooks/useReservationSocket.ts` | `reservation:status_updated`, `reservation:new` |
+
+All hooks:
+
+1. Subscribe to events on mount
+2. Invalidate relevant TanStack Query caches on event receipt
+3. Show a `sonner` toast notification
+4. Unsubscribe on unmount
+
+Hooks are registered at the layout level:
+
+- `RootLayout` — `useOrderSocket`, `useReservationSocket`
+- `AdminLayout` — `useAdminOrderSocket`, `useReservationSocket`
+
+---
+
+## Content Security Policy
+
+The production Vercel deployment (`vercel.json`) enforces a strict CSP:
+
+```
+default-src 'self';
+script-src 'self';
+style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+font-src 'self' https://fonts.gstatic.com;
+img-src 'self' data: blob: https://res.cloudinary.com https://images.unsplash.com;
+connect-src 'self' https://bar-backend-y9sr.onrender.com wss:;
+object-src 'none';
+```
+
+**Important notes for development:**
+
+- Google Fonts are loaded via synchronous `<link rel="stylesheet">` (not lazy-loaded `onload` pattern) to avoid inline event handler CSP violations.
+- Tailwind CSS v4 uses a Vite plugin (`@tailwindcss/vite`) — no runtime style injection — so `'unsafe-inline'` in `script-src` is not needed.
+- If you add new external resources (CDN, API, WebSocket), update both `vercel.json` CSP and the backend's Helmet CSP config (`src/app.ts`).
+
+---
+
+## Styling System
+
+Uses **Tailwind CSS v4** with a custom design token system.
+
+### Design Tokens
+
+All tokens are defined in `src/shared/assets/styles/variables.css` inside `@theme {}`. Tailwind v4 automatically generates utility classes from every `--color-*`, `--font-*`, `--shadow-*`, and `--animate-*` variable.
+
+**Brand palette:**
+
+| Token                | Value     | Usage                      |
+| -------------------- | --------- | -------------------------- |
+| `--color-ob-bg`      | `#F7F6F3` | App background             |
+| `--color-ob-surface` | `#FFFFFF` | Cards, modals              |
+| `--color-ob-caramel` | `#9A6239` | Primary CTA, accents       |
+| `--color-ob-blue`    | `#D8E7F2` | Section fills, info states |
+| `--color-ob-text`    | `#2F2F2F` | Primary text               |
+
+### CSS Architecture
+
+| File             | Purpose                                                          |
+| ---------------- | ---------------------------------------------------------------- |
+| `variables.css`  | Design tokens (`@theme`)                                         |
+| `reset.css`      | Base reset, scrollbar, focus ring                                |
+| `components.css` | Component classes: `.btn-*`, `.card`, `.badge-*`, `.input`, etc. |
+| `utilities.css`  | Custom utilities: `.text-gradient`, `.scrollbar-hide`            |
+
+> **Rule:** `@apply` in `components.css` may only reference built-in Tailwind utilities — never other custom classes from the same file.
+
+---
+
+## Build and Deploy
+
+### Production build
+
+```bash
+npm run build
+# Output in dist/
+```
+
+### Preview production build locally
+
+```bash
+npm run preview
+```
+
+### Vercel deployment
+
+The project is configured for Vercel via `vercel.json`:
+
+- **Rewrites:** All routes → `/index.html` (SPA routing)
+- **Headers:** CSP, `X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff`, `Referrer-Policy`
+- **Cache:** `/assets/*` → `immutable, max-age=31536000`
+
+---
+
+## Known Limitations
+
+- No i18n support yet.
+
+---
+
+## Roadmap
+
+- [ ] Dark / light mode toggle
+- [ ] i18n (Polish + English)
+- [ ] Progressive Web App (PWA) manifest + service worker
+- [ ] Shared Zod schema package with backend (monorepo)
+- [ ] E2E tests (Playwright)
